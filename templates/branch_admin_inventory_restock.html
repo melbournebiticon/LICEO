@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}Restock Item (By Size){% endblock %}
+
+{% block content %}
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#f5f7fa; color:#333; }
+  .container { max-width:780px; margin:0 auto; padding:40px 20px; }
+  .card { background:#fff; border-radius:14px; box-shadow:0 2px 10px rgba(0,0,0,.08); padding:28px; }
+  h1 { font-size:26px; margin-bottom:16px; color:#222; }
+  .muted { color:#666; font-size:13px; }
+  .item-box { background:#f8f9fa; border:1px solid #eee; border-radius:12px; padding:16px; margin:14px 0 18px; }
+  .row { display:flex; justify-content:space-between; gap:12px; margin-bottom:10px; }
+  .label { font-weight:700; color:#555; }
+  .val { font-weight:700; color:#222; text-align:right; }
+
+  .message { padding:12px 14px; border-radius:10px; margin:10px 0 14px; font-weight:600; }
+  .success { background:#d1e7dd; color:#0f5132; border:1px solid #badbcc; }
+  .error { background:#f8d7da; color:#842029; border:1px solid #f5c2c7; }
+
+  .grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+  .field { width:100%; padding:12px; border:1px solid #ddd; border-radius:10px; font-size:15px; }
+  .field:focus { outline:none; border-color:#0d6efd; box-shadow:0 0 0 3px rgba(13,110,253,.12); }
+
+  .btn { padding:12px 16px; border:none; border-radius:10px; font-weight:800; cursor:pointer; text-decoration:none; display:inline-block; }
+  .btn-primary { background:#198754; color:#fff; }
+  .btn-primary:hover { background:#157347; }
+  .btn-secondary { background:#6c757d; color:#fff; }
+  .btn-secondary:hover { background:#5c636a; }
+  .btn-outline { background:#fff; color:#0d6efd; border:2px solid #0d6efd; }
+  .btn-outline:hover { background:#0d6efd; color:#fff; }
+
+  table { width:100%; border-collapse:collapse; margin-top:10px; }
+  th, td { padding:10px; border-bottom:1px solid #eee; text-align:left; }
+  th { font-size:13px; color:#666; }
+  .pill { display:inline-block; padding:4px 10px; border-radius:999px; background:#eef6ff; color:#0b5ed7; font-weight:800; font-size:12px; }
+</style>
+
+<div class="container">
+  <div class="card">
+    <h1>📦 Restock Item (By Size)</h1>
+    <div class="muted">Tip: Create size rows first (XS–XXL), then restock per size.</div>
+
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% if msgs %}
+        {% for cat, msg in msgs %}
+          <div class="message {% if cat == 'success' %}success{% else %}error{% endif %}">
+            {{ msg }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% if error %}
+      <div class="message error">❌ {{ error }}</div>
+    {% endif %}
+
+    {% if item %}
+      <div class="item-box">
+        <div class="row"><div class="label">Item Name:</div><div class="val">{{ item[1] }}</div></div>
+        <div class="row"><div class="label">Category:</div><div class="val">{{ item[2] }}</div></div>
+        <div class="row"><div class="label">Total Stock (all sizes):</div><div class="val">{{ item[3] }}</div></div>
+        <div class="row"><div class="label">Reserved (all sizes):</div><div class="val">{{ item[4] }}</div></div>
+        <div class="row"><div class="label">Available:</div><div class="val">{{ item[3] - item[4] }}</div></div>
+      </div>
+
+      {% if not size_rows %}
+        <div class="item-box">
+          <span class="pill">No sizes found for this item</span>
+          <div class="muted" style="margin-top:8px;">
+            Click below to create default sizes (XS, S, M, L, XL, XXL).
+          </div>
+
+          <form method="POST" style="margin-top:12px;">
+            <input type="hidden" name="action" value="create_sizes">
+            <button class="btn btn-outline" type="submit">➕ Create default sizes</button>
+            <a class="btn btn-secondary" href="{{ url_for('branch_admin.branch_admin_inventory') }}" style="margin-left:8px;">Back</a>
+          </form>
+        </div>
+      {% else %}
+        <div class="item-box">
+          <div style="font-weight:900; margin-bottom:8px;">Current Stocks per Size</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Size</th>
+                <th>Stock</th>
+                <th>Reserved</th>
+                <th>Available</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in size_rows %}
+                <tr>
+                  <td><span class="pill">{{ r[1] }}</span></td>
+                  <td>{{ r[2] }}</td>
+                  <td>{{ r[3] }}</td>
+                  <td>{{ r[2] - r[3] }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <form method="POST">
+          <div class="grid">
+            <div>
+              <label class="muted" style="font-weight:800;">Size *</label>
+              <select class="field" name="size_label" required>
+                <option value="">-- Select size --</option>
+                {% for s in size_order %}
+                  <option value="{{ s }}">{{ s }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div>
+              <label class="muted" style="font-weight:800;">Add stock *</label>
+              <input class="field" type="number" name="add_stock" min="1" placeholder="e.g. 10" required>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;">
+            <button class="btn btn-primary" type="submit">✅ Confirm Restock</button>
+            <a class="btn btn-secondary" href="{{ url_for('branch_admin.branch_admin_inventory') }}" style="margin-left:8px;">Back</a>
+          </div>
+        </form>
+      {% endif %}
+    {% else %}
+      <div class="message error">Item not found.</div>
+      <a class="btn btn-secondary" href="{{ url_for('branch_admin.branch_admin_inventory') }}">Back</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

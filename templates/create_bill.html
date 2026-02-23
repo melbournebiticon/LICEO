@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Create Bill{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">Create Bill</div>
+    
+    <div style="margin-bottom: 2rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
+        <h3 style="margin-bottom: 0.5rem;">Student Information</h3>
+        <p><strong>Name:</strong> {{ enrollment.student_name }}</p>
+        <p><strong>Grade Level:</strong> {{ enrollment.grade_level }}</p>
+        <p><strong>Guardian:</strong> {{ enrollment.guardian_name }}</p>
+        <p><strong>Contact:</strong> {{ enrollment.contact_number }}</p>
+    </div>
+    
+    <form method="post">
+        <div class="form-group">
+            <label class="form-label">Tuition Fee</label>
+            <input type="number" step="0.01" name="tuition_fee" class="form-control" 
+                   value="{{ tuition_fee }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Book Fee ({{ book_count }} books x ₱500.00)</label>
+            <input type="number" step="0.01" name="books_fee" class="form-control" 
+                   value="{{ books_fee }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Uniform Fee ({{ uniform_count }} items x ₱350.00)</label>
+            <input type="number" step="0.01" name="uniform_fee" class="form-control" 
+                   value="{{ uniform_fee }}" required>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Other Fees</label>
+            <input type="number" step="0.01" name="other_fees" class="form-control" 
+                   value="0" required>
+        </div>
+        
+        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 2px solid #e5e7eb;">
+            <p style="font-size: 1.25rem; font-weight: bold;">
+                Total Amount: ₱<span id="total">{{ tuition_fee + books_fee + uniform_fee }}</span>
+            </p>
+        </div>
+        
+        <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+            <button type="submit" class="btn btn-primary">Create Bill</button>
+            <a href="{{ url_for('cashier.dashboard') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Calculate total on change
+document.querySelectorAll('input[type="number"]').forEach(input => {
+    input.addEventListener('input', function() {
+        const tuition = parseFloat(document.querySelector('input[name="tuition_fee"]').value) || 0;
+        const book = parseFloat(document.querySelector('input[name="books_fee"]').value) || 0;
+        const uniform = parseFloat(document.querySelector('input[name="uniform_fee"]').value) || 0;
+        const other = parseFloat(document.querySelector('input[name="other_fees"]').value) || 0;
+        const total = tuition + book + uniform + other;
+        document.getElementById('total').textContent = total.toFixed(2);
+    });
+});
+</script>
+{% endblock %}

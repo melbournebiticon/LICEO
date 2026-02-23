@@ -1,0 +1,479 @@
+{% extends "base.html" %}
+
+{% block title %}Reservation{% endblock %}
+
+{% block content %}
+<style>
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+  header { border-bottom: 1px solid #ddd; padding-bottom: 1rem; margin-bottom: 1rem; }
+  .card { padding: 1rem; border: 1px solid #eee; border-radius: 12px; background:#fff; box-shadow: 0 2px 8px rgba(0,0,0,.06); margin-bottom: 12px; }
+  .muted { color:#000; font-size: 13px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .select { 
+    padding:10px; 
+    border-radius:10px; 
+    border:1px solid #ddd; 
+    min-width:220px; 
+    background:#fff; 
+    color:#000;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .badge { 
+    font-size:12px; 
+    padding:4px 8px; 
+    border:1px solid #ddd; 
+    border-radius:999px; 
+    background:#fafafa; 
+    color:#000;
+    display: inline-block;
+  }
+  .btn {
+    display:inline-block; 
+    padding:10px 16px; 
+    border-radius:10px;
+    border:1px solid #ddd; 
+    background:#007bff; 
+    color:#fff;
+    text-decoration:none; 
+    cursor:pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+  }
+  .btn:hover { background:#0056b3; }
+  .btn:disabled {
+    background:#ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  .btn-secondary {
+    background:#6c757d;
+    color: #fff;
+  }
+  .btn-secondary:hover {
+    background:#5a6268;
+  }
+
+  .grid { 
+    display:grid; 
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+    gap:16px;
+    margin: 20px 0;
+  }
+  
+  .item-card { 
+    padding:16px; 
+    border:1px solid #eee; 
+    border-radius:12px; 
+    background:#fff;
+    transition: box-shadow 0.2s, transform 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .item-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,.1);
+    transform: translateY(-2px);
+  }
+  
+  .item-top { 
+    display:flex; 
+    gap:12px; 
+    align-items:flex-start;
+    margin-bottom: 12px;
+    flex: 1;
+  }
+  
+  .thumb {
+    width:90px; 
+    height:110px; 
+    border-radius:8px; 
+    border:1px solid #eee;
+    object-fit:contain; 
+    background:#fafafa;
+    flex-shrink: 0;
+  }
+  
+  .item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .title { 
+    font-weight:700; 
+    margin-bottom:6px; 
+    color:#000;
+    font-size: 14px;
+    line-height: 1.3;
+  }
+  
+  .price { 
+    font-weight:700; 
+    margin-top:6px; 
+    color:#0b6b2f;
+    font-size: 16px;
+  }
+  
+  .availability {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+  }
+  
+  .size-row {
+    display:flex; 
+    justify-content:space-between; 
+    align-items:center; 
+    margin-top:12px; 
+    gap:10px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+  }
+  
+  .qty-row { 
+    display:flex; 
+    justify-content:space-between; 
+    align-items:center; 
+    margin-top:10px; 
+    gap:10px;
+  }
+  
+  .qty-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  input[type="number"], 
+  select.size-select { 
+    padding:8px 10px; 
+    border-radius:8px; 
+    border:1px solid #ddd; 
+    background:#fff;
+    color:#000;
+    font-size: 14px;
+  }
+  
+  input[type="number"] {
+    width:70px;
+    text-align: center;
+  }
+  
+  select.size-select {
+    width:100%;
+    cursor: pointer;
+  }
+  
+  input[type="number"]:disabled,
+  select.size-select:disabled {
+    background:#f0f0f0;
+    color:#999;
+    cursor:not-allowed;
+  }
+
+  .warn { 
+    color:#dc3545; 
+    font-size:13px;
+    font-weight: 500;
+  }
+  
+  .ok { 
+    color:#0b6b2f; 
+    font-size:13px;
+    font-weight: 500;
+  }
+  
+  .qty-note {
+    font-size: 11px;
+    color: #999;
+    margin-top: 2px;
+  }
+
+  .required {
+    color: #dc3545;
+    font-weight: 600;
+  }
+
+  h1, h3 { color:#000; }
+  label { color:#000; }
+  b { color:#000; }
+
+  .info-box {
+    background: #f8f9fa;
+    border-left: 4px solid #007bff;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    font-size: 13px;
+  }
+
+  .out-of-stock {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    .grid {
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .item-top {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .thumb {
+      width: 100%;
+      height: 140px;
+    }
+  }
+</style>
+
+<div class="container">
+  <header>
+    <h1>📚 Reserve Books & Uniforms</h1>
+    <p class="muted">
+      Branch: <b>{{ branch_id }}</b>
+      {% if student_grade %} • Grade: <b>{{ student_grade }}</b>{% endif %}
+    </p>
+  </header>
+
+  {% if error %}
+    <div class="card" style="border-left: 4px solid #dc3545;">
+      <b class="warn">⚠️ {{ error }}</b>
+    </div>
+  {% endif %}
+
+  {% if message %}
+    <div class="card" style="border-left: 4px solid #0b6b2f;">
+      <b class="ok">✅ {{ message }}</b>
+    </div>
+  {% endif %}
+
+  <div class="card">
+    <div class="row">
+      <label class="muted"><b>Filter by Category:</b></label>
+      <select id="categorySelect" class="select" onchange="filterItems()">
+        <option value="ALL">All Items</option>
+        <option value="BOOK">📖 Books</option>
+        <option value="UNIFORM">👕 Uniforms</option>
+      </select>
+
+      <a class="btn btn-secondary" href="{{ url_for('student_portal.dashboard') }}">⬅ Back to Dashboard</a>
+
+
+    <div class="info-box">
+      📌 Select items below and choose your preferred size for uniforms. Maximum 3 items per product.
+    </div>
+  </div>
+
+  <form method="post" class="card" id="reservationForm">
+    <h3 style="margin-bottom:12px;">Available Items</h3>
+    <p class="muted" style="margin-bottom:16px;">
+      Select quantity for each item. For uniforms, <span class="required">select a size</span>. Click "Submit Reservation" when done.
+    </p>
+
+    <div id="itemsWrap" class="grid">
+      {% if items|length == 0 %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #999;">
+          <p style="font-size: 16px; margin-bottom: 8px;">📦 No items available</p>
+          <p style="font-size: 13px;">Try selecting a different category or check back later.</p>
+        </div>
+      {% else %}
+        {% for it in items %}
+          <div class="item-card item-card-js {% if it.available <= 0 %}out-of-stock{% endif %}" data-category="{{ it.category }}" data-item-id="{{ it.item_id }}">
+            <div class="item-top">
+              {% set imgpath = it.image_url %}
+              {% if not imgpath %}
+                {% set imgpath = '/static/img/placeholder.jpg' %}
+              {% elif imgpath.startswith('http') %}
+                {# keep as is #}
+              {% elif imgpath.startswith('/') %}
+                {# keep as is #}
+              {% else %}
+                {% set imgpath = '/' ~ imgpath %}
+              {% endif %}
+
+              <img class="thumb" src="{{ imgpath }}" alt="{{ it.item_name }}" onerror="this.src='/static/img/placeholder.jpg'">
+
+              <div class="item-info">
+                <div class="title">{{ it.item_name }}</div>
+
+                <div style="margin-bottom: 8px;">
+                  <span class="badge">{{ it.category }}</span>
+                  {% if it.grade_level %}<span class="badge">{{ it.grade_level }}</span>{% endif %}
+                </div>
+
+                <div class="price">₱{{ '%.2f'|format(it.price or 0) }}</div>
+                
+                <div class="availability">
+                  {% if it.available > 0 %}
+                    <span style="color: #0b6b2f; font-weight: 500;">✓ In Stock</span> ({{ it.available }} available)
+                  {% else %}
+                    <span style="color: #dc3545; font-weight: 500;">✗ Out of Stock</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- SIZE SELECTION FOR UNIFORMS -->
+            {% if it.category == 'UNIFORM' %}
+              <div class="size-row">
+                <label class="muted" style="font-weight: 600; margin: 0;">
+                  Size: <span class="required">*</span>
+                </label>
+                <select class="size-select size-select-js" 
+                        name="size_{{ it.item_id }}"
+                        data-item-id="{{ it.item_id }}"
+                        {% if it.available <= 0 %}disabled{% endif %}>
+                  <option value="">-- Choose Size --</option>
+                  <option value="XS">Extra Small (XS)</option>
+                  <option value="S">Small (S)</option>
+                  <option value="M">Medium (M)</option>
+                  <option value="L">Large (L)</option>
+                  <option value="XL">Extra Large (XL)</option>
+                  <option value="XXL">2X Large (XXL)</option>
+                </select>
+              </div>
+            {% endif %}
+
+            <!-- QUANTITY INPUT -->
+            <div class="qty-row">
+              <label class="muted" style="font-weight: 600; margin: 0;">Quantity:</label>
+              <div class="qty-container">
+                <input type="number"
+                       name="qty_{{ it.item_id }}"
+                       min="0"
+                       max="3"
+                       value="0"
+                       class="qty-input"
+                       data-item-id="{{ it.item_id }}"
+                       data-category="{{ it.category }}"
+                       {% if it.available <= 0 %}disabled{% endif %}
+                       onchange="validateInput(this)"
+                       onkeyup="validateInput(this)">
+                <span class="qty-note">Max: 3</span>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <div class="row" style="margin-top:24px; justify-content: flex-end;">
+      <button class="btn" type="submit" id="submitBtn">✅ Submit Reservation</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  function filterItems(){
+    const selected = document.getElementById("categorySelect").value;
+    const cards = document.querySelectorAll(".item-card-js");
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const cat = card.getAttribute("data-category");
+      if (selected === "ALL" || cat === selected) {
+        card.style.display = "block";
+        visibleCount++;
+      } else {
+        card.style.display = "none";
+      }
+    });
+  }
+
+  function validateQty(input) {
+    let val = parseInt(input.value) || 0;
+    
+    // Enforce max of 3
+    if (val > 3) {
+      val = 3;
+      input.value = 3;
+    }
+    
+    // Enforce min of 0
+    if (val < 0) {
+      val = 0;
+      input.value = 0;
+    }
+  }
+
+  function validateInput(qtyInput) {
+    validateQty(qtyInput);
+    updateSubmitButton();
+  }
+
+  function updateSubmitButton() {
+    const form = document.getElementById("reservationForm");
+    const qtyInputs = document.querySelectorAll(".qty-input");
+    let isValid = false;
+    let selectedItems = [];
+
+    qtyInputs.forEach(input => {
+      const qty = parseInt(input.value) || 0;
+      const itemId = input.getAttribute("data-item-id");
+      const category = input.getAttribute("data-category");
+
+      if (qty > 0) {
+        // Check if uniform has size selected
+        if (category === "UNIFORM") {
+          const sizeSelect = document.querySelector(`select[name="size_${itemId}"]`);
+          if (sizeSelect && sizeSelect.value) {
+            selectedItems.push(itemId);
+          }
+        } else {
+          selectedItems.push(itemId);
+        }
+      }
+    });
+
+    isValid = selectedItems.length > 0;
+
+    const submitBtn = document.getElementById("submitBtn");
+    submitBtn.disabled = !isValid;
+  }
+
+  // Validate form before submit
+  document.getElementById("reservationForm").addEventListener("submit", function(e) {
+    const qtyInputs = document.querySelectorAll(".qty-input");
+    let hasErrors = false;
+    let errorMsg = "";
+
+    qtyInputs.forEach(input => {
+      const qty = parseInt(input.value) || 0;
+      const itemId = input.getAttribute("data-item-id");
+      const category = input.getAttribute("data-category");
+
+      if (qty > 0) {
+        // Check if uniform has size selected
+        if (category === "UNIFORM") {
+          const sizeSelect = document.querySelector(`select[name="size_${itemId}"]`);
+          if (!sizeSelect || !sizeSelect.value) {
+            hasErrors = true;
+            errorMsg = "Please select a size for all uniforms you want to reserve!";
+            sizeSelect?.focus();
+          }
+        }
+      }
+    });
+
+    if (hasErrors) {
+      e.preventDefault();
+      alert(errorMsg);
+      return false;
+    }
+  });
+
+  // Initialize
+  filterItems();
+  updateSubmitButton();
+
+  // Update on any change
+  document.addEventListener('change', function(e) {
+    if (e.target.classList.contains('qty-input') || e.target.classList.contains('size-select-js')) {
+      updateSubmitButton();
+    }
+  });
+</script>
+{% endblock %}

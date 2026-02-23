@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enrollment Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            padding: 40px;
+        }
+        h2 {
+            color: #2c3e50;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .btn-primary:hover {
+            background-color: #1e4ed8;
+        }
+        hr {
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Enrollment Summary</h2>
+
+<p><strong>Name:</strong> {{ enrollment.student_name }}</p>
+<p><strong>Grade Level:</strong> {{ enrollment.grade_level }}</p>
+<p><strong>Gender:</strong> {{ enrollment.gender }}</p>
+<p><strong>Date of Birth:</strong> {{ enrollment.dob }}</p>
+<p><strong>Address:</strong> {{ enrollment.address }}</p>
+<p><strong>Contact Number:</strong> {{ enrollment.contact_number }}</p>
+<p><strong>Guardian Name:</strong> {{ enrollment.guardian_name }}</p>
+<p><strong>Guardian Contact:</strong> {{ enrollment.guardian_contact }}</p>
+{% if enrollment.previous_school %}
+<p><strong>Previous School:</strong> {{ enrollment.previous_school }}</p>
+{% endif %}
+
+<h3>Uploaded Documents:</h3>
+<ul>
+    {% for doc in documents %}
+        <li><a href="{{ doc.file_path }}" target="_blank">{{ doc.file_name }}</a></li>
+    {% endfor %}
+</ul>
+
+<h3>Books Reserved:</h3>
+<ul>
+    {% for book in books %}
+        <li>{{ book.book_name }}</li>
+    {% endfor %}
+</ul>
+
+<h3>Uniforms Selected:</h3>
+<ul>
+    {% for uniform in uniforms %}
+        <li>{{ uniform.uniform_type }} - Size: {{ uniform.size }}, Qty: {{ uniform.quantity }}</li>
+    {% endfor %}
+</ul>
+
+<form method="post">
+    <button type="submit" class="btn-primary">Submit Enrollment</button>
+</form>
+
+
+</body>
+</html>

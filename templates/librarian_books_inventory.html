@@ -1,0 +1,481 @@
+{% extends "base.html" %}
+
+{% block title %}Book Inventory{% endblock %}
+
+{% block styles %}
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    background: #f5f7fa;
+    color: #333;
+  }
+  
+  .container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  h1 {
+    font-size: 28px;
+    color: #222;
+  }
+
+  .header-subtitle {
+    font-size: 13px;
+    color: #999;
+    margin-top: 4px;
+  }
+  
+  .header-actions {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .btn {
+    padding: 10px 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f8f8f8;
+    color: #222;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
+  }
+  
+  .btn:hover {
+    background: #efefef;
+  }
+  
+  .btn-primary {
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+  }
+  
+  .btn-primary:hover {
+    background: #218838;
+  }
+  
+  .btn-secondary {
+    background: #6c757d;
+    color: white;
+    border-color: #6c757d;
+  }
+  
+  .btn-secondary:hover {
+    background: #5a6268;
+  }
+  
+  .card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .stat-box {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    border-left: 4px solid #007bff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  }
+  
+  .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #222;
+  }
+  
+  .stat-label {
+    font-size: 13px;
+    color: #999;
+    margin-top: 4px;
+  }
+  
+  .filter-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .filter-bar label {
+    font-weight: 600;
+    color: #555;
+    font-size: 13px;
+  }
+  
+  .filter-bar select,
+  .filter-bar input {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+  }
+  
+  .filter-bar select:focus,
+  .filter-bar input:focus {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 0 3px rgba(40,167,69,0.1);
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  
+  thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  th {
+    padding: 10px 8px;
+    text-align: left;
+    font-weight: 600;
+    color: #555;
+    font-size: 12px;
+  }
+  
+  td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+  }
+  
+  tbody tr {
+    transition: background 0.2s;
+  }
+  
+  tbody tr:hover {
+    background: #f9f9f9;
+  }
+  
+  .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+  
+  .badge-success {
+    background: #d1e7dd;
+    color: #0f5132;
+  }
+  
+  .badge-danger {
+    background: #f8d7da;
+    color: #842029;
+  }
+  
+  .badge-warning {
+    background: #fff3cd;
+    color: #856404;
+  }
+  
+  .badge-info {
+    background: #cff4fc;
+    color: #055160;
+  }
+
+  .badge-grade {
+    background: #eef6ff;
+    color: #0b5ed7;
+    margin-left: 0;
+  }
+  
+  .btn-sm {
+    padding: 6px 10px;
+    font-size: 11px;
+    margin: 2px;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  
+  .btn-warning {
+    background: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+  }
+  
+  .btn-danger {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: white;
+  }
+  
+  .btn-info {
+    background: #17a2b8;
+    border-color: #17a2b8;
+    color: white;
+  }
+
+  .btn-edit {
+    background: #6c757d;
+    border-color: #6c757d;
+    color: white;
+  }
+  
+  .low-stock {
+    background: #fff3cd !important;
+  }
+  
+  .out-of-stock {
+    background: #f8d7da !important;
+  }
+
+  /* Actions column styling */
+  .action-buttons {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* Loading indicator */
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  .loading-overlay.active {
+    display: flex;
+  }
+
+  .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #28a745;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+  }
+
+  .empty-state a {
+    color: #28a745;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .empty-state a:hover {
+    text-decoration: underline;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+
+<div class="container">
+  <header>
+    <div>
+      <h1>📚 Book Inventory</h1>
+      <div class="header-subtitle">Shows only BOOK category for your branch</div>
+    </div>
+    <div class="header-actions">
+      <a href="{{ url_for('librarian.book_add') }}" class="btn btn-primary">➕ Add Book</a>
+      <a href="{{ url_for('librarian.dashboard') }}" class="btn">⬅ Back</a>
+    </div>
+  </header>
+
+  <!-- Statistics -->
+  <div class="stats">
+    <div class="stat-box">
+      <div class="stat-value">{{ stats.total_items if stats else 0 }}</div>
+      <div class="stat-label">Total Books</div>
+    </div>
+    <div class="stat-box" style="border-left-color: #28a745;">
+      <div class="stat-value">{{ stats.total_stock if stats else 0 }}</div>
+      <div class="stat-label">Total Stock</div>
+    </div>
+    <div class="stat-box" style="border-left-color: #ffc107;">
+      <div class="stat-value">{{ stats.reserved if stats else 0 }}</div>
+      <div class="stat-label">Reserved</div>
+    </div>
+    <div class="stat-box" style="border-left-color: #dc3545;">
+      <div class="stat-value">{{ stats.low_stock if stats else 0 }}</div>
+      <div class="stat-label">Low Stock (&lt;10)</div>
+    </div>
+    <div class="stat-box" style="border-left-color: #17a2b8;">
+      <div class="stat-value">{{ stats.out_stock if stats else 0 }}</div>
+      <div class="stat-label">Out of Stock</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <form method="GET" id="filterForm" class="card filter-bar">
+    <div class="filter-group">
+      <label>🔍 Search by Title/Publisher</label>
+      <input type="text" name="search" id="searchInput" placeholder="Search..." value="{{ search or '' }}">
+    </div>
+    <div class="filter-group">
+      <label>🎓 Grade Level</label>
+      <select name="grade" id="gradeSelect">
+        <option value="">All Grades</option>
+        {% for g in grades %}
+          <option value="{{ g }}" {% if grade_filter == g %}selected{% endif %}>{{ g }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </form>
+
+  <!-- Book Inventory Table -->
+  <div class="card">
+    {% if items and items|length > 0 %}
+      <table>
+        <thead>
+          <tr>
+            <th>Grade Level</th>
+            <th>Publisher</th>
+            <th>Title</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Reserved</th>
+            <th>Available</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for it in items %}
+            {% set available = (it.stock_total or 0) - (it.reserved_qty or 0) %}
+            <tr class="{{ 'out-of-stock' if available == 0 else ('low-stock' if available < 10 else '') }}">
+              <td>
+                <span class="badge badge-grade">{{ it.grade_level or 'All' }}</span>
+              </td>
+              <td>{{ it.publisher or '-' }}</td>
+              <td style="font-weight: 700;">{{ it.title or it.item_name }}</td>
+              <td><strong>₱{{ "%.2f"|format(it.price or 0) }}</strong></td>
+              <td>{{ it.stock_total or 0 }}</td>
+              <td>{{ it.reserved_qty or 0 }}</td>
+              <td>
+                <strong>{{ available }}</strong>
+                {% if available == 0 %}
+                  <span class="badge badge-danger">Out</span>
+                {% elif available < 10 %}
+                  <span class="badge badge-warning">Low</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <a href="{{ url_for('librarian.book_edit', item_id=it.item_id) }}" class="btn btn-sm btn-edit" title="Edit Book">✏️ Edit</a>
+                  <a href="{{ url_for('librarian.book_restock', item_id=it.item_id) }}" class="btn btn-sm btn-primary" title="Restock">📦 Restock</a>
+                  <a href="{{ url_for('librarian.book_price', item_id=it.item_id) }}" class="btn btn-sm btn-info" title="Update Price">💰 Price</a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty-state">
+        📭 No books found. <a href="{{ url_for('librarian.book_add') }}">Add your first book</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Get form and filter elements
+  const form = document.getElementById('filterForm');
+  const gradeSelect = document.getElementById('gradeSelect');
+  const searchInput = document.getElementById('searchInput');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+
+  // Show loading indicator
+  function showLoading() {
+    loadingOverlay.classList.add('active');
+  }
+
+  // Auto-submit form when dropdown changes
+  function autoSubmit() {
+    showLoading();
+    form.submit();
+  }
+
+  // Add event listener to grade select
+  gradeSelect.addEventListener('change', autoSubmit);
+
+  // Search input with debounce (wait 500ms after user stops typing)
+  let searchTimeout;
+  searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(function() {
+      showLoading();
+      form.submit();
+    }, 500);
+  });
+
+  // Optional: Submit on Enter key in search
+  searchInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      clearTimeout(searchTimeout);
+      showLoading();
+      form.submit();
+    }
+  });
+</script>
+{% endblock %}

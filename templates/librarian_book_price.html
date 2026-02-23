@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Update Book Price{% endblock %}
+
+{% block content %}
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#f5f7fa; color:#333; }
+  .container { max-width:700px; margin:0 auto; padding:40px 20px; }
+  .card { background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); padding:40px; }
+  h1 { font-size:28px; margin-bottom:30px; color:#222; }
+  .item-info { background:#f8f9fa; border-radius:8px; padding:20px; margin-bottom:30px; }
+  .item-info-row { display:flex; justify-content:space-between; margin-bottom:12px; font-size:15px; gap:12px; }
+  .item-info-row:last-child { margin-bottom:0; }
+  .item-info-label { font-weight:600; color:#555; }
+  .item-info-value { color:#222; font-weight:600; text-align:right; }
+  .current-price { font-size:32px; color:#007bff; font-weight:800; }
+  .form-group { margin-bottom:20px; }
+  label { display:block; font-weight:600; margin-bottom:8px; color:#555; }
+  input { width:100%; padding:14px; border:2px solid #ddd; border-radius:8px; font-size:18px; font-weight:600; }
+  input:focus { outline:none; border-color:#17a2b8; box-shadow:0 0 0 3px rgba(23,162,184,0.1); }
+  .btn { padding:14px 28px; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer; text-decoration:none; display:inline-block; transition:.2s; }
+  .btn-primary { background:#17a2b8; color:#fff; }
+  .btn-primary:hover { background:#138496; }
+  .btn-secondary { background:#6c757d; color:#fff; margin-left:10px; }
+  .btn-secondary:hover { background:#5a6268; }
+  .message { padding:14px 18px; border-radius:8px; margin-bottom:20px; font-weight:600; }
+  .message-success { background:#d1e7dd; color:#0f5132; border:1px solid #badbcc; }
+  .message-error { background:#f8d7da; color:#842029; border:1px solid #f5c2c7; }
+</style>
+
+<div class="container">
+  <div class="card">
+    <h1>💰 Update Book Price</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div class="message {{ 'message-success' if category=='success' else 'message-error' }}">
+            {{ '✅' if category=='success' else '❌' }} {{ msg }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% if book %}
+      {% set available = (book.stock_total or 0) - (book.reserved_qty or 0) %}
+      <div class="item-info">
+        <div class="item-info-row">
+          <span class="item-info-label">Title:</span>
+          <span class="item-info-value">{{ book.title }}</span>
+        </div>
+        <div class="item-info-row">
+          <span class="item-info-label">Grade:</span>
+          <span class="item-info-value">{{ book.grade_level }}</span>
+        </div>
+        <div class="item-info-row">
+          <span class="item-info-label">Publisher:</span>
+          <span class="item-info-value">{{ book.publisher or '-' }}</span>
+        </div>
+        <div class="item-info-row">
+          <span class="item-info-label">Current Price:</span>
+          <span class="item-info-value current-price">₱{{ "%.2f"|format(book.price or 0) }}</span>
+        </div>
+        <div class="item-info-row">
+          <span class="item-info-label">Available Stock:</span>
+          <span class="item-info-value">{{ available }}</span>
+        </div>
+      </div>
+
+      <form method="POST">
+        <div class="form-group">
+          <label>💵 New Price (₱) *</label>
+          <input type="number" name="new_price" step="0.01" min="0.01" placeholder="0.00" value="{{ book.price }}" required>
+        </div>
+
+        <div style="margin-top:30px;">
+          <button type="submit" class="btn btn-primary">✅ Update Price</button>
+          <a href="{{ url_for('librarian.books_inventory') }}" class="btn btn-secondary">Back</a>
+        </div>
+      </form>
+    {% else %}
+      <p>Book not found.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

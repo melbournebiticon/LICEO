@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Liceo LMS – Home{% endblock %}
+
+{% block styles %}
+<style>
+  .hp-wrap { max-width: 1100px; margin: 0 auto; }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    padding: 3rem 1.5rem 2.5rem;
+    background: linear-gradient(145deg, var(--nav) 0%, var(--nav2) 50%, #0a3d7a 100%);
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(11, 74, 162, 0.25);
+  }
+  .hero h1 {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-weight: 800;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.02em;
+  }
+  .hero p {
+    font-size: 1.05rem;
+    opacity: 0.95;
+    margin: 0 0 1.5rem;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-ctas {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .hero-ctas a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .hero-ctas .btn-white {
+    background: #fff;
+    color: var(--nav);
+  }
+  .hero-ctas .btn-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  }
+  .hero-ctas .btn-outline {
+    background: transparent;
+    color: #fff;
+    border: 2px solid rgba(255,255,255,0.8);
+  }
+  .hero-ctas .btn-outline:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+  }
+
+  /* Section titles */
+  .section-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 1rem;
+  }
+  .branch-select {
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    width: 100%;
+    max-width: 420px;
+    background: var(--card);
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+  .branch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .branch-card {
+    background: var(--card);
+    padding: 1.25rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .branch-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--btn);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.12);
+  }
+  .branch-name { font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
+  .branch-location { font-size: 0.9rem; color: var(--muted); }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2rem 0;
+  }
+
+  .announcement-card {
+    background: var(--card);
+    padding: 1.25rem 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 0.75rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  .announcement-card h3 { font-size: 1.1rem; margin: 0 0 0.5rem; color: var(--text); }
+  .announcement-card p { margin: 0; color: var(--muted); font-size: 0.95rem; line-height: 1.5; }
+
+  /* FAQ section – connected to base / chatbot */
+  #faq {
+    scroll-margin-top: 80px;
+  }
+  .faq-section {
+    padding: 2rem 0;
+  }
+  .faq-intro {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    max-width: 560px;
+  }
+  .faq-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--btn);
+    color: #fff;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .faq-cta:hover { background: var(--btnHover); color: #fff; transform: translateY(-1px); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hp-wrap">
+
+  <section class="hero">
+    <h1>Liceo Learning Management System</h1>
+    <p>Enrollment, billing, reservations, and more — all in one place for students, parents, and staff.</p>
+    <div class="hero-ctas">
+      {% if session.get("user_id") or session.get("student_account_id") %}
+        <a class="btn-white" href="/logout">Logout</a>
+      {% else %}
+        <a class="btn-white" href="/login">Login</a>
+      {% endif %}
+      <a class="btn-outline" href="/track">Track enrollment</a>
+    </div>
+  </section>
+
+  <label class="section-title">Select branch</label>
+  <select class="branch-select" onchange="goToBranch(this.value)">
+    <option value="">— Choose a branch —</option>
+    {% for b in branches %}
+      <option value="/branch/{{ b.branch_id }}">{{ b.branch_name }}{% if b.location %} – {{ b.location }}{% endif %}</option>
+    {% endfor %}
+  </select>
+
+  {% if branches %}
+  <div class="branch-grid">
+    {% for b in branches %}
+      <div class="branch-card" onclick="location.href='/branch/{{ b.branch_id }}'">
+        <div class="branch-name">{{ b.branch_name }}</div>
+        {% if b.location %}<div class="branch-location">{{ b.location }}</div>{% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="divider"></div>
+
+  <h2 class="section-title">Announcements</h2>
+  {% if announcements %}
+    {% for a in announcements %}
+      <div class="announcement-card">
+        <h3>{{ a.title }}</h3>
+        <p>{{ a.message }}</p>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p style="color: var(--muted);">No announcements yet.</p>
+  {% endif %}
+
+  <div class="divider"></div>
+
+  <section class="faq-section" id="faq">
+    <h2 class="section-title">FAQ</h2>
+    <p class="faq-intro">Common questions about enrollment, billing, and reservations are answered in our FAQ. You can also use the chat button at the bottom of the page to ask anything.</p>
+    <a class="faq-cta" href="#" onclick="var b=document.getElementById('chatbot-toggle'); if(b) b.click(); return false;">💬 Open FAQ chat</a>
+  </section>
+
+</div>
+
+<script>
+function goToBranch(url) {
+  if (url) window.location.href = url;
+}
+</script>
+{% endblock %}

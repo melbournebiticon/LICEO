@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enrollment Successful</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .success-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        .success-icon {
+            font-size: 64px;
+            color: #10b981;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .enrollment-id-box {
+            background-color: #fef3c7;
+            border: 3px solid #f59e0b;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        .enrollment-id-label {
+            font-size: 16px;
+            color: #92400e;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .enrollment-id {
+            font-size: 48px;
+            font-weight: bold;
+            color: #b45309;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+        .warning-box {
+            background-color: #fee2e2;
+            border: 2px solid #ef4444;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .warning-title {
+            font-weight: bold;
+            color: #991b1b;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .warning-list {
+            color: #7f1d1d;
+            line-height: 1.8;
+            padding-left: 20px;
+        }
+        .info-box {
+            background-color: #dbeafe;
+            border: 2px solid #3b82f6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .info-title {
+            font-weight: bold;
+            color: #1e40af;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .info-text {
+            color: #1e3a8a;
+            line-height: 1.8;
+        }
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary:hover {
+            background-color: #1e4ed8;
+        }
+        .btn-secondary {
+            background-color: #64748b;
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+        .student-name {
+            color: #6b7280;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="success-container">
+    <div class="success-icon">✓</div>
+    <h1>Enrollment Submitted Successfully!</h1>
+    <div class="student-name">{{ student_name }}</div>
+    
+    <div class="enrollment-id-box">
+        <div class="enrollment-id-label">YOUR ENROLLMENT ID</div>
+        <div class="enrollment-id">{{ enrollment_id }}</div>
+    </div>
+    
+    <div class="warning-box">
+        <div class="warning-title">⚠️ IMPORTANT - SAVE THIS ID!</div>
+        <ul class="warning-list">
+            <li><strong>Write down or screenshot this Enrollment ID immediately</strong></li>
+            <li>You will need this ID to track your enrollment status</li>
+            <li>Registrar will create student and parent accounts after approval</li>
+            <li>You can also create your own student account after approval using this ID</li>
+            <li>This ID cannot be recovered if lost - keep it safe!</li>
+        </ul>
+    </div>
+    
+    <div class="info-box">
+        <div class="info-title">📋 Next Steps</div>
+        <div class="info-text">
+            <strong>1.</strong> Your enrollment is now pending review by the registrar<br>
+            <strong>2.</strong> You can track your enrollment status using the ID above<br>
+            <strong>3.</strong> Once approved, you can create a student account to access your portal<br>
+            <strong>4.</strong> Parents can register and link their account using this enrollment ID
+        </div>
+    </div>
+    
+    <div style="margin-top: 30px;">
+        <a href="/track" class="btn-primary">Track Enrollment Status</a>
+        <a href="/" class="btn-secondary">Return to Homepage</a>
+    </div>
+</div>
+
+</body>
+</html>

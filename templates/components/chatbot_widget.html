@@ -1,0 +1,288 @@
+<style>
+  #chatbot-toggle{
+    position:fixed; right:20px; bottom:20px;
+    width:60px; height:60px; border-radius:50%;
+    border:none; cursor:pointer;
+    background:#004080; color:#fff; font-size:26px;
+    box-shadow:0 8px 22px rgba(0,0,0,.28);
+    z-index:9999;
+  }
+
+  #chatbot-box{
+    position:fixed; right:20px; bottom:90px;
+    width:360px; max-width:95vw;
+    height:520px; max-height:75vh;
+    background:#fff; border-radius:16px;
+    box-shadow:0 12px 40px rgba(0,0,0,.25);
+    display:none; flex-direction:column; overflow:hidden;
+    font-family:Arial, sans-serif;
+    z-index:9999;
+  }
+
+  .chatbot-header{
+    background:#004080; color:#fff;
+    padding:12px 14px; font-weight:700;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+
+  .chatbot-header .mini-btn{
+    background:rgba(255,255,255,.18);
+    color:#fff; border:none; cursor:pointer;
+    padding:6px 10px; border-radius:999px;
+    font-weight:700; font-size:12px;
+  }
+
+  .chatbot-body{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-height:0; /* important for proper scrolling */
+    background:#f5f5f5;
+  }
+
+  .chat-messages{
+    flex:1;
+    overflow:auto;
+    padding:12px;
+    min-height:0;
+  }
+
+  .message{ margin:10px 0; }
+  .message.bot{ text-align:left; }
+  .message.user{ text-align:right; }
+
+  .bubble{
+    display:inline-block;
+    padding:10px 12px;
+    border-radius:14px;
+    max-width:85%;
+    line-height:1.4;
+    font-size:14px;
+    word-wrap:break-word;
+  }
+
+  .bot .bubble{
+    background:#fff;
+    border:1px solid #ddd;
+    border-bottom-left-radius:6px;
+  }
+
+  .user .bubble{
+    background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+    color:#fff;
+    border-bottom-right-radius:6px;
+  }
+
+  .chat-actions{
+    background:#fff;
+    border-top:1px solid #eee;
+    padding:10px;
+    display:flex;
+    gap:10px;
+    align-items:center;
+  }
+
+  .chat-actions button{
+    border:none;
+    cursor:pointer;
+    font-weight:700;
+    padding:10px 12px;
+    border-radius:12px;
+    font-size:13px;
+  }
+
+  #btn-show-questions{
+    background:#e8f0f8;
+    color:#004080;
+    border:2px solid #004080;
+  }
+
+  #btn-clear{
+    background:#ff6b6b;
+    color:#fff;
+  }
+
+  .questions-panel{
+    background:#fff;
+    border-top:1px solid #eee;
+    padding:10px;
+    display:none;          /* hidden by default */
+    max-height:180px;      /* fixed height so chat stays visible */
+    overflow:auto;
+  }
+
+  .questions-panel button{
+    width:100%;
+    margin:6px 0;
+    padding:10px 12px;
+    border-radius:14px;
+    border:2px solid #004080;
+    background:#e8f0f8;
+    color:#004080;
+    cursor:pointer;
+    text-align:left;
+    font-weight:600;
+    font-size:13px;
+  }
+
+  .questions-panel button:hover{
+    background:#004080;
+    color:#fff;
+  }
+
+  @media (max-width: 480px){
+    #chatbot-box{ right:10px; bottom:85px; width:94vw; height:70vh; }
+    #chatbot-toggle{ right:14px; bottom:14px; }
+  }
+</style>
+
+<button id="chatbot-toggle">💬</button>
+
+<div id="chatbot-box">
+  <div class="chatbot-header">
+    <span>🤖 Liceo FAQ Assistant</span>
+    <button class="mini-btn" id="btn-close">Close</button>
+  </div>
+
+  <div class="chatbot-body">
+    <div class="chat-messages" id="chatMessages"></div>
+
+    <div class="chat-actions">
+      <button id="btn-show-questions">Show Questions</button>
+      <button id="btn-clear">Clear</button>
+    </div>
+
+    <div class="questions-panel" id="questionButtons"></div>
+  </div>
+</div>
+
+<script>
+  let faqs = [];
+
+  const toggleBtn = document.getElementById("chatbot-toggle");
+  const box = document.getElementById("chatbot-box");
+  const closeBtn = document.getElementById("btn-close");
+
+  const chatMessages = document.getElementById("chatMessages");
+  const questionsPanel = document.getElementById("questionButtons");
+
+  const btnShowQuestions = document.getElementById("btn-show-questions");
+  const btnClear = document.getElementById("btn-clear");
+
+  function openBox() { box.style.display = "flex"; }
+  function closeBox() { box.style.display = "none"; }
+
+  toggleBtn.onclick = () => (box.style.display === "flex" ? closeBox() : openBox());
+  closeBtn.onclick = closeBox;
+
+  function escapeHTML(str) {
+    return String(str || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function formatAnswer(raw) {
+    // 1) escape for safety
+    let text = escapeHTML(raw);
+
+    // 2) normalize newlines
+    text = text.replace(/\r\n/g, "\n");
+
+    // 3) Bold "Title:" patterns (e.g. "Annual Tuition Fees:")
+    text = text.replace(/^([A-Za-z0-9][A-Za-z0-9 \-/()]+):/gm, "<b>$1:</b>");
+
+    // 4) Convert bullet lines "• something" into <ul><li>
+    const lines = text.split("\n");
+    let out = [];
+    let inList = false;
+
+    for (let line of lines) {
+      const bulletMatch = line.match(/^\s*•\s+(.*)$/);
+
+      if (bulletMatch) {
+        if (!inList) {
+          out.push("<ul style='margin:8px 0 8px 18px; padding:0;'>");
+          inList = true;
+        }
+        out.push(`<li style="margin:4px 0;">${bulletMatch[1]}</li>`);
+      } else {
+        if (inList) {
+          out.push("</ul>");
+          inList = false;
+        }
+
+        // blank line -> spacing
+        if (line.trim() === "") out.push("<div style='height:6px'></div>");
+        else out.push(`<div style="margin:4px 0;">${line}</div>`);
+      }
+    }
+
+    if (inList) out.push("</ul>");
+
+    // 5) Make separators nicer (---)
+    return out.join("").replaceAll("---", "<hr style='border:none;border-top:1px solid #eee;margin:10px 0;'>");
+  }
+
+  function addBotMessage(html) {
+    const div = document.createElement("div");
+    div.className = "message bot";
+    div.innerHTML = `<div class="bubble">${html}</div>`;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function addUserMessage(text) {
+    const div = document.createElement("div");
+    div.className = "message user";
+    div.innerHTML = `<div class="bubble">${escapeHTML(text)}</div>`;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function renderQuestions() {
+    questionsPanel.innerHTML = "";
+    faqs.forEach((faq) => {
+      const btn = document.createElement("button");
+      btn.textContent = faq.question;
+      btn.onclick = () => {
+        addUserMessage(faq.question);
+        addBotMessage(formatAnswer(faq.answer));
+
+        // hide questions after answering so convo is visible
+        questionsPanel.style.display = "none";
+        btnShowQuestions.textContent = "Show Questions";
+      };
+      questionsPanel.appendChild(btn);
+    });
+  }
+
+  btnShowQuestions.onclick = () => {
+    const isOpen = questionsPanel.style.display === "block";
+    questionsPanel.style.display = isOpen ? "none" : "block";
+    btnShowQuestions.textContent = isOpen ? "Show Questions" : "Hide Questions";
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  };
+
+  btnClear.onclick = () => {
+    chatMessages.innerHTML = "";
+    addBotMessage("👋 Hi! Click <b>Show Questions</b> to pick an FAQ.");
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  };
+
+  async function loadFAQs() {
+    try {
+      const res = await fetch("/api/faqs");
+      faqs = await res.json();
+
+      addBotMessage("👋 Hi! Click <b>Show Questions</b> to pick an FAQ.");
+      renderQuestions();
+    } catch (e) {
+      addBotMessage("⚠️ Unable to load FAQs right now.");
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", loadFAQs);
+</script>

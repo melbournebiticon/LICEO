@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Enrollment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            padding: 40px;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        form {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 600px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        label {
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-primary:hover {
+            background-color: #1e4ed8;
+        }
+    </style>
+</head>
+<body>
+<h1>Enrollment for {{ branch.branch_name }}</h1>
+
+{% if message %}
+<p style="color:green">{{ message }}</p>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data">
+    <label>Full Name:</label>
+    <input type="text" name="student_name" placeholder="Full Name" required>
+
+    <label>Grade Level:</label>
+    <input type="text" name="grade_level" placeholder="Grade Level" required>
+
+    <label>Gender:</label>
+    <select name="gender" required>
+        <option value="">-- Select Gender --</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+    </select>
+
+    <label>Date of Birth:</label>
+    <input type="date" name="dob" required>
+
+    <label>Address:</label>
+    <input type="text" name="address" placeholder="Address" required>
+
+    <label>Contact Number:</label>
+    <input type="text" name="contact_number" placeholder="Contact Number" required>
+
+    <label>Guardian Name:</label>
+    <input type="text" name="guardian_name" placeholder="Guardian Name" required>
+
+    <label>Guardian Contact Number:</label>
+    <input type="text" name="guardian_contact" placeholder="Guardian Contact" required>
+
+    <label>Previous School (optional):</label>
+    <input type="text" name="previous_school" placeholder="Previous School">
+
+    <label>Upload Requirements (PDF/JPG/PNG):</label>
+    <input type="file" name="documents" multiple required>
+
+    <button type="submit" class="btn-primary">Next: Books</button>
+</form>
+
+</body>
+</html>

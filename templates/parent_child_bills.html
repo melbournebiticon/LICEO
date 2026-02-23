@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}{{ child.student_name }} - Billing{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">{{ child.student_name }} - Billing Information</div>
+    
+    <!-- Student Basic Info -->
+    <div style="margin-bottom: 2rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
+        <p><strong>Student:</strong> {{ child.student_name }}</p>
+        <p><strong>Grade Level:</strong> {{ child.grade_level }}</p>
+    </div>
+    
+    {% if bill %}
+    <!-- Bill Details -->
+    <h3 style="margin-bottom: 1rem;">Bill Breakdown</h3>
+    <table style="margin-bottom: 2rem;">
+        <tr>
+            <td>Tuition Fee</td>
+            <td class="text-right">₱{{ "%.2f"|format(bill.tuition_fee) }}</td>
+        </tr>
+        <tr>
+            <td>Book Fee</td>
+            <td class="text-right">₱{{ "%.2f"|format(bill.books_fee) }}</td>
+        </tr>
+        <tr>
+            <td>Uniform Fee</td>
+            <td class="text-right">₱{{ "%.2f"|format(bill.uniform_fee) }}</td>
+        </tr>
+        {% if bill.other_fees > 0 %}
+        <tr>
+            <td>Other Fees</td>
+            <td class="text-right">₱{{ "%.2f"|format(bill.other_fees) }}</td>
+        </tr>
+        {% endif %}
+        <tr style="font-weight: bold; border-top: 2px solid #333;">
+            <td>Total Amount</td>
+            <td class="text-right">₱{{ "%.2f"|format(bill.total_amount) }}</td>
+        </tr>
+        <tr style="font-weight: bold;">
+            <td>Amount Paid</td>
+            <td class="text-right" style="color: #10b981;">₱{{ "%.2f"|format(bill.amount_paid) }}</td>
+        </tr>
+        <tr style="font-weight: bold; font-size: 1.1rem;">
+            <td>Balance</td>
+            <td class="text-right" style="color: {{ 'green' if bill.balance == 0 else '#ef4444' }};">
+                ₱{{ "%.2f"|format(bill.balance) }}
+            </td>
+        </tr>
+    </table>
+    
+    <div style="margin-bottom: 2rem;">
+        <strong>Payment Status:</strong> 
+        {% if bill.status == 'paid' %}
+            <span class="badge badge-paid">Fully Paid</span>
+        {% elif bill.status == 'partial' %}
+            <span class="badge badge-partial">Partially Paid</span>
+        {% else %}
+            <span class="badge badge-unpaid">Unpaid</span>
+        {% endif %}
+    </div>
+    
+    <!-- Payment History -->
+    <h3 style="margin-bottom: 1rem;">Payment History</h3>
+    {% if payments %}
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Reference</th>
+                <th>Received By</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payments %}
+            <tr>
+                <td>{{ payment.payment_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>₱{{ "%.2f"|format(payment.amount) }}</td>
+                <td>{{ payment.payment_method|title }}</td>
+                <td>{{ payment.reference_number or '-' }}</td>
+                <td>{{ payment.received_by_name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #6b7280;">No payments recorded yet</p>
+    {% endif %}
+    
+    {% if bill.balance > 0 %}
+    <div style="margin-top: 2rem; padding: 1rem; background: #fef3c7; border-radius: 6px;">
+        <p style="color: #92400e; font-weight: 500;">
+            Please contact the cashier at the school to make a payment.
+        </p>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <!-- No Bill Created -->
+    <div style="text-align: center; padding: 3rem;">
+        <p style="font-size: 1.2rem; color: #6b7280; margin-bottom: 1rem;">
+            No bill has been created yet for this enrollment.
+        </p>
+        <p style="color: #6b7280;">
+            The cashier will create a bill once the enrollment is processed.
+        </p>
+    </div>
+    {% endif %}
+    
+    <!-- Actions -->
+    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+        <a href="{{ url_for('parent.child_detail', enrollment_id=child.enrollment_id) }}" 
+           class="btn btn-secondary">View Enrollment Details</a>
+        <a href="{{ url_for('parent.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

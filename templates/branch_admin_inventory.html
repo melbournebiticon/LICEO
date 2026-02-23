@@ -1,0 +1,496 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory Management{% endblock %}
+
+{% block styles %}
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    background: #f5f7fa;
+    color: #333;
+  }
+  
+  .container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  h1 {
+    font-size: 28px;
+    color: #222;
+  }
+  
+  .header-actions {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .btn {
+    padding: 10px 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f8f8f8;
+    color: #222;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
+  }
+  
+  .btn:hover {
+    background: #efefef;
+  }
+  
+  .btn-primary {
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+  }
+  
+  .btn-primary:hover {
+    background: #218838;
+  }
+  
+  .btn-secondary {
+    background: #6c757d;
+    color: white;
+    border-color: #6c757d;
+  }
+  
+  .btn-secondary:hover {
+    background: #5a6268;
+  }
+  
+  .card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .stat-box {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    border-left: 4px solid #007bff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  }
+  
+  .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #222;
+  }
+  
+  .stat-label {
+    font-size: 13px;
+    color: #999;
+    margin-top: 4px;
+  }
+  
+  .filter-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .filter-bar label {
+    font-weight: 600;
+    color: #555;
+    font-size: 13px;
+  }
+  
+  .filter-bar select,
+  .filter-bar input {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+  }
+  
+  .filter-bar select:focus,
+  .filter-bar input:focus {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 0 3px rgba(40,167,69,0.1);
+  }
+  
+  .filter-actions {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  
+  thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  th {
+    padding: 10px 8px;
+    text-align: left;
+    font-weight: 600;
+    color: #555;
+    font-size: 12px;
+  }
+  
+  td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+  }
+  
+  tbody tr {
+    transition: background 0.2s;
+  }
+  
+  tbody tr:hover {
+    background: #f9f9f9;
+  }
+  
+  .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+  
+  .badge-success {
+    background: #d1e7dd;
+    color: #0f5132;
+  }
+  
+  .badge-danger {
+    background: #f8d7da;
+    color: #842029;
+  }
+  
+  .badge-warning {
+    background: #fff3cd;
+    color: #856404;
+  }
+  
+  .badge-info {
+    background: #cff4fc;
+    color: #055160;
+  }
+  
+  .btn-sm {
+    padding: 6px 10px;
+    font-size: 11px;
+    margin: 2px;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  
+  .btn-warning {
+    background: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+  }
+  
+  .btn-danger {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: white;
+  }
+  
+  .btn-info {
+    background: #17a2b8;
+    border-color: #17a2b8;
+    color: white;
+  }
+  
+  .low-stock {
+    background: #fff3cd !important;
+  }
+  
+  .out-of-stock {
+    background: #f8d7da !important;
+  }
+
+  /* Actions column styling */
+  .action-buttons {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* Size display styling */
+  .size-display {
+    font-size: 11px;
+    color: #666;
+  }
+
+  /* Loading indicator */
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+
+  .loading-overlay.active {
+    display: flex;
+  }
+
+  .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #28a745;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+
+<div class="container">
+  <header>
+    <h1>📦 Inventory Management</h1>
+    <div class="header-actions">
+      <a href="{{ url_for('branch_admin.branch_admin_inventory_add') }}" class="btn btn-primary">+ Add New Item</a>
+      <a href="{{ url_for('branch_admin.dashboard') }}" class="btn">⬅ Back to Dashboard</a>
+    </div>
+  </header>
+
+  <!-- Statistics -->
+  <div class="stats">
+    <div class="stat-box">
+      <div class="stat-value">{{ stats[0] or 0 }}</div>
+      <div class="stat-label">Total Items</div>
+    </div>
+    <div class="stat-box" style="border-left-color: #28a745;">
+      <div class="stat-value">{{ stats[1] or 0 }}</div>
+      <div class="stat-label">Total Stock</div>
+    </div>
+    <div class="stat-box" style="border-left-color: #ffc107;">
+      <div class="stat-value">{{ stats[2] or 0 }}</div>
+      <div class="stat-label">Reserved</div>
+    </div>
+    <div class="stat-box" style="border-left-color: #dc3545;">
+      <div class="stat-value">{{ stats[3] or 0 }}</div>
+      <div class="stat-label">Low Stock Items</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <form method="GET" id="filterForm" class="card filter-bar">
+    <div class="filter-group">
+      <label>🔍 Search</label>
+      <input type="text" name="search" id="searchInput" placeholder="Search by name..." value="{{ search }}">
+    </div>
+    <div class="filter-group">
+      <label>📦 Category</label>
+      <select name="category" id="categorySelect">
+        <option value="UNIFORM" {{ 'selected' if category_filter == 'UNIFORM' }}>Uniform</option>
+        <option value="BOOK" {{ 'selected' if category_filter == 'BOOK' }}>Book</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>🎓 Grade Level</label>
+      <select name="grade" id="gradeSelect">
+        <option value="">All Grades</option>
+        <option value="Kinder" {{ 'selected' if grade_filter == 'Kinder' }}>Kinder</option>
+        {% for i in range(1, 13) %}
+        <option value="Grade {{ i }}" {{ 'selected' if grade_filter == 'Grade ' + i|string }}>Grade {{ i }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>⚡ Status</label>
+      <select name="status" id="statusSelect">
+        <option value="active" {{ 'selected' if status_filter == 'active' or not status_filter }}>Active</option>
+        <option value="inactive" {{ 'selected' if status_filter == 'inactive' }}>Inactive</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>&nbsp;</label>
+      <button type="button" class="btn btn-secondary" onclick="clearFilters()">✖ Clear All</button>
+    </div>
+  </form>
+
+  <!-- Inventory Table -->
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Item Name</th>
+          <th>Category</th>
+          <th>Grade Range</th>
+          <th>Sizes Available</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Reserved</th>
+          <th>Available</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        {% set available = (item[7] or 0) - (item[8] or 0) %}
+        {% set grade_display = item[11] if item[11] else (item[3] or 'All') %}
+        <tr class="{{ 'out-of-stock' if available == 0 else ('low-stock' if available < 10 else '') }}">
+          <td><strong>{{ item[2] }}</strong></td>
+          <td>{{ item[1] }}</td>
+          <td>{{ grade_display }}</td>
+          <td>
+            <span class="size-display">XS, S, M, L, XL, XXL</span>
+          </td>
+          <td><strong>₱{{ "%.2f"|format(item[6] or 0) }}</strong></td>
+          <td>{{ item[7] or 0 }}</td>
+          <td>{{ item[8] or 0 }}</td>
+          <td>
+            <strong>{{ available }}</strong>
+            {% if available < 10 and available > 0 %}
+            <span class="badge badge-warning">Low</span>
+            {% elif available == 0 %}
+            <span class="badge badge-danger">Out</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if item[10] %}
+            <span class="badge badge-success">✓ Active</span>
+            {% else %}
+            <span class="badge badge-danger">✗ Inactive</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="action-buttons">
+              <a href="{{ url_for('branch_admin.branch_admin_inventory_restock', item_id=item[0]) }}" class="btn btn-sm btn-primary" title="Restock">📦 Restock</a>
+              <a href="{{ url_for('branch_admin.branch_admin_inventory_price', item_id=item[0]) }}" class="btn btn-sm btn-info" title="Update Price">💰 Update Price</a>
+              <form method="POST" action="{{ url_for('branch_admin.branch_admin_inventory_toggle', item_id=item[0]) }}" style="display:inline;">
+                <button type="submit" class="btn btn-sm btn-warning" title="{{ 'Deactivate' if item[10] else 'Activate' }}">
+                  {{ '🔒 Deactivate' if item[10] else '✅ Activate' }}
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="10" style="text-align:center;padding:40px;color:#999;">
+            📭 No items found. <a href="{{ url_for('branch_admin.branch_admin_inventory_add') }}" style="color:#28a745;font-weight:600;">Add your first item</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Get form and filter elements
+  const form = document.getElementById('filterForm');
+  const categorySelect = document.getElementById('categorySelect');
+  const gradeSelect = document.getElementById('gradeSelect');
+  const statusSelect = document.getElementById('statusSelect');
+  const searchInput = document.getElementById('searchInput');
+  const loadingOverlay = document.getElementById('loadingOverlay');
+
+  // Show loading indicator
+  function showLoading() {
+    loadingOverlay.classList.add('active');
+  }
+
+  // Auto-submit form when dropdown changes
+  function autoSubmit() {
+    showLoading();
+    form.submit();
+  }
+
+  // Add event listeners to all select dropdowns
+  categorySelect.addEventListener('change', autoSubmit);
+  gradeSelect.addEventListener('change', autoSubmit);
+  statusSelect.addEventListener('change', autoSubmit);
+
+  // Search input with debounce (wait 500ms after user stops typing)
+  let searchTimeout;
+  searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(function() {
+      showLoading();
+      form.submit();
+    }, 500);
+  });
+
+  // Clear all filters
+  function clearFilters() {
+    showLoading();
+    window.location.href = '{{ url_for("branch_admin.branch_admin_inventory") }}';
+  }
+
+  // Optional: Submit on Enter key in search
+  searchInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      clearTimeout(searchTimeout);
+      showLoading();
+      form.submit();
+    }
+  });
+</script>
+{% endblock %}

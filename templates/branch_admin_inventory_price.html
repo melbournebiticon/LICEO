@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Update Price{% endblock %}
+
+{% block styles %}
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    background: #f5f7fa;
+    color: #333;
+  }
+  
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+  
+  .card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 40px;
+  }
+  
+  h1 {
+    font-size: 28px;
+    margin-bottom: 30px;
+    color: #222;
+  }
+  
+  .item-info {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .item-info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 15px;
+  }
+  
+  .item-info-row:last-child {
+    margin-bottom: 0;
+  }
+  
+  .item-info-label {
+    font-weight: 600;
+    color: #555;
+  }
+  
+  .item-info-value {
+    color: #222;
+    font-weight: 600;
+  }
+  
+  .current-price {
+    font-size: 32px;
+    color: #007bff;
+    font-weight: 700;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #555;
+  }
+  
+  input {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 18px;
+    font-family: inherit;
+    font-weight: 600;
+  }
+  
+  input:focus {
+    outline: none;
+    border-color: #17a2b8;
+    box-shadow: 0 0 0 3px rgba(23,162,184,0.1);
+  }
+  
+  .btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+  }
+  
+  .btn-primary {
+    background: #17a2b8;
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background: #138496;
+  }
+  
+  .btn-secondary {
+    background: #6c757d;
+    color: white;
+    margin-left: 10px;
+  }
+  
+  .btn-secondary:hover {
+    background: #5a6268;
+  }
+  
+  .message {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+  
+  .message-success {
+    background: #d1e7dd;
+    color: #0f5132;
+    border: 1px solid #badbcc;
+  }
+  
+  .message-error {
+    background: #f8d7da;
+    color: #842029;
+    border: 1px solid #f5c2c7;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="card">
+    <h1>💰 Update Price</h1>
+
+    {% if message %}
+    <div class="message message-success">✅ {{ message }}</div>
+    {% endif %}
+
+    {% if error %}
+    <div class="message message-error">❌ {{ error }}</div>
+    {% endif %}
+
+    {% if item %}
+    <div class="item-info">
+      <div class="item-info-row">
+        <span class="item-info-label">Item Name:</span>
+        <span class="item-info-value">{{ item[1] }}</span>
+      </div>
+      <div class="item-info-row">
+        <span class="item-info-label">Category:</span>
+        <span class="item-info-value">{{ item[2] }}</span>
+      </div>
+      <div class="item-info-row">
+        <span class="item-info-label">Current Price:</span>
+        <span class="item-info-value current-price">₱{{ "%.2f"|format(item[3] or 0) }}</span>
+      </div>
+      <div class="item-info-row">
+        <span class="item-info-label">Stock Available:</span>
+        <span class="item-info-value">{{ item[4] }}</span>
+      </div>
+    </div>
+
+    <form method="POST">
+      <div class="form-group">
+        <label>💵 New Price (₱) *</label>
+        <input type="number" name="new_price" step="0.01" min="0.01" placeholder="0.00" value="{{ item[3] }}" required>
+      </div>
+
+      <div style="margin-top: 30px;">
+        <button type="submit" class="btn btn-primary">✅ Update Price</button>
+        <a href="{{ url_for('branch_admin.branch_admin_inventory') }}" class="btn btn-secondary">Back</a>
+      </div>
+    </form>
+    {% else %}
+    <p>Item not found.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

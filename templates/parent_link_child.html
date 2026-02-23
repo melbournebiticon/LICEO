@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Link Child{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 2rem auto;">
+    <div class="card">
+        <div class="card-header">Add Child to Your Account</div>
+        
+        <div style="margin-bottom: 1.5rem; padding: 1rem; background: #dbeafe; border-radius: 6px;">
+            <p style="color: #1e40af; margin-bottom: 0.5rem;"><strong>Note:</strong></p>
+            <p style="color: #1e40af;">You need your child's Enrollment ID to link them to your account. This ID was provided when the enrollment was submitted.</p>
+        </div>
+        
+        <form method="post">
+            <div class="form-group">
+                <label class="form-label">Enrollment ID *</label>
+                <input type="number" name="enrollment_id" class="form-control" 
+                       placeholder="Enter enrollment ID" required>
+                <small style="color: #6b7280;">The unique ID assigned during enrollment</small>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Relationship *</label>
+                <select name="relationship" class="form-control" required>
+                    <option value="">Select relationship</option>
+                    <option value="father">Father</option>
+                    <option value="mother">Mother</option>
+                    <option value="guardian">Guardian</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary">Link Child</button>
+                <a href="{{ url_for('parent.dashboard') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

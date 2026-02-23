@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Restock Book{% endblock %}
+
+{% block styles %}
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    background: #f5f7fa;
+    color: #333;
+  }
+  
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+  
+  .card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 40px;
+  }
+  
+  h1 {
+    font-size: 28px;
+    margin-bottom: 30px;
+    color: #222;
+  }
+  
+  .book-info {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .book-info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 15px;
+  }
+  
+  .book-info-row:last-child {
+    margin-bottom: 0;
+  }
+  
+  .book-info-label {
+    font-weight: 600;
+    color: #555;
+  }
+  
+  .book-info-value {
+    color: #222;
+    font-weight: 600;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #555;
+  }
+  
+  input {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: inherit;
+  }
+  
+  input:focus {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 0 3px rgba(40,167,69,0.1);
+  }
+  
+  .quick-add {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .quick-add-btn {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #007bff;
+    background: white;
+    color: #007bff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  
+  .quick-add-btn:hover {
+    background: #007bff;
+    color: white;
+  }
+  
+  .btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+  }
+  
+  .btn-primary {
+    background: #28a745;
+    color: white;
+  }
+  
+  .btn-primary:hover {
+    background: #218838;
+  }
+  
+  .btn-secondary {
+    background: #6c757d;
+    color: white;
+    margin-left: 10px;
+  }
+  
+  .btn-secondary:hover {
+    background: #5a6268;
+  }
+  
+  .message {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+  
+  .message-success {
+    background: #d1e7dd;
+    color: #0f5132;
+    border: 1px solid #badbcc;
+  }
+  
+  .message-error {
+    background: #f8d7da;
+    color: #842029;
+    border: 1px solid #f5c2c7;
+  }
+
+  .highlight {
+    font-size: 24px;
+    color: #28a745;
+    font-weight: 700;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="card">
+    <h1>📦 Restock Book</h1>
+
+    {% if message %}
+    <div class="message message-success">✅ {{ message }}</div>
+    {% endif %}
+
+    {% if error %}
+    <div class="message message-error">❌ {{ error }}</div>
+    {% endif %}
+
+    {% if book %}
+    <div class="book-info">
+      <div class="book-info-row">
+        <span class="book-info-label">Grade Level:</span>
+        <span class="book-info-value">{{ book.grade_level }}</span>
+      </div>
+      <div class="book-info-row">
+        <span class="book-info-label">Publisher:</span>
+        <span class="book-info-value">{{ book.publisher }}</span>
+      </div>
+      <div class="book-info-row">
+        <span class="book-info-label">Title:</span>
+        <span class="book-info-value">{{ book.title }}</span>
+      </div>
+      <div class="book-info-row">
+        <span class="book-info-label">Current Stock:</span>
+        <span class="book-info-value highlight">{{ book.stock_total }}</span>
+      </div>
+      <div class="book-info-row">
+        <span class="book-info-label">Reserved:</span>
+        <span class="book-info-value">{{ book.reserved_qty }}</span>
+      </div>
+      <div class="book-info-row">
+        <span class="book-info-label">Available:</span>
+        <span class="book-info-value">{{ book.stock_total - book.reserved_qty }}</span>
+      </div>
+    </div>
+
+    <form method="POST">
+      <div class="form-group">
+        <label>Quick Add Stock</label>
+        <div class="quick-add">
+          <button type="button" class="quick-add-btn" onclick="addStock(10)">+10</button>
+          <button type="button" class="quick-add-btn" onclick="addStock(20)">+20</button>
+          <button type="button" class="quick-add-btn" onclick="addStock(50)">+50</button>
+          <button type="button" class="quick-add-btn" onclick="addStock(100)">+100</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>📥 Add Stock Quantity *</label>
+        <input type="number" name="add_stock" id="add_stock" min="1" placeholder="Enter quantity to add" required>
+      </div>
+
+      <div style="margin-top: 30px;">
+        <button type="submit" class="btn btn-primary">✅ Confirm Restock</button>
+        <a href="{{ url_for('librarian.books_inventory') }}" class="btn btn-secondary">Back</a>
+      </div>
+    </form>
+    {% else %}
+    <p>Book not found.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function addStock(amount) {
+    const input = document.getElementById('add_stock');
+    const current = parseInt(input.value) || 0;
+    input.value = current + amount;
+    input.focus();
+  }
+</script>
+{% endblock %}

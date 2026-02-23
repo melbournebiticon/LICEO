@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}Super Admin Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .header-row{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 12px;
+        flex-wrap:wrap;
+        margin-bottom: 10px;
+    }
+
+    .header-row h1{ margin:0; }
+
+    .card {
+        background: white;
+        padding: 25px;
+        margin-bottom: 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .card h2 {
+        margin-top: 0;
+        color: #2c3e50;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        transition: 0.2s;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        gap: 8px;
+        text-decoration:none;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary{
+        background:#6c757d;
+        color:#fff;
+    }
+    .btn-secondary:hover{
+        background:#545b62;
+        transform: translateY(-1px);
+    }
+
+    .branches-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    .branches-table th {
+        background: #f8f9fa;
+        padding: 12px;
+        text-align: left;
+        border-bottom: 2px solid #dee2e6;
+        color: #495057;
+        font-weight: 600;
+    }
+
+    .branches-table td {
+        padding: 12px;
+        border-bottom: 1px solid #dee2e6;
+        vertical-align: top;
+    }
+
+    .branches-table tr:hover {
+        background: #f8f9fa;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    .badge-success {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-warning {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 40px;
+        color: #6c757d;
+    }
+
+    .muted{
+        color:#6c757d;
+        font-size: 14px;
+        margin-top: -10px;
+    }
+</style>
+
+<div class="dashboard-container">
+
+    <div class="header-row">
+        <h1>🔐 Super Admin Dashboard</h1>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <a href="/super-admin/faqs" class="btn btn-secondary">💬 Manage FAQs</a>
+            <a href="/change-password" class="btn btn-secondary">🔑 Change Password</a>
+        </div>
+    </div>
+
+    <!-- Create New Branch -->
+    <div class="card">
+        <h2>➕ Create New Branch</h2>
+        <p class="muted">Creates a new branch and its default admin account.</p>
+
+        <form method="POST" action="/super-admin">
+            <div class="form-group">
+                <label for="branch_name">Branch Name:</label>
+                <input type="text" id="branch_name" name="branch_name"
+                       placeholder="e.g., Main Campus, Quezon City Branch" required>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location"
+                       placeholder="e.g., Manila, Cebu, Davao" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                ➕ Create Branch & Admin Account
+            </button>
+        </form>
+    </div>
+
+    <!-- FAQs shortcut card (optional, but visible in page too) -->
+    <div class="card">
+        <h2>💬 FAQ Chatbot Manager</h2>
+        <p class="muted">
+            Add / edit General FAQs and Branch FAQs (for chatbot).
+        </p>
+        <a href="/super-admin/faqs" class="btn btn-primary">Open FAQ Manager</a>
+    </div>
+
+    <!-- Existing Branches -->
+    <div class="card">
+        <h2>🏢 All Branches ({{ branches|length }})</h2>
+
+        {% if branches and branches|length > 0 %}
+            <table class="branches-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Branch Name</th>
+                        <th>Location</th>
+                        <th>Admin Username</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for branch in branches %}
+                        <tr>
+                            <td><strong>{{ branch.branch_id }}</strong></td>
+                            <td>{{ branch.branch_name }}</td>
+                            <td>📍 {{ branch.location or 'N/A' }}</td>
+                            <td>
+                                {% if branch.admin_username %}
+                                    <span class="badge badge-success">👤 {{ branch.admin_username }}</span>
+                                {% else %}
+                                    <span class="badge badge-warning">⚠️ No Admin</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if branch.is_active %}
+                                    <span class="badge badge-success">✓ Active</span>
+                                {% else %}
+                                    <span class="badge badge-warning">✗ Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ branch.created_at.strftime('%Y-%m-%d') if branch.created_at else 'N/A' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="no-data">
+                <p>📭 No branches created yet.</p>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

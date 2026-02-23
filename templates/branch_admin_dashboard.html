@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Branch Admin Dashboard{% endblock %}
+
+{% block content %}
+<style>
+  .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+  .header { display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px; }
+  .card { background:#fff; border:1px solid #eee; border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,.06); margin-bottom: 14px; }
+  .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; }
+  .btn { display:inline-block; padding:10px 14px; border-radius:10px; border:1px solid #ddd; background:#f8f8f8; text-decoration:none; color:#222; font-weight:600; }
+  .btn:hover { background:#efefef; }
+  .btn-primary { background:#007bff; color:#fff; border-color:#007bff; }
+  .btn-primary:hover { background:#0056b3; }
+  .btn-danger { background:#dc3545; color:#fff; border-color:#dc3545; }
+  .btn-danger:hover { background:#c82333; }
+  .muted { color:#666; font-size:13px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .field { width:100%; padding:10px; border:1px solid #ddd; border-radius:10px; }
+  .actions { display:flex; gap:10px; flex-wrap:wrap; }
+  .badge { display:inline-block; padding:4px 10px; border-radius:999px; background:#eef6ff; color:#0b5ed7; font-size:12px; font-weight:700; }
+  .success { background:#d1e7dd; color:#0f5132; border:1px solid #badbcc; padding:12px; border-radius:10px; }
+</style>
+
+<div class="container">
+  <div class="header">
+    <div>
+      <h1 style="margin:0;">Branch Admin Dashboard</h1>
+      <div class="muted">Manage branch users, FAQs, and inventory.</div>
+    </div>
+    <div class="actions">
+      <a class="btn" href="{{ url_for('auth.change_password') }}">Change Password</a>
+      <a class="btn btn-danger" href="{{ url_for('auth.logout') }}">Logout</a>
+    </div>
+  </div>
+
+  <!-- HOMEPAGE ANNOUNCEMENTS (visible to all branches) -->
+  <div class="card">
+    <h2 style="margin:0 0 6px 0;">📢 Homepage Announcements</h2>
+    <div class="muted" style="margin-bottom:12px;">
+      These show on the main homepage. Everyone (all branches) can see them.
+    </div>
+
+    <form method="post" action="{{ url_for('branch_admin.dashboard') }}">
+      <input type="hidden" name="add_announcement" value="1">
+      <div class="row">
+        <div style="flex:1; min-width:200px;">
+          <label style="font-weight:700; font-size:13px;">Title</label>
+          <input class="field" name="announcement_title" placeholder="e.g. Enrollment is open" required>
+        </div>
+        <div style="flex:2; min-width:260px;">
+          <label style="font-weight:700; font-size:13px;">Message</label>
+          <input class="field" name="announcement_message" placeholder="Short message for the homepage">
+        </div>
+        <div style="display:flex; align-items:flex-end;">
+          <button class="btn btn-primary" type="submit">Add to Homepage</button>
+        </div>
+      </div>
+    </form>
+
+    {% if announcements_list %}
+    <div style="margin-top:14px;">
+      <div style="font-weight:700; font-size:13px; margin-bottom:8px;">Current announcements</div>
+      <ul style="margin:0; padding-left:20px;">
+        {% for a in announcements_list %}
+        <li style="margin-bottom:8px;">
+          <strong>{{ a.title }}</strong>
+          {% if a.message %} – {{ a.message[:80] }}{% if a.message|length > 80 %}...{% endif %}{% endif %}
+          <span class="muted" style="font-size:12px;">{{ a.created_at.strftime('%Y-%m-%d %H:%M') if a.created_at else '' }}</span>
+          {% if a.is_active %}
+          <form method="post" action="{{ url_for('branch_admin.announcement_hide', announcement_id=a.id) }}" style="display:inline; margin-left:8px;">
+            <button type="submit" class="btn" style="padding:4px 10px; font-size:12px;">Hide from homepage</button>
+          </form>
+          {% else %}
+          <span class="muted" style="font-size:12px;">(hidden)</span>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- QUICK LINKS -->
+  <div class="card">
+    <h2 style="margin:0 0 10px 0;">Quick Actions</h2>
+    <div class="grid">
+      <a class="btn btn-primary" href="{{ url_for('branch_admin.branch_admin_faqs') }}">🤖 Manage Branch FAQs</a>
+      <a class="btn btn-primary" href="{{ url_for('branch_admin.branch_admin_inventory') }}">📦 Inventory List</a>
+      <a class="btn" href="{{ url_for('branch_admin.branch_admin_inventory_add') }}">➕ Add Inventory Item</a>
+
+      <div class="card" style="margin:0; padding:12px; border-style:dashed;">
+        <div style="font-weight:700;">💡 Restock / Update Price</div>
+        <div class="muted" style="margin-top:6px;">
+          Open Inventory List, then click <b>Restock</b> or <b>Update Price</b> on an item.
+        </div>
+        <a class="btn" style="margin-top:10px;" href="{{ url_for('branch_admin.branch_admin_inventory') }}">Go to Inventory</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE USERS -->
+  <div class="card">
+    <h2 style="margin:0 0 6px 0;">Create Registrar / Cashier</h2>
+    <div class="muted" style="margin-bottom:12px;">
+      Creates a user under your branch.
+    </div>
+
+    <form method="post" action="{{ url_for('branch_admin.dashboard') }}">
+      <div class="row">
+        <div style="flex:1; min-width:260px;">
+          <label style="font-weight:700; font-size:13px;">Base Username</label>
+          <input class="field" name="username" placeholder="e.g., juan" required>
+          <div class="muted" style="margin-top:6px;">Tip: use a short base username.</div>
+        </div>
+
+        <div style="flex:1; min-width:220px;">
+          <label style="font-weight:700; font-size:13px;">Role</label>
+          <select class="field" name="role" required>
+            <option value="registrar">Registrar</option>
+            <option value="cashier">Cashier</option>
+            <option value="librarian">Librarian</option>
+
+          </select>
+        </div>
+
+        <div style="display:flex; align-items:flex-end;">
+          <button class="btn btn-primary" type="submit">Create User</button>
+        </div>
+      </div>
+    </form>
+
+    {% if created_user %}
+      <div style="margin-top:14px;" class="success">
+        <div style="font-weight:800; margin-bottom:6px;">User Created Successfully ✅</div>
+        <div><span class="badge">{{ created_user.role }}</span></div>
+        <div style="margin-top:8px;"><b>Username:</b> {{ created_user.username }}</div>
+        <div><b>Temporary Password:</b> {{ created_user.password }}</div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

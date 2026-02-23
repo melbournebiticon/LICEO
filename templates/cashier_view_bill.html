@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Bill</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; margin-bottom: 20px; }
+        .info-card { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #dee2e6; }
+        .info-row:last-child { border-bottom: none; }
+        .info-row strong { color: #555; }
+        .fee-breakdown { background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .fee-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+        .fee-row.total { border-top: 2px solid #333; border-bottom: none; font-size: 18px; font-weight: bold; margin-top: 10px; }
+        .status-badge { display: inline-block; padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 14px; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-partial { background: #d1ecf1; color: #0c5460; }
+        .status-paid { background: #d4edda; color: #155724; }
+        .payment-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
+        .summary-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; text-align: center; }
+        .summary-card h4 { font-size: 12px; opacity: 0.9; margin-bottom: 10px; }
+        .summary-card .value { font-size: 24px; font-weight: bold; }
+        .btn { padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .actions { display: flex; gap: 10px; margin-top: 30px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f8f9fa; font-weight: bold; color: #333; }
+        tr:hover { background: #f8f9fa; }
+        .flash { padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+        .flash-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .flash-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📄 Bill Details</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="info-card">
+            <div class="info-row">
+                <span><strong>Bill ID:</strong></span>
+                <span>{{ bill.bill_id }}</span>
+            </div>
+            <div class="info-row">
+                <span><strong>Enrollment ID:</strong></span>
+                <span>{{ bill.enrollment_id }}</span>
+            </div>
+            <div class="info-row">
+                <span><strong>Student Name:</strong></span>
+                <span>{{ bill.student_name }}</span>
+            </div>
+            <div class="info-row">
+                <span><strong>Grade Level:</strong></span>
+                <span>Grade {{ bill.grade_level }}</span>
+            </div>
+            <div class="info-row">
+                <span><strong>Guardian:</strong></span>
+                <span>{{ bill.guardian_name }}</span>
+            </div>
+            <div class="info-row">
+                <span><strong>Branch:</strong></span>
+                <span>{{ bill.branch_name }}</span>
+            </div>
+            <div class="info-row">
+                <span><strong>Status:</strong></span>
+                <span>
+                    {% if bill.status == 'paid' %}
+                        <span class="status-badge status-paid">✅ PAID</span>
+                    {% elif bill.status == 'partial' %}
+                        <span class="status-badge status-partial">⏳ PARTIAL</span>
+                    {% else %}
+                        <span class="status-badge status-pending">⏰ PENDING</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <div class="payment-summary">
+            <div class="summary-card">
+                <h4>TOTAL AMOUNT</h4>
+                <div class="value">₱{{ "%.2f"|format(bill.total_amount) }}</div>
+            </div>
+            <div class="summary-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <h4>AMOUNT PAID</h4>
+                <div class="value">₱{{ "%.2f"|format(bill.amount_paid) }}</div>
+            </div>
+            <div class="summary-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <h4>BALANCE</h4>
+                <div class="value">₱{{ "%.2f"|format(bill.balance) }}</div>
+            </div>
+        </div>
+
+        <div class="fee-breakdown">
+            <h3>Fee Breakdown</h3>
+            <div class="fee-row">
+                <span>Tuition Fee</span>
+                <span>₱{{ "%.2f"|format(bill.tuition_fee) }}</span>
+            </div>
+            <div class="fee-row">
+                <span>Books Fee</span>
+                <span>₱{{ "%.2f"|format(bill.books_fee) }}</span>
+            </div>
+            <div class="fee-row">
+                <span>Uniform Fee</span>
+                <span>₱{{ "%.2f"|format(bill.uniform_fee) }}</span>
+            </div>
+            <div class="fee-row">
+                <span>Other Fees</span>
+                <span>₱{{ "%.2f"|format(bill.other_fees) }}</span>
+            </div>
+            <div class="fee-row total">
+                <span>TOTAL</span>
+                <span>₱{{ "%.2f"|format(bill.total_amount) }}</span>
+            </div>
+        </div>
+
+        <h3>💸 Payment History</h3>
+        {% if payments %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Receipt #</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Received By</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.receipt_number }}</td>
+                    <td>{{ payment.payment_date.strftime('%Y-%m-%d %I:%M %p') }}</td>
+                    <td>₱{{ "%.2f"|format(payment.amount) }}</td>
+                    <td>{{ payment.payment_method|upper }}</td>
+                    <td>{{ payment.received_by_name }}</td>
+                    <td><a href="/cashier/receipt/{{ payment.payment_id }}" target="_blank">🖨️ Print</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="text-align: center; color: #999; padding: 20px;">No payments recorded yet.</p>
+        {% endif %}
+
+        <div class="actions">
+            {% if bill.status != 'paid' %}
+                <a href="/cashier/process-payment/{{ bill.bill_id }}" class="btn btn-success">💵 Process Payment</a>
+            {% endif %}
+            <a href="/cashier" class="btn btn-secondary">← Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

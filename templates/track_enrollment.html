@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Track Enrollment</title>
+</head>
+<body>
+
+<h2>Track Your Enrollment</h2>
+
+<form method="post">
+    <input type="number" name="enrollment_id" placeholder="Enter Enrollment ID" required>
+    <button type="submit">Check Status</button>
+</form>
+
+<hr>
+
+{% if enrollment %}
+<h3>Enrollment Details</h3>
+
+<p><b>Name:</b> {{ enrollment.student_name }}</p>
+<p><b>Branch:</b> {{ enrollment.branch_name }}</p>
+<p><b>Grade:</b> {{ enrollment.grade_level }}</p>
+<p><b>Status:</b>
+    {% if enrollment.status == 'pending' %}
+        ⏳ Pending
+    {% elif enrollment.status == 'approved' %}
+        ✅ Approved
+    {% else %}
+        ❌ Rejected
+    {% endif %}
+</p>
+
+<h4>Documents</h4>
+{% for doc in documents %}
+    <a href="{{ doc.file_path }}" target="_blank">{{ doc.file_name }}</a><br>
+{% endfor %}
+
+<h4>Books Reserved</h4>
+{% for book in books %}
+    {{ book.book_name }} ({{ book.quantity }})<br>
+{% endfor %}
+
+<h4>Uniforms Reserved</h4>
+{% for u in uniforms %}
+    {{ u.uniform_type }} - {{ u.size }} ({{ u.quantity }})<br>
+{% endfor %}
+
+{% endif %}
+
+</body>
+</html>

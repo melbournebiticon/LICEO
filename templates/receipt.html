@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Receipt{% endblock %}
+
+{% block content %}
+<div class="receipt">
+    <div class="receipt-header">
+        <h1>{{ receipt.branch_name }}</h1>
+        <p>{{ receipt.location }}</p>
+        <p style="margin-top: 1rem; font-weight: bold; font-size: 1.2rem;">OFFICIAL RECEIPT</p>
+    </div>
+    
+    <div class="receipt-info">
+        <div>
+            <p><strong>Receipt No:</strong> OR-{{ "%06d"|format(receipt.payment_id) }}</p>
+            <p><strong>Date:</strong> {{ receipt.payment_date.strftime('%B %d, %Y %I:%M %p') }}</p>
+            <p><strong>Payment Method:</strong> {{ receipt.payment_method|title }}</p>
+            {% if receipt.reference_number %}
+            <p><strong>Reference:</strong> {{ receipt.reference_number }}</p>
+            {% endif %}
+        </div>
+        <div>
+            <p><strong>Student Name:</strong> {{ receipt.student_name }}</p>
+            <p><strong>Grade Level:</strong> {{ receipt.grade_level }}</p>
+            <p><strong>Guardian:</strong> {{ receipt.guardian_name }}</p>
+            <p><strong>Contact:</strong> {{ receipt.contact_number }}</p>
+        </div>
+    </div>
+    
+    <div class="receipt-items">
+        <h3 style="margin-bottom: 1rem;">Bill Breakdown</h3>
+        <table>
+            <tr>
+                <td>Tuition Fee</td>
+                <td class="text-right">₱{{ "%.2f"|format(receipt.tuition_fee) }}</td>
+            </tr>
+            <tr>
+                <td>Book Fee</td>
+                <td class="text-right">₱{{ "%.2f"|format(receipt.books_fee) }}</td>
+            </tr>
+            <tr>
+                <td>Uniform Fee</td>
+                <td class="text-right">₱{{ "%.2f"|format(receipt.uniform_fee) }}</td>
+            </tr>
+            {% if receipt.other_fees > 0 %}
+            <tr>
+                <td>Other Fees</td>
+                <td class="text-right">₱{{ "%.2f"|format(receipt.other_fees) }}</td>
+            </tr>
+            {% endif %}
+            <tr style="font-weight: bold; border-top: 2px solid #333;">
+                <td>Total Bill Amount</td>
+                <td class="text-right">₱{{ "%.2f"|format(receipt.total_amount) }}</td>
+            </tr>
+            <tr style="font-weight: bold; font-size: 1.2rem; color: #10b981;">
+                <td>Amount Paid (This Transaction)</td>
+                <td class="text-right">₱{{ "%.2f"|format(receipt.amount) }}</td>
+            </tr>
+            <tr>
+                <td>Previous Payments</td>
+                <td class="text-right">₱{{ "%.2f"|format(receipt.amount_paid - receipt.amount) }}</td>
+            </tr>
+            <tr style="font-weight: bold;">
+                <td>Total Paid to Date</td>
+                <td class="text-right">₱{{ "%.2f"|format(receipt.amount_paid) }}</td>
+            </tr>
+            <tr style="font-weight: bold; font-size: 1.2rem;">
+                <td>Remaining Balance</td>
+                <td class="text-right" style="color: {{ 'green' if receipt.balance == 0 else '#ef4444' }};">
+                    ₱{{ "%.2f"|format(receipt.balance) }}
+                </td>
+            </tr>
+        </table>
+    </div>
+    
+    {% if receipt.notes %}
+    <div style="margin-bottom: 1.5rem;">
+        <strong>Notes:</strong> {{ receipt.notes }}
+    </div>
+    {% endif %}
+    
+    <div style="margin-top: 2rem; text-align: center; padding-top: 1rem; border-top: 1px solid #ccc;">
+        <p><strong>Received by:</strong> {{ receipt.received_by_name }}</p>
+        <p style="margin-top: 2rem;">_______________________________</p>
+        <p>Authorized Signature</p>
+    </div>
+    
+    <div class="no-print" style="margin-top: 2rem; text-align: center;">
+        <button onclick="window.print()" class="btn btn-primary">Print Receipt</button>
+        <a href="{{ url_for('cashier.view_bill', bill_id=receipt.bill_id) }}" class="btn btn-secondary">Back to Bill</a>
+        <a href="{{ url_for('cashier.dashboard') }}" class="btn btn-secondary">Dashboard</a>
+    </div>
+</div>
+{% endblock %}

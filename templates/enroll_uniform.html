@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Uniform Selection</h2>
+    <form method="post">
+        {% for uniform in uniforms %}
+            <h4>{{ uniform.type }}</h4>
+            Size:
+            <select name="{{ uniform.type }}_size">
+                {% for size in uniform.sizes %}
+                    <option value="{{ size }}">{{ size }}</option>
+                {% endfor %}
+            </select>
+            Quantity:
+            <input type="number" name="{{ uniform.type }}_qty" min="0" value="0"><br><br>
+        {% endfor %}
+        <button type="submit">Next: Summary</button>
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Payment History{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">Payment History</div>
+    
+    <!-- Date Filter -->
+    <form method="get" class="search-box">
+        <input type="date" name="date_from" class="form-control" value="{{ date_from }}">
+        <input type="date" name="date_to" class="form-control" value="{{ date_to }}">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="{{ url_for('cashier.payment_history') }}" class="btn btn-secondary">Clear</a>
+    </form>
+    
+    <!-- Total Collected -->
+    <div style="margin-bottom: 1.5rem; padding: 1rem; background: #d1fae5; border-radius: 6px;">
+        <p style="font-size: 1.5rem; font-weight: bold; color: #065f46;">
+            Total Collected: ₱{{ "%.2f"|format(total_collected) }}
+        </p>
+    </div>
+    
+    <!-- Payment Table -->
+    {% if payments %}
+    <table>
+        <thead>
+            <tr>
+                <th>Receipt No.</th>
+                <th>Date</th>
+                <th>Student Name</th>
+                <th>Grade</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Reference</th>
+                <th>Received By</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payments %}
+            <tr>
+                <td>OR-{{ "%06d"|format(payment.payment_id) }}</td>
+                <td>{{ payment.payment_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ payment.student_name }}</td>
+                <td>{{ payment.grade_level }}</td>
+                <td>₱{{ "%.2f"|format(payment.amount) }}</td>
+                <td>{{ payment.payment_method|title }}</td>
+                <td>{{ payment.reference_number or '-' }}</td>
+                <td>{{ payment.received_by_name }}</td>
+                <td>
+                    <a href="{{ url_for('cashier.receipt', payment_id=payment.payment_id) }}" 
+                       class="btn btn-secondary btn-sm">View Receipt</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-center" style="padding: 2rem; color: #6b7280;">No payments found</p>
+    {% endif %}
+    
+    <div style="margin-top: 2rem;">
+        <a href="{{ url_for('cashier.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

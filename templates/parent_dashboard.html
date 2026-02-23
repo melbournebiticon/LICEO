@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Parent Dashboard{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">My Children</div>
+    
+    <div style="margin-bottom: 1.5rem;">
+        <a href="{{ url_for('parent.link_child') }}" class="btn btn-primary">Add Child</a>
+    </div>
+    
+    {% if children %}
+    <div class="grid grid-2">
+        {% for child in children %}
+        <div class="card">
+            <h3 style="margin-bottom: 0.5rem;">{{ child.student_name }}</h3>
+            <p><strong>Grade:</strong> {{ child.grade_level }}</p>
+            <p><strong>Branch:</strong> {{ child.branch_name }} ({{ child.location }})</p>
+            <p><strong>Relationship:</strong> {{ child.relationship|title }}</p>
+            
+            <div style="margin: 1rem 0;">
+                <strong>Enrollment Status:</strong>
+                {% if child.status == 'approved' %}
+                    <span class="badge badge-approved">Approved</span>
+                {% elif child.status == 'rejected' %}
+                    <span class="badge badge-rejected">Rejected</span>
+                {% else %}
+                    <span class="badge badge-pending">Pending</span>
+                {% endif %}
+            </div>
+            
+            {% if child.bill_id %}
+            <div style="margin: 1rem 0; padding: 1rem; background: #f9fafb; border-radius: 6px;">
+                <p style="font-weight: 500; margin-bottom: 0.5rem;">Billing Status:</p>
+                <p><strong>Total:</strong> ₱{{ "%.2f"|format(child.total_amount) }}</p>
+                <p><strong>Paid:</strong> ₱{{ "%.2f"|format(child.amount_paid) }}</p>
+                <p><strong>Balance:</strong> ₱{{ "%.2f"|format(child.balance) }}</p>
+                {% if child.bill_status == 'paid' %}
+                    <span class="badge badge-paid">Fully Paid</span>
+                {% elif child.bill_status == 'partial' %}
+                    <span class="badge badge-partial">Partially Paid</span>
+                {% else %}
+                    <span class="badge badge-unpaid">Unpaid</span>
+                {% endif %}
+            </div>
+            {% else %}
+            <div style="margin: 1rem 0; padding: 1rem; background: #fef3c7; border-radius: 6px;">
+                <p style="color: #92400e;">No bill created yet</p>
+            </div>
+            {% endif %}
+            
+            <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <a href="{{ url_for('parent.child_detail', enrollment_id=child.enrollment_id) }}" 
+                   class="btn btn-secondary btn-sm">View Details</a>
+
+                <a href="{{ url_for('parent.child_bills', enrollment_id=child.enrollment_id) }}" 
+                   class="btn btn-primary btn-sm">View Bills</a>
+
+                <!-- ✅ NEW BUTTON -->
+                <a href="{{ url_for('parent.child_reserve', enrollment_id=child.enrollment_id) }}"
+                   class="btn btn-success btn-sm">📚 Reserve Items</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; color: #6b7280;">
+        <p style="font-size: 1.2rem; margin-bottom: 1rem;">No children linked yet</p>
+        <p>Click "Add Child" to link your child using their enrollment ID</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

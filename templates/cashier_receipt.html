@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Official Receipt - {{ payment.receipt_number }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
+        .receipt { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border: 2px solid #333; }
+        .header { text-align: center; border-bottom: 3px double #333; padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { font-size: 28px; margin-bottom: 5px; }
+        .header h2 { font-size: 20px; color: #666; margin-bottom: 10px; }
+        .header p { color: #888; font-size: 14px; }
+        .receipt-number { text-align: center; background: #333; color: white; padding: 15px; margin-bottom: 30px; font-size: 20px; font-weight: bold; }
+        .info-section { margin-bottom: 30px; }
+        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dotted #ddd; }
+        .info-row strong { color: #333; }
+        .amount-box { background: #f8f9fa; border: 2px solid #333; padding: 20px; margin: 30px 0; text-align: center; }
+        .amount-box .label { font-size: 14px; color: #666; margin-bottom: 10px; }
+        .amount-box .amount { font-size: 36px; font-weight: bold; color: #333; }
+        .balance-info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
+        .balance-card { border: 1px solid #ddd; padding: 15px; text-align: center; }
+        .balance-card .label { font-size: 12px; color: #666; margin-bottom: 5px; }
+        .balance-card .value { font-size: 20px; font-weight: bold; }
+        .footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #333; }
+        .signature { margin-top: 60px; }
+        .signature-line { border-top: 2px solid #333; width: 250px; margin: 0 auto; padding-top: 10px; text-align: center; }
+        .print-btn { background: #007bff; color: white; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; margin-right: 10px; }
+        .back-btn { background: #6c757d; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold; display: inline-block; }
+        .no-print { text-align: center; margin-bottom: 20px; }
+        @media print {
+            .no-print { display: none; }
+            body { background: white; padding: 0; }
+            .receipt { border: none; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+        <button onclick="window.print()" class="print-btn">🖨️ Print Receipt</button>
+        <a href="/cashier/bill/{{ payment.bill_id }}" class="back-btn">← Back to Bill</a>
+    </div>
+
+    <div class="receipt">
+        <div class="header">
+            <h1>{{ payment.branch_name }}</h1>
+            <h2>{{ payment.location }}</h2>
+            <p>Official Receipt</p>
+        </div>
+
+        <div class="receipt-number">
+            OR #: {{ payment.receipt_number }}
+        </div>
+
+        <div class="info-section">
+            <div class="info-row">
+                <strong>Date:</strong>
+                <span>{{ payment.payment_date.strftime('%B %d, %Y %I:%M %p') }}</span>
+            </div>
+            <div class="info-row">
+                <strong>Received from:</strong>
+                <span>{{ payment.guardian_name }}</span>
+            </div>
+            <div class="info-row">
+                <strong>Student Name:</strong>
+                <span>{{ payment.student_name }}</span>
+            </div>
+            <div class="info-row">
+                <strong>Grade Level:</strong>
+                <span>Grade {{ payment.grade_level }}</span>
+            </div>
+            <div class="info-row">
+                <strong>Enrollment ID:</strong>
+                <span>{{ payment.enrollment_id }}</span>
+            </div>
+            <div class="info-row">
+                <strong>Payment Method:</strong>
+                <span>{{ payment.payment_method|upper }}</span>
+            </div>
+            {% if payment.notes %}
+            <div class="info-row">
+                <strong>Notes:</strong>
+                <span>{{ payment.notes }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="amount-box">
+            <div class="label">AMOUNT PAID</div>
+            <div class="amount">₱{{ "%.2f"|format(payment.amount) }}</div>
+        </div>
+
+        <div class="balance-info">
+            <div class="balance-card">
+                <div class="label">Total Bill</div>
+                <div class="value">₱{{ "%.2f"|format(payment.total_amount) }}</div>
+            </div>
+            <div class="balance-card">
+                <div class="label">Total Paid</div>
+                <div class="value">₱{{ "%.2f"|format(payment.amount_paid) }}</div>
+            </div>
+            <div class="balance-card">
+                <div class="label">Balance</div>
+                <div class="value">₱{{ "%.2f"|format(payment.balance) }}</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p style="text-align: center; margin-bottom: 10px;"><strong>This is an official receipt of payment</strong></p>
+            <p style="text-align: center; color: #666; font-size: 14px;">Keep this receipt for your records</p>
+
+            <div class="signature">
+                <div class="signature-line">
+                    {{ payment.received_by_name }}
+                    <div style="font-size: 12px; color: #666; margin-top: 5px;">Cashier</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

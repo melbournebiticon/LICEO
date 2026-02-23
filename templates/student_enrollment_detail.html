@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Enrollment Details{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">My Enrollment Details</div>
+    
+    <!-- Student Information -->
+    <div style="margin-bottom: 2rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
+        <h3 style="margin-bottom: 1rem;">Student Information</h3>
+        <div class="grid grid-2">
+            <div>
+                <p><strong>Name:</strong> {{ enrollment.student_name }}</p>
+                <p><strong>Grade Level:</strong> {{ enrollment.grade_level }}</p>
+                <p><strong>Gender:</strong> {{ enrollment.gender }}</p>
+                <p><strong>Date of Birth:</strong> {{ enrollment.dob }}</p>
+            </div>
+            <div>
+                <p><strong>Branch:</strong> {{ enrollment.branch_name }}</p>
+                <p><strong>Location:</strong> {{ enrollment.location }}</p>
+                <p><strong>Contact:</strong> {{ enrollment.contact_number }}</p>
+                <p><strong>Previous School:</strong> {{ enrollment.previous_school or 'N/A' }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Enrollment Status -->
+    <div style="margin-bottom: 2rem;">
+        <h3 style="margin-bottom: 0.5rem;">Enrollment Status</h3>
+        {% if enrollment.status == 'approved' %}
+            <span class="badge badge-approved">Approved</span>
+        {% elif enrollment.status == 'rejected' %}
+            <span class="badge badge-rejected">Rejected</span>
+        {% else %}
+            <span class="badge badge-pending">Pending Review</span>
+        {% endif %}
+        <p style="margin-top: 0.5rem; color: #6b7280;">
+            Submitted on: {{ enrollment.created_at.strftime('%B %d, %Y') }}
+        </p>
+    </div>
+    
+    <!-- Guardian Information -->
+    <div style="margin-bottom: 2rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
+        <h3 style="margin-bottom: 1rem;">Guardian Information</h3>
+        <p><strong>Name:</strong> {{ enrollment.guardian_name }}</p>
+        <p><strong>Contact:</strong> {{ enrollment.guardian_contact }}</p>
+        <p><strong>Address:</strong> {{ enrollment.address }}</p>
+    </div>
+    
+    <!-- Documents -->
+    <div style="margin-bottom: 2rem;">
+        <h3 style="margin-bottom: 1rem;">Uploaded Documents</h3>
+        {% if documents %}
+        <ul style="list-style: none; padding: 0;">
+            {% for doc in documents %}
+            <li style="margin-bottom: 0.5rem;">
+                <a href="{{ doc.file_path }}" target="_blank" style="color: #2563eb;">
+                    📄 {{ doc.file_name }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p style="color: #6b7280;">No documents uploaded</p>
+        {% endif %}
+    </div>
+    
+    <!-- Books -->
+    <div style="margin-bottom: 2rem;">
+        <h3 style="margin-bottom: 1rem;">Books Ordered</h3>
+        {% if books %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Book Name</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td>{{ book.book_name }}</td>
+                    <td>{{ book.quantity }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color: #6b7280;">No books ordered</p>
+        {% endif %}
+    </div>
+    
+    <!-- Uniforms -->
+    <div style="margin-bottom: 2rem;">
+        <h3 style="margin-bottom: 1rem;">Uniforms Ordered</h3>
+        {% if uniforms %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Size</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for uniform in uniforms %}
+                <tr>
+                    <td>{{ uniform.uniform_type }}</td>
+                    <td>{{ uniform.size }}</td>
+                    <td>{{ uniform.quantity }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color: #6b7280;">No uniforms ordered</p>
+        {% endif %}
+    </div>
+    
+    <!-- Actions -->
+    <div style="display: flex; gap: 1rem;">
+        <a href="{{ url_for('student_portal.billing') }}" class="btn btn-primary">View Billing</a>
+        <a href="{{ url_for('student_portal.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">Welcome, {{ student.student_name }}!</div>
+    
+    <!-- Student Overview -->
+    <div style="margin-bottom: 2rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
+        <div class="grid grid-2">
+            <div>
+                <p><strong>Name:</strong> {{ student.student_name }}</p>
+                <p><strong>Grade Level:</strong> {{ student.grade_level }}</p>
+                <p><strong>Enrollment ID:</strong> {{ student.enrollment_id }}</p>
+            </div>
+            <div>
+                <p><strong>Branch:</strong> {{ student.branch_name }}</p>
+                <p><strong>Location:</strong> {{ student.location }}</p>
+                <p><strong>Status:</strong> 
+                    {% if student.status == 'approved' %}
+                        <span class="badge badge-approved">Approved</span>
+                    {% elif student.status == 'rejected' %}
+                        <span class="badge badge-rejected">Rejected</span>
+                    {% else %}
+                        <span class="badge badge-pending">Pending</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Stats -->
+    <div class="grid grid-3" style="margin-bottom: 2rem;">
+        <div class="stat-card">
+            <div class="stat-value">{{ doc_count }}</div>
+            <div class="stat-label">Documents</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ book_count }}</div>
+            <div class="stat-label">Books Ordered</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ uniform_count }}</div>
+            <div class="stat-label">Uniforms Ordered</div>
+        </div>
+    </div>
+    
+    <!-- Billing Status -->
+    <div class="card">
+        <h3 style="margin-bottom: 1rem;">Billing Status</h3>
+        {% if bill %}
+        <div style="padding: 1rem; background: #f9fafb; border-radius: 6px;">
+            <div class="grid grid-2">
+                <div>
+                    <p><strong>Total Amount:</strong> ₱{{ "%.2f"|format(bill.total_amount) }}</p>
+                    <p><strong>Amount Paid:</strong> ₱{{ "%.2f"|format(bill.amount_paid) }}</p>
+                </div>
+                <div>
+                    <p><strong>Balance:</strong> 
+                        <span style="color: {{ 'green' if bill.balance == 0 else '#ef4444' }}; font-weight: bold;">
+                            ₱{{ "%.2f"|format(bill.balance) }}
+                        </span>
+                    </p>
+                    <p><strong>Status:</strong>
+                        {% if bill.status == 'paid' %}
+                            <span class="badge badge-paid">Paid</span>
+                        {% elif bill.status == 'partial' %}
+                            <span class="badge badge-partial">Partial</span>
+                        {% else %}
+                            <span class="badge badge-unpaid">Unpaid</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <div style="margin-top: 1rem;">
+                <a href="{{ url_for('student_portal.billing') }}" class="btn btn-primary btn-sm">
+                    View Full Billing Details
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div style="padding: 1rem; background: #fef3c7; border-radius: 6px;">
+            <p style="color: #92400e;">No bill has been created yet. Please check back later.</p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Quick Actions -->
+    <div style="margin-top: 2rem;">
+        <h3 style="margin-bottom: 1rem;">Quick Actions</h3>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <a href="{{ url_for('student_portal.enrollment_status') }}" class="btn btn-secondary">
+                📋 View Enrollment Details
+            </a>
+
+            <a href="{{ url_for('student_portal.billing') }}" class="btn btn-primary">
+                💰 View Billing
+            </a>
+
+            <a href="{{ url_for('student.student_reservation') }}" class="btn btn-success">
+                🛒 Reserve Books & Uniforms
+            </a>
+
+            {# ✅ Fix: link directly to /student/reservations (since you said you don't have student_reservations_list) #}
+            <a href="/student/reservations" class="btn btn-info">
+                ✅ View My Reservations
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-success {
+    background: #10b981;
+    color: white;
+    border-color: #10b981;
+}
+.btn-success:hover {
+    background: #059669;
+}
+.btn-info {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+.btn-info:hover {
+    background: #2563eb;
+}
+</style>
+{% endblock %}
