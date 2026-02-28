@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Account Created - Registrar</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -16,6 +17,7 @@
             align-items: center;
             z-index: 1000;
         }
+
         .credentials-content {
             background: white;
             padding: 40px;
@@ -24,6 +26,7 @@
             width: 90%;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
+
         .credentials-title {
             color: #10b981;
             font-size: 24px;
@@ -31,6 +34,7 @@
             margin-bottom: 20px;
             text-align: center;
         }
+
         .credentials-box {
             background-color: #fef3c7;
             border: 3px solid #f59e0b;
@@ -38,24 +42,28 @@
             border-radius: 8px;
             margin: 20px 0;
         }
+
         .credential-item {
             margin: 15px 0;
             padding: 10px;
             background: white;
             border-radius: 5px;
         }
+
         .credential-label {
             font-weight: bold;
             color: #92400e;
             font-size: 14px;
             margin-bottom: 5px;
         }
+
         .credential-value {
             font-size: 20px;
             font-family: 'Courier New', monospace;
             color: #b45309;
             word-break: break-all;
         }
+
         .warning-section {
             background-color: #fee2e2;
             border: 2px solid #ef4444;
@@ -63,16 +71,19 @@
             border-radius: 8px;
             margin: 20px 0;
         }
+
         .warning-title {
             font-weight: bold;
             color: #991b1b;
             font-size: 16px;
             margin-bottom: 10px;
         }
+
         .warning-text {
             color: #7f1d1d;
             line-height: 1.6;
         }
+
         .copy-btn {
             background-color: #3b82f6;
             color: white;
@@ -83,95 +94,100 @@
             font-size: 14px;
             margin-top: 10px;
         }
+
         .copy-btn:hover {
             background-color: #2563eb;
         }
+
         .action-buttons {
             text-align: center;
             margin-top: 30px;
         }
     </style>
 </head>
+
 <body>
 
-<div class="credentials-modal">
-    <div class="credentials-content">
-        <div class="credentials-title">
-            ✓ {{ account_type|title }} Account Created Successfully!
-        </div>
-        
-        <div style="text-align: center; color: #6b7280; margin-bottom: 20px;">
-            <strong>Student:</strong> {{ student_name }}<br>
-            <strong>Enrollment ID:</strong> {{ enrollment_id }}
-        </div>
-        
-        <div class="credentials-box">
-            <div class="credential-item">
-                <div class="credential-label">USERNAME</div>
-                <div class="credential-value" id="username">{{ username }}</div>
-                <button class="copy-btn" onclick="copyToClipboard('username', event)">Copy Username</button>
+    <div class="credentials-modal">
+        <div class="credentials-content">
+            <div class="credentials-title">
+                ✓ {{ account_type|title }} Account Created Successfully!
             </div>
-            
-            <div class="credential-item">
-                <div class="credential-label">TEMPORARY PASSWORD</div>
-                <div class="credential-value" id="password">{{ password }}</div>
-                <button class="copy-btn" onclick="copyToClipboard('password', event)">Copy Password</button>
+
+            <div style="text-align: center; color: #6b7280; margin-bottom: 20px;">
+                <strong>Student:</strong> {{ student_name }}<br>
+                <strong>Enrollment ID:</strong> {{ enrollment_id }}
             </div>
-        </div>
-        
-        <div class="warning-section">
-            <div class="warning-title">⚠️ IMPORTANT INSTRUCTIONS</div>
-            <div class="warning-text">
-                <ul style="margin: 10px 0; padding-left: 20px;">
-                    <li><strong>Share these credentials with the {{ account_type }}</strong> via secure messenger</li>
-                    <li>The user will be <strong>required to change this password</strong> on first login</li>
-                    <li>These credentials will <strong>not be shown again</strong> - save them now</li>
-                    <li>The temporary password is randomly generated for security</li>
-                    {% if account_type == 'parent' %}
-                    <li>The parent can use this account to monitor their child's enrollment and billing</li>
-                    {% else %}
-                    <li>The student can use this account to view enrollment details and billing information</li>
-                    {% endif %}
-                </ul>
+
+            <div class="credentials-box">
+                <div class="credential-item">
+                    <div class="credential-label">USERNAME</div>
+                    <div class="credential-value" id="username">{{ username }}</div>
+                    <button class="copy-btn" onclick="copyToClipboard('username', event)">Copy Username</button>
+                </div>
+
+                <div class="credential-item">
+                    <div class="credential-label">TEMPORARY PASSWORD</div>
+                    <div class="credential-value" id="password">{{ password }}</div>
+                    <button class="copy-btn" onclick="copyToClipboard('password', event)">Copy Password</button>
+                </div>
             </div>
-        </div>
-        
-        <div class="action-buttons">
-            <a href="/registrar" class="btn btn-primary">Return to Dashboard</a>
+
+            <div class="warning-section">
+                <div class="warning-title">⚠️ IMPORTANT INSTRUCTIONS</div>
+                <div class="warning-text">
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li><strong>Share these credentials with the {{ account_type }}</strong> via secure messenger
+                        </li>
+                        <li>The user will be <strong>required to change this password</strong> on first login</li>
+                        <li>These credentials will <strong>not be shown again</strong> - save them now</li>
+                        <li>The temporary password is randomly generated for security</li>
+                        {% if account_type == 'parent' %}
+                        <li>The parent can use this account to monitor their child's enrollment and billing</li>
+                        {% else %}
+                        <li>The student can use this account to view enrollment details and billing information</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="/registrar" class="btn btn-primary">⬅ Back</a>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-function copyToClipboard(elementId, event) {
-    const element = document.getElementById(elementId);
-    const text = element.textContent;
-    
-    navigator.clipboard.writeText(text).then(() => {
-        const btn = event.target;
-        const originalText = btn.textContent;
-        btn.textContent = 'Copied!';
-        btn.style.backgroundColor = '#10b981';
-        
-        setTimeout(() => {
-            btn.textContent = originalText;
-            btn.style.backgroundColor = '#3b82f6';
-        }, 2000);
-    }).catch(err => {
-        alert('Failed to copy: ' + err);
-    });
-}
+    <script>
+        function copyToClipboard(elementId, event) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
 
-// Prevent accidental page close
-window.onbeforeunload = function() {
-    return "Have you saved the credentials? They won't be shown again.";
-};
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.backgroundColor = '#10b981';
 
-// Print functionality
-function printCredentials() {
-    window.print();
-}
-</script>
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.backgroundColor = '#3b82f6';
+                }, 2000);
+            }).catch(err => {
+                alert('Failed to copy: ' + err);
+            });
+        }
+
+        // Prevent accidental page close
+        window.onbeforeunload = function () {
+            return "Have you saved the credentials? They won't be shown again.";
+        };
+
+        // Print functionality
+        function printCredentials() {
+            window.print();
+        }
+    </script>
 
 </body>
+
 </html>

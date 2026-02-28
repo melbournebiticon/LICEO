@@ -17,17 +17,17 @@ def _require_librarian():
 # Reuse this in SQL ORDER BY (keeps Nursery, Kinder, Grade 1..10)
 GRADE_ORDER_SQL = """
 CASE
-    WHEN grade_level = 'Nursery' THEN 0
-    WHEN grade_level = 'Kinder'  THEN 1
-    WHEN grade_level = 'Grade 1' THEN 2
-    WHEN grade_level = 'Grade 2' THEN 3
-    WHEN grade_level = 'Grade 3' THEN 4
-    WHEN grade_level = 'Grade 4' THEN 5
-    WHEN grade_level = 'Grade 5' THEN 6
-    WHEN grade_level = 'Grade 6' THEN 7
-    WHEN grade_level = 'Grade 7' THEN 8
-    WHEN grade_level = 'Grade 8' THEN 9
-    WHEN grade_level = 'Grade 9' THEN 10
+    WHEN grade_level = 'Nursery'  THEN 0
+    WHEN grade_level = 'Kinder'   THEN 1
+    WHEN grade_level = 'Grade 1'  THEN 2
+    WHEN grade_level = 'Grade 2'  THEN 3
+    WHEN grade_level = 'Grade 3'  THEN 4
+    WHEN grade_level = 'Grade 4'  THEN 5
+    WHEN grade_level = 'Grade 5'  THEN 6
+    WHEN grade_level = 'Grade 6'  THEN 7
+    WHEN grade_level = 'Grade 7'  THEN 8
+    WHEN grade_level = 'Grade 8'  THEN 9
+    WHEN grade_level = 'Grade 9'  THEN 10
     WHEN grade_level = 'Grade 10' THEN 11
     ELSE 99
 END
@@ -65,7 +65,7 @@ def books_inventory():
             params.append(grade_filter)
 
         if search:
-            where.append("(item_name ILIKE %s OR COALESCE(publisher,'') ILIKE %s)")
+            where.append("(item_name ILIKE %s OR COALESCE(size_label,'') ILIKE %s)")
             like = f"%{search}%"
             params.extend([like, like])
 
@@ -76,7 +76,7 @@ def books_inventory():
                 item_id,
                 item_name AS title,
                 grade_level,
-                COALESCE(publisher,'') AS publisher,
+                COALESCE(size_label,'') AS publisher,
                 price,
                 stock_total,
                 reserved_qty
@@ -84,7 +84,7 @@ def books_inventory():
             WHERE {where_sql}
             ORDER BY
                 {GRADE_ORDER_SQL},
-                COALESCE(publisher,''),
+                COALESCE(size_label,''),
                 item_name
         """, params)
 
@@ -151,7 +151,7 @@ def book_add():
             cur.execute("""
                 INSERT INTO inventory_items
                     (branch_id, category, item_name, grade_level, is_common,
-                     publisher, price, stock_total, reserved_qty, image_url, is_active)
+                     size_label, price, stock_total, reserved_qty, image_url, is_active)
                 VALUES
                     (%s, 'BOOK', %s, %s, FALSE,
                      %s, 0, 0, 0, NULL, TRUE)
@@ -198,7 +198,7 @@ def book_edit(item_id):
                 item_id,
                 item_name AS title,
                 grade_level,
-                COALESCE(publisher,'') AS publisher,
+                COALESCE(size_label,'') AS publisher,
                 price,
                 stock_total,
                 reserved_qty
@@ -225,7 +225,7 @@ def book_edit(item_id):
             try:
                 cur2.execute("""
                     UPDATE inventory_items
-                    SET item_name=%s, grade_level=%s, publisher=%s
+                    SET item_name=%s, grade_level=%s, size_label=%s
                     WHERE item_id=%s AND branch_id=%s AND UPPER(category)='BOOK'
                 """, (title, grade_level, publisher, item_id, branch_id))
                 db.commit()
@@ -268,7 +268,7 @@ def book_restock(item_id):
                 item_id,
                 item_name AS title,
                 grade_level,
-                COALESCE(publisher,'') AS publisher,
+                COALESCE(size_label,'') AS publisher,
                 price,
                 stock_total,
                 reserved_qty
@@ -405,14 +405,14 @@ def releases():
             SELECT
                 item_id,
                 grade_level,
-                COALESCE(publisher,'') AS publisher,
+                COALESCE(size_label,'') AS publisher,
                 item_name AS title,
                 price
             FROM inventory_items
             WHERE {book_where}
             ORDER BY
                 {GRADE_ORDER_SQL},
-                COALESCE(publisher,''),
+                COALESCE(size_label,''),
                 item_name
         """, book_params)
         books = cur.fetchall() or []
@@ -572,7 +572,7 @@ def book_price(item_id):
                 item_id,
                 item_name AS title,
                 grade_level,
-                COALESCE(publisher,'') AS publisher,
+                COALESCE(size_label,'') AS publisher,
                 price,
                 stock_total,
                 reserved_qty

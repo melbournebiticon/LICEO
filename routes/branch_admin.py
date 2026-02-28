@@ -126,7 +126,8 @@ def dashboard():
     try:
         # Load announcements for homepage (all active; visible to all branches)
         cursor.execute("""
-            SELECT id, title, message, created_at, is_active
+            SELECT announcement_id AS id, title, message, created_at, is_active,
+                   image_url, branch_id
             FROM announcements
             ORDER BY created_at DESC
         """)
@@ -140,18 +141,36 @@ def dashboard():
     if request.method == "POST":
         # Form: Add Homepage Announcement
         if request.form.get("add_announcement") == "1":
-            title = (request.form.get("announcement_title") or "").strip()
+            title   = (request.form.get("announcement_title")   or "").strip()
             message = (request.form.get("announcement_message") or "").strip()
             if title:
+                # ── Handle optional photo upload ──
+                image_url = None
+                photo = request.files.get("announcement_photo")
+                if photo and photo.filename:
+                    import uuid as _uuid
+                    from werkzeug.utils import secure_filename as _sfn
+                    ALLOWED = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+                    ext = photo.filename.rsplit('.', 1)[-1].lower() if '.' in photo.filename else ''
+                    if ext in ALLOWED:
+                        import os as _os
+                        fname  = f"{_uuid.uuid4().hex}.{ext}"
+                        folder = _os.path.join("uploads", "announcements")
+                        _os.makedirs(folder, exist_ok=True)
+                        photo.save(_os.path.join(folder, fname))
+                        image_url = f"/uploads/announcements/{fname}"
+                    else:
+                        flash("Photo must be PNG, JPG, GIF, or WEBP.", "warning")
+
                 db = get_db_connection()
                 cur = db.cursor()
                 try:
                     cur.execute("""
-                        INSERT INTO announcements (title, message, is_active)
-                        VALUES (%s, %s, TRUE)
-                    """, (title, message))
+                        INSERT INTO announcements (title, message, is_active, image_url, branch_id)
+                        VALUES (%s, %s, TRUE, %s, %s)
+                    """, (title, message, image_url, session.get("branch_id")))
                     db.commit()
-                    flash("Announcement added. It will show on the homepage for everyone.", "success")
+                    flash("Announcement added to homepage!", "success")
                 except Exception as e:
                     db.rollback()
                     flash(f"Could not add announcement: {str(e)}", "error")
@@ -389,7 +408,7 @@ def branch_admin_inventory():
     grade_filter = (request.args.get("grade") or "").strip()
     status_filter = (request.args.get("status") or "active").strip()
 
-    if not category_filter:
+    if not category_filter or category_filter.upper() == 'BOOK':
         return redirect("/branch-admin/inventory?category=UNIFORM&status=" + status_filter)
 
     db = get_db_connection()
@@ -460,7 +479,7 @@ def branch_admin_inventory():
               COALESCE(SUM(reserved_qty),0) AS total_reserved,
               COALESCE(SUM(CASE WHEN (stock_total - reserved_qty) < 10 THEN 1 ELSE 0 END),0) AS low_stock_items
             FROM inventory_items
-            WHERE branch_id = %s AND is_active = TRUE
+            WHERE branch_id = %s AND is_active = TRUE AND category != 'BOOK'
         """, (branch_id,))
         stats = cursor.fetchone()
 
@@ -722,215 +741,3 @@ def branch_admin_inventory_toggle(item_id):
 
     return redirect(request.referrer or "/branch-admin/inventory?category=UNIFORM")
 
-
-# ==========================================================
-# ✅ NEW: BOOKS INVENTORY (for Librarian requirements)
-# Category used: "BOOK"
-# item_name = Title, size_label = Publisher, grade_level = Grade
-# stock_total = quantity
-# ==========================================================
-
-def _require_book_staff():
-    # librarian can manage books, branch_admin can also access
-    return session.get("role") in ("branch_admin", "librarian")
-
-
-@branch_admin_bp.route("/branch-admin/books", methods=["GET"])
-def books_inventory():
-    if not _require_book_staff():
-        return redirect("/")
-
-    branch_id = session.get("branch_id")
-    grade_filter = (request.args.get("grade") or "").strip()
-    search = (request.args.get("search") or "").strip()
-
-    db = get_db_connection()
-    cursor = db.cursor()
-    try:
-        where = ["branch_id=%s", "category='BOOK'"]
-        params = [branch_id]
-
-        if grade_filter:
-            where.append("grade_level = %s")
-            params.append(grade_filter)
-
-        if search:
-            where.append("(item_name ILIKE %s OR COALESCE(size_label,'') ILIKE %s)")
-            like = f"%{search}%"
-            params.extend([like, like])
-
-        where_sql = " AND ".join(where)
-
-        cursor.execute(f"""
-            SELECT item_id, grade_level, size_label, item_name, price, stock_total, reserved_qty, is_active
-            FROM inventory_items
-            WHERE {where_sql}
-            ORDER BY grade_level, item_name
-        """, params)
-        rows = cursor.fetchall() or []
-    finally:
-        cursor.close()
-        db.close()
-
-    return render_template(
-        "books_inventory.html",
-        rows=rows,
-        grade_filter=grade_filter,
-        search=search
-    )
-
-
-@branch_admin_bp.route("/branch-admin/books/add", methods=["GET", "POST"])
-def books_add():
-    if not _require_book_staff():
-        return redirect("/")
-
-    branch_id = session.get("branch_id")
-
-    if request.method == "POST":
-        grade_level = (request.form.get("grade_level") or "").strip()
-        publisher = (request.form.get("publisher") or "").strip()
-        title = (request.form.get("title") or "").strip()
-        price = (request.form.get("price") or "").strip()
-        qty = (request.form.get("qty") or "").strip()
-
-        if not (grade_level and publisher and title and price and qty):
-            flash("Missing required fields.", "error")
-            return redirect(url_for("branch_admin.books_add"))
-
-        db = get_db_connection()
-        cursor = db.cursor()
-        try:
-            cursor.execute("""
-                INSERT INTO inventory_items
-                (branch_id, category, item_name, grade_level, is_common, size_label,
-                 price, stock_total, reserved_qty, image_url, is_active)
-                VALUES (%s,'BOOK',%s,%s,FALSE,%s,%s,%s,0,NULL,TRUE)
-            """, (branch_id, title, grade_level, publisher, price, qty))
-            db.commit()
-            flash("✅ Book added.", "success")
-            return redirect(url_for("branch_admin.books_inventory"))
-        except Exception as e:
-            db.rollback()
-            flash(str(e), "error")
-            return redirect(url_for("branch_admin.books_add"))
-        finally:
-            cursor.close()
-            db.close()
-
-    return render_template("books_add.html")
-
-
-@branch_admin_bp.route("/branch-admin/books/<int:item_id>/edit", methods=["GET", "POST"])
-def books_edit(item_id):
-    if not _require_book_staff():
-        return redirect("/")
-
-    branch_id = session.get("branch_id")
-
-    db = get_db_connection()
-    cursor = db.cursor()
-    try:
-        cursor.execute("""
-            SELECT item_id, grade_level, size_label, item_name, price, stock_total, is_active
-            FROM inventory_items
-            WHERE item_id=%s AND branch_id=%s AND category='BOOK'
-            LIMIT 1
-        """, (item_id, branch_id))
-        book = cursor.fetchone()
-        if not book:
-            return "Book not found", 404
-
-        if request.method == "POST":
-            grade_level = (request.form.get("grade_level") or "").strip()
-            publisher = (request.form.get("publisher") or "").strip()
-            title = (request.form.get("title") or "").strip()
-            price = (request.form.get("price") or "").strip()
-            qty = (request.form.get("qty") or "").strip()
-            is_active = (request.form.get("is_active") == "on")
-
-            cursor.execute("""
-                UPDATE inventory_items
-                SET grade_level=%s,
-                    size_label=%s,
-                    item_name=%s,
-                    price=%s,
-                    stock_total=%s,
-                    is_active=%s
-                WHERE item_id=%s AND branch_id=%s AND category='BOOK'
-            """, (grade_level, publisher, title, price, qty, is_active, item_id, branch_id))
-            db.commit()
-            flash("✅ Book updated.", "success")
-            return redirect(url_for("branch_admin.books_inventory"))
-
-    except Exception as e:
-        db.rollback()
-        flash(str(e), "error")
-    finally:
-        cursor.close()
-        db.close()
-
-    return render_template("books_edit.html", book=book)
-
-
-@branch_admin_bp.route("/branch-admin/books/<int:item_id>/release", methods=["POST"])
-def books_release(item_id):
-    """
-    Record book releases to students:
-      - deduct stock_total
-      - you can later log the student name/enrollment_id in a separate table
-    """
-    if not _require_book_staff():
-        return redirect("/")
-
-    branch_id = session.get("branch_id")
-    qty = (request.form.get("qty") or "").strip()
-
-    try:
-        qty = int(qty)
-    except Exception:
-        qty = 0
-
-    if qty <= 0:
-        flash("Invalid release quantity.", "error")
-        return redirect(url_for("branch_admin.books_inventory"))
-
-    db = get_db_connection()
-    cursor = db.cursor()
-    try:
-        # lock row
-        cursor.execute("""
-            SELECT stock_total, reserved_qty, item_name
-            FROM inventory_items
-            WHERE item_id=%s AND branch_id=%s AND category='BOOK' AND is_active=TRUE
-            FOR UPDATE
-        """, (item_id, branch_id))
-        row = cursor.fetchone()
-        if not row:
-            raise Exception("Book not found or inactive.")
-
-        stock_total, reserved_qty, item_name = row
-        stock_total = int(stock_total or 0)
-        reserved_qty = int(reserved_qty or 0)
-
-        available = stock_total - reserved_qty
-        if qty > available:
-            raise Exception(f"Not enough available stock for {item_name}. Available: {available}")
-
-        cursor.execute("""
-            UPDATE inventory_items
-            SET stock_total = stock_total - %s
-            WHERE item_id=%s AND branch_id=%s AND category='BOOK'
-        """, (qty, item_id, branch_id))
-
-        db.commit()
-        flash(f"✅ Released {qty} book(s): {item_name}", "success")
-
-    except Exception as e:
-        db.rollback()
-        flash(str(e), "error")
-    finally:
-        cursor.close()
-        db.close()
-
-    return redirect(url_for("branch_admin.books_inventory"))

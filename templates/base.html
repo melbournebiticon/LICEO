@@ -1,144 +1,340 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Liceo LMS{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    :root{
-      --bg:#f3f6fb;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#64748b;
-      --border:#e5e7eb;
+    :root {
+      --bg: #f0f4f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
 
-      --nav:#0b4aa2;          /* modern blue */
-      --nav2:#083b84;
-      --btn:#2563eb;
-      --btnHover:#1e4ed8;
-      --dark:#111827;
-      --darkHover:#0b1220;
+      --nav: #1a2e5a;
+      --nav2: #162548;
+      --nav-accent: #3b82f6;
 
-      --success:#2e7d32;
-      --error:#c62828;
-      --info:#1565c0;
-      --warning:#ff8f00;
+      --btn: #2563eb;
+      --btnHover: #1d4ed8;
+      --dark: #111827;
+      --darkHover: #0d1520;
+
+      --success: #16a34a;
+      --error: #dc2626;
+      --info: #2563eb;
+      --warning: #d97706;
+
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      font-family: Arial, sans-serif;
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
+      font-size: 14px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
 
     /* ===== NAVBAR ===== */
-    nav{
-      background: linear-gradient(180deg, var(--nav), var(--nav2));
-      padding: 10px 16px;
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items:center;
+    nav {
+      background: linear-gradient(135deg, var(--nav) 0%, var(--nav2) 100%);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      height: 58px;
       position: sticky;
       top: 0;
       z-index: 1000;
-      box-shadow: 0 2px 10px rgba(2,6,23,.08);
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+      gap: 4px;
     }
 
-    .nav-left, .nav-right{
-      display:flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items:center;
-    }
-
-    .nav-spacer{ flex:1; }
-
-    .nav-link{
-      color:#fff;
-      text-decoration:none;
-      font-weight:700;
-      font-size:14px;
-      padding: 8px 10px;
-      border-radius: 10px;
-      transition: .15s ease;
-      display:inline-flex;
-      align-items:center;
-      gap: 8px;
-    }
-    .nav-link:hover{
-      background: rgba(255,255,255,.14);
-    }
-
-    .pill{
-      background: rgba(255,255,255,.14);
-      color:#fff;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      display: inline-flex;
-      gap: 6px;
+    /* Logo / brand */
+    .nav-brand {
+      display: flex;
       align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.3px;
+      margin-right: 8px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .nav-brand-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .nav-divider {
+      width: 1px;
+      height: 22px;
+      background: rgba(255, 255, 255, 0.15);
+      margin: 0 6px;
+      flex-shrink: 0;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .nav-link {
+      color: rgba(255, 255, 255, 0.82);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 13.5px;
+      padding: 6px 11px;
+      border-radius: 8px;
+      transition: background 0.15s, color 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       white-space: nowrap;
     }
-    .pill small{ opacity:.9; font-weight:700; }
 
-    /* ===== LAYOUT ===== */
-    .container{
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 18px;
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
     }
 
-    /* ===== FLASH ===== */
-    .flash-wrap{
-      max-width: 1100px;
-      margin: 12px auto 0;
-      padding: 0 18px;
+    .nav-link.active {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-weight: 600;
     }
-    .flash{
-      padding: 12px 14px;
-      border-radius: 12px;
-      margin: 10px 0;
+
+    /* Logout button style */
+    .nav-logout {
+      color: rgba(255, 255, 255, 0.75);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-logout:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    /* User badge */
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.10);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      padding: 5px 12px 5px 6px;
+    }
+
+    .nav-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--nav-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .nav-user-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .nav-user-name {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .nav-user-role {
+      font-size: 10.5px;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+
+    /* ===== FLASH MESSAGES ===== */
+    .flash-wrap {
+      max-width: 1200px;
+      margin: 16px auto 0;
+      padding: 0 24px;
+    }
+
+    .flash {
+      padding: 13px 16px;
+      border-radius: var(--radius);
+      margin: 8px 0;
       background: var(--card);
       border: 1px solid var(--border);
-      box-shadow: 0 1px 3px rgba(2,6,23,.06);
-      font-size: 14px;
+      box-shadow: var(--shadow);
+      font-size: 13.5px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .flash.success{ border-left: 5px solid var(--success); }
-    .flash.error{ border-left: 5px solid var(--error); }
-    .flash.info{ border-left: 5px solid var(--info); }
-    .flash.warning{ border-left: 5px solid var(--warning); }
 
-    /* ===== OPTIONAL BUTTONS FOR TEMPLATES ===== */
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding: 10px 16px;
-      border-radius: 10px;
+    .flash::before {
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .flash.success {
+      border-left: 4px solid var(--success);
+      background: #f0fdf4;
+      color: #166534;
+    }
+
+    .flash.success::before {
+      content: '✅';
+    }
+
+    .flash.error {
+      border-left: 4px solid var(--error);
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    .flash.error::before {
+      content: '❌';
+    }
+
+    .flash.info {
+      border-left: 4px solid var(--info);
+      background: #eff6ff;
+      color: #1e40af;
+    }
+
+    .flash.info::before {
+      content: 'ℹ️';
+    }
+
+    .flash.warning {
+      border-left: 4px solid var(--warning);
+      background: #fffbeb;
+      color: #92400e;
+    }
+
+    .flash.warning::before {
+      content: '⚠️';
+    }
+
+    /* ===== LAYOUT ===== */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* ===== GLOBAL BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 9px 16px;
+      border-radius: 9px;
       border: 1px solid transparent;
-      font-weight: 800;
-      font-size: 14px;
-      cursor:pointer;
-      text-decoration:none;
-      transition:.15s ease;
+      font-weight: 600;
+      font-size: 13.5px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s;
+      font-family: 'Inter', Arial, sans-serif;
+      white-space: nowrap;
     }
-    .btn-primary{
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
       background: var(--btn);
-      color:#fff;
+      color: #fff;
+      border-color: var(--btn);
     }
-    .btn-primary:hover{ background: var(--btnHover); transform: translateY(-1px); }
-    .btn-dark{
+
+    .btn-primary:hover {
+      background: var(--btnHover);
+    }
+
+    .btn-dark {
       background: var(--dark);
-      color:#fff;
+      color: #fff;
+      border-color: var(--dark);
     }
-    .btn-dark:hover{ background: var(--darkHover); transform: translateY(-1px); }
+
+    .btn-dark:hover {
+      background: var(--darkHover);
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #f8fafc;
+    }
   </style>
 
   {% block head %}{% endblock %}
@@ -148,66 +344,82 @@
 <body>
 
   <nav>
+    <!-- Brand -->
+    <a class="nav-brand" href="/">
+      <span class="nav-brand-icon">🎓</span>
+      Liceo LMS
+    </a>
+
+    <div class="nav-divider"></div>
+
     <div class="nav-left">
-      <a class="nav-link" href="/">Home</a>
-
       {% if session.get('role') %}
-        {# Logged-in Navigation #}
-        {% if session.get('role') == 'student' %}
-          <a class="nav-link" href="/student/dashboard">Student</a>
-          <a class="nav-link" href="/student/billing">Billing</a>
 
-        {% elif session.get('role') == 'parent' %}
-          <a class="nav-link" href="/parent/dashboard">My Children</a>
-          <a class="nav-link" href="/parent/link-child">Add Child</a>
+      {% if session.get('role') == 'student' %}
+      <a class="nav-link" href="/student/dashboard">🏠 Home</a>
+      <a class="nav-link" href="/student/billing">🧾 Billing</a>
 
-        {% elif session.get('role') == 'registrar' %}
-          <a class="nav-link" href="/registrar">Registrar</a>
+      {% elif session.get('role') == 'parent' %}
+      <a class="nav-link" href="/parent/dashboard">👨‍👩‍👧 My Children</a>
+      <a class="nav-link" href="/parent/link-child">➕ Add Child</a>
 
-        {% elif session.get('role') == 'cashier' %}
-          <a class="nav-link" href="/cashier">Cashier</a>
-          <a class="nav-link" href="/cashier/payment-history">Payments</a>
+      {% elif session.get('role') == 'registrar' %}
+      <a class="nav-link" href="/registrar">📋 Registrar</a>
 
-        {% elif session.get('role') == 'librarian' %}
-          <a class="nav-link" href="/librarian">Librarian</a>
+      {% elif session.get('role') == 'cashier' %}
+      <a class="nav-link" href="/cashier">💰 Cashier</a>
+      <a class="nav-link" href="/cashier/payment-history">📊 Payments</a>
 
-        {% elif session.get('role') == 'branch_admin' %}
-          <a class="nav-link" href="/branch-admin">Branch Admin</a>
+      {% elif session.get('role') == 'librarian' %}
+      <a class="nav-link" href="/librarian">📚 Librarian</a>
 
-        {% elif session.get('role') == 'super_admin' %}
-          <a class="nav-link" href="/super-admin">Super Admin</a>
-        {% endif %}
+      {% elif session.get('role') == 'branch_admin' %}
+      <a class="nav-link" href="/branch-admin">🏫 Branch Admin</a>
 
-        <a class="nav-link" href="/#faq">FAQ</a>
-        <a class="nav-link" href="/logout">Logout</a>
+      {% elif session.get('role') == 'super_admin' %}
+      <a class="nav-link" href="/super-admin">🔐 Super Admin</a>
+      {% endif %}
+
+      <a class="nav-link" href="/#faq">❓ FAQ</a>
 
       {% else %}
-        {# Public Navigation #}
-        <a class="nav-link" href="/login">Login</a>
-        <a class="nav-link" href="/track">Track</a>
-        <a class="nav-link" href="/#faq">FAQ</a>
+      <a class="nav-link" href="/login">🔑 Login</a>
+      <a class="nav-link" href="/track">🔍 Track</a>
+      <a class="nav-link" href="/#faq">❓ FAQ</a>
       {% endif %}
     </div>
 
-    <div class="nav-spacer"></div>
-
     <div class="nav-right">
       {% if session.get('role') %}
-        {% set _branch_id = session.get("branch_id") %}
-        {% set _branch_name = branch_name if branch_name is defined else None %}
+      {# Friendly role label mapping #}
+      {% set role_labels = {
+      'super_admin': 'Super Admin',
+      'branch_admin': 'Branch Admin',
+      'registrar': 'Registrar',
+      'cashier': 'Cashier',
+      'librarian': 'Librarian',
+      'parent': 'Parent',
+      'student': 'Student'
+      } %}
+      {% set role_raw = session.get('role') %}
+      {% set role_label = role_labels.get(role_raw, role_raw | title) %}
 
-        {% if _branch_id %}
-          <span class="pill">
-            <small>Branch:</small>
-            {% if _branch_name %}
-              {{ _branch_name }}
-            {% else %}
-              ID {{ _branch_id }}
-            {% endif %}
-          </span>
-        {% endif %}
+      {# Get display name: prefer student_name, else use first part of role #}
+      {% if session.get('student_name') %}
+      {% set display_name = session.get('student_name') %}
+      {% else %}
+      {% set display_name = role_label %}
+      {% endif %}
 
-        <span class="pill"><small>Role:</small> {{ session.get('role') }}</span>
+      {# Avatar initial #}
+      {% set avatar_letter = display_name[0] | upper %}
+
+      <div class="nav-user">
+        <div class="nav-avatar">{{ avatar_letter }}</div>
+        <span class="nav-user-name">{{ display_name }}</span>
+      </div>
+
+      <a class="nav-logout" href="/logout">↩ Logout</a>
       {% endif %}
     </div>
   </nav>
@@ -215,31 +427,30 @@
   <!-- Flash messages -->
   <div class="flash-wrap">
     {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, msg in messages %}
-          <div class="flash {{ category }}">{{ msg }}</div>
-        {% endfor %}
-      {% endif %}
+    {% if messages %}
+    {% for category, msg in messages %}
+    <div class="flash {{ category }}">{{ msg }}</div>
+    {% endfor %}
+    {% endif %}
     {% endwith %}
   </div>
 
   <!-- Page content -->
-  <div class="container">
-    {% block content %}{% endblock %}
-  </div>
+  {% block content %}{% endblock %}
 
   {# Global chatbot - ON by default, OFF for super_admin #}
   {% set _auto_show = (session.get('role') != 'super_admin') %}
   {% if show_chatbot is defined %}
-    {% set _final_show = show_chatbot %}
+  {% set _final_show = show_chatbot %}
   {% else %}
-    {% set _final_show = _auto_show %}
+  {% set _final_show = _auto_show %}
   {% endif %}
 
   {% if _final_show %}
-    {% include "components/chatbot_widget.html" ignore missing %}
+  {% include "components/chatbot_widget.html" ignore missing %}
   {% endif %}
 
   {% block scripts %}{% endblock %}
 </body>
+
 </html>

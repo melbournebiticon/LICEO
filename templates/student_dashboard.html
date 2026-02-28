@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Student Dashboard{% endblock %}
+{% block title %}Student Portal{% endblock %}
 
 {% block content %}
 <div class="card">
     <div class="card-header">Welcome, {{ student.student_name }}!</div>
-    
+
     <!-- Student Overview -->
     <div style="margin-bottom: 2rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
         <div class="grid grid-2">
@@ -17,19 +17,19 @@
             <div>
                 <p><strong>Branch:</strong> {{ student.branch_name }}</p>
                 <p><strong>Location:</strong> {{ student.location }}</p>
-                <p><strong>Status:</strong> 
+                <p><strong>Status:</strong>
                     {% if student.status == 'approved' %}
-                        <span class="badge badge-approved">Approved</span>
+                    <span class="badge badge-approved">Approved</span>
                     {% elif student.status == 'rejected' %}
-                        <span class="badge badge-rejected">Rejected</span>
+                    <span class="badge badge-rejected">Rejected</span>
                     {% else %}
-                        <span class="badge badge-pending">Pending</span>
+                    <span class="badge badge-pending">Pending</span>
                     {% endif %}
                 </p>
             </div>
         </div>
     </div>
-    
+
     <!-- Quick Stats -->
     <div class="grid grid-3" style="margin-bottom: 2rem;">
         <div class="stat-card">
@@ -45,7 +45,7 @@
             <div class="stat-label">Uniforms Ordered</div>
         </div>
     </div>
-    
+
     <!-- Billing Status -->
     <div class="card">
         <h3 style="margin-bottom: 1rem;">Billing Status</h3>
@@ -57,18 +57,18 @@
                     <p><strong>Amount Paid:</strong> ₱{{ "%.2f"|format(bill.amount_paid) }}</p>
                 </div>
                 <div>
-                    <p><strong>Balance:</strong> 
+                    <p><strong>Balance:</strong>
                         <span style="color: {{ 'green' if bill.balance == 0 else '#ef4444' }}; font-weight: bold;">
                             ₱{{ "%.2f"|format(bill.balance) }}
                         </span>
                     </p>
                     <p><strong>Status:</strong>
                         {% if bill.status == 'paid' %}
-                            <span class="badge badge-paid">Paid</span>
+                        <span class="badge badge-paid">Paid</span>
                         {% elif bill.status == 'partial' %}
-                            <span class="badge badge-partial">Partial</span>
+                        <span class="badge badge-partial">Partial</span>
                         {% else %}
-                            <span class="badge badge-unpaid">Unpaid</span>
+                        <span class="badge badge-unpaid">Unpaid</span>
                         {% endif %}
                     </p>
                 </div>
@@ -85,7 +85,7 @@
         </div>
         {% endif %}
     </div>
-    
+
     <!-- Quick Actions -->
     <div style="margin-top: 2rem;">
         <h3 style="margin-bottom: 1rem;">Quick Actions</h3>
@@ -102,7 +102,8 @@
                 🛒 Reserve Books & Uniforms
             </a>
 
-            {# ✅ Fix: link directly to /student/reservations (since you said you don't have student_reservations_list) #}
+            {# ✅ Fix: link directly to /student/reservations (since you said you don't have student_reservations_list)
+            #}
             <a href="/student/reservations" class="btn btn-info">
                 ✅ View My Reservations
             </a>
@@ -111,21 +112,24 @@
 </div>
 
 <style>
-.btn-success {
-    background: #10b981;
-    color: white;
-    border-color: #10b981;
-}
-.btn-success:hover {
-    background: #059669;
-}
-.btn-info {
-    background: #3b82f6;
-    color: white;
-    border-color: #3b82f6;
-}
-.btn-info:hover {
-    background: #2563eb;
-}
+    .btn-success {
+        background: #10b981;
+        color: white;
+        border-color: #10b981;
+    }
+
+    .btn-success:hover {
+        background: #059669;
+    }
+
+    .btn-info {
+        background: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+    }
+
+    .btn-info:hover {
+        background: #2563eb;
+    }
 </style>
 {% endblock %}

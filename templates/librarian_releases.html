@@ -4,151 +4,367 @@
 
 {% block styles %}
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-  body { background: #f5f7fa; color: #333; }
+  body {
+    background: #f5f7fa;
+    color: #333;
+  }
 
-  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
 
   header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 18px; padding-bottom: 18px; border-bottom: 2px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid #ddd;
     gap: 12px;
   }
 
-  .header-left { display: flex; flex-direction: column; gap: 4px; }
-  h1 { font-size: 28px; color: #222; }
-  .header-subtitle { font-size: 13px; color: #999; }
+  .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
 
-  .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  h1 {
+    font-size: 28px;
+    color: #222;
+  }
+
+  .header-subtitle {
+    font-size: 13px;
+    color: #999;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
 
   .btn {
-    padding: 10px 16px; border: 1px solid #ddd; border-radius: 8px;
-    background: #f8f8f8; color: #222; cursor: pointer; text-decoration: none;
-    display: inline-block; font-size: 14px; font-weight: 500; transition: background 0.2s;
+    padding: 10px 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f8f8f8;
+    color: #222;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
     white-space: nowrap;
   }
-  .btn:hover { background: #efefef; }
+
+  .btn:hover {
+    background: #efefef;
+  }
 
   .btn-primary {
-    background: #28a745; color: #fff; border-color: #28a745;
-    padding: 12px 24px; font-size: 15px;
+    background: #28a745;
+    color: #fff;
+    border-color: #28a745;
+    padding: 12px 24px;
+    font-size: 15px;
   }
-  .btn-primary:hover { background: #218838; }
+
+  .btn-primary:hover {
+    background: #218838;
+  }
 
   .btn-info {
-    background: #007bff; color: #fff; border-color: #007bff;
+    background: #007bff;
+    color: #fff;
+    border-color: #007bff;
   }
-  .btn-info:hover { background: #0056b3; }
+
+  .btn-info:hover {
+    background: #0056b3;
+  }
 
   .card {
-    background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    padding: 26px; margin-bottom: 20px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 26px;
+    margin-bottom: 20px;
   }
 
-  .form-section { margin-bottom: 28px; }
+  .form-section {
+    margin-bottom: 28px;
+  }
+
   .form-section h3 {
-    font-size: 16px; font-weight: 600; color: #222;
-    margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #eee;
+    font-size: 16px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eee;
   }
 
   .form-row {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 18px; margin-bottom: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 18px;
+    margin-bottom: 16px;
   }
 
-  .form-group { display: flex; flex-direction: column; }
-  label { font-weight: 600; color: #555; font-size: 14px; margin-bottom: 8px; }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
 
-  input, select {
-    padding: 12px 14px; border: 1px solid #ddd; border-radius: 8px;
-    font-size: 14px; transition: border-color 0.2s, box-shadow 0.2s;
+  label {
+    font-weight: 600;
+    color: #555;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  input,
+  select {
+    padding: 12px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
     font-family: inherit;
   }
 
-  input:focus, select:focus {
-    outline: none; border-color: #28a745; box-shadow: 0 0 0 3px rgba(40,167,69,0.1);
+  input:focus,
+  select:focus {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
   }
 
-  .help-text { font-size: 12px; color: #999; margin-top: 4px; }
+  .help-text {
+    font-size: 12px;
+    color: #999;
+    margin-top: 4px;
+  }
 
   .form-actions {
-    display: flex; gap: 12px; margin-top: 22px; padding-top: 16px; border-top: 1px solid #eee;
+    display: flex;
+    gap: 12px;
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
   }
-  .form-actions .btn-primary { flex: 1; }
 
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead { background: #f8f9fa; border-bottom: 2px solid #ddd; }
+  .form-actions .btn-primary {
+    flex: 1;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #ddd;
+  }
+
   th {
-    padding: 12px 8px; text-align: left; font-weight: 600; color: #555;
-    font-size: 12px; text-transform: uppercase; letter-spacing: 0.02em;
+    padding: 12px 8px;
+    text-align: left;
+    font-weight: 600;
+    color: #555;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
   }
-  td { padding: 12px 8px; border-bottom: 1px solid #eee; vertical-align: middle; }
-  tbody tr { transition: background 0.2s; }
-  tbody tr:hover { background: #f9f9f9; }
 
-  .book-title { font-weight: 600; color: #222; }
-  .book-info { font-size: 12px; color: #999; }
-  .price { color: #28a745; font-weight: 600; }
-  .muted { color: #999; font-size: 13px; text-align: center; padding: 32px 16px; }
+  td {
+    padding: 12px 8px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background 0.2s;
+  }
+
+  tbody tr:hover {
+    background: #f9f9f9;
+  }
+
+  .book-title {
+    font-weight: 600;
+    color: #222;
+  }
+
+  .book-info {
+    font-size: 12px;
+    color: #999;
+  }
+
+  .price {
+    color: #28a745;
+    font-weight: 600;
+  }
+
+  .muted {
+    color: #999;
+    font-size: 13px;
+    text-align: center;
+    padding: 32px 16px;
+  }
 
   .message {
-    padding: 14px 18px; border-radius: 8px; margin-bottom: 18px; font-weight: 500;
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    font-weight: 500;
   }
-  .message-success { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
-  .message-error { background: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+
+  .message-success {
+    background: #d1e7dd;
+    color: #0f5132;
+    border: 1px solid #badbcc;
+  }
+
+  .message-error {
+    background: #f8d7da;
+    color: #842029;
+    border: 1px solid #f5c2c7;
+  }
 
   .loading-overlay {
-    position: fixed; inset: 0; background: rgba(255,255,255,0.8);
-    display: none; justify-content: center; align-items: center; z-index: 9999;
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
   }
-  .loading-overlay.active { display: flex; }
+
+  .loading-overlay.active {
+    display: flex;
+  }
+
   .spinner {
-    border: 4px solid #f3f3f3; border-top: 4px solid #28a745; border-radius: 50%;
-    width: 40px; height: 40px; animation: spin 1s linear infinite;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #28a745;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
   }
-  @keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg)
+    }
+
+    100% {
+      transform: rotate(360deg)
+    }
+  }
 
   /* Recent releases modal/panel */
   .modal-backdrop {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.35);
-    display: none; align-items: center; justify-content: center; z-index: 9998;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9998;
     padding: 18px;
   }
-  .modal-backdrop.active { display: flex; }
+
+  .modal-backdrop.active {
+    display: flex;
+  }
 
   .modal {
     width: min(1100px, 100%);
-    background: #fff; border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
     overflow: hidden;
   }
+
   .modal-header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 16px 18px; border-bottom: 1px solid #eee; background: #fafafa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 18px;
+    border-bottom: 1px solid #eee;
+    background: #fafafa;
     gap: 12px;
   }
-  .modal-title { font-size: 16px; font-weight: 700; color: #222; }
-  .modal-body { padding: 16px 18px; }
-  .modal-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  .close-x {
-    border: 1px solid #ddd; background: #fff; border-radius: 10px;
-    padding: 8px 10px; cursor: pointer;
+
+  .modal-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #222;
   }
-  .close-x:hover { background: #f2f2f2; }
+
+  .modal-body {
+    padding: 16px 18px;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .close-x {
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 10px;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+
+  .close-x:hover {
+    background: #f2f2f2;
+  }
 
   .filter-row {
-    display: flex; gap: 12px; align-items: end; flex-wrap: wrap;
+    display: flex;
+    gap: 12px;
+    align-items: end;
+    flex-wrap: wrap;
     margin-bottom: 12px;
   }
-  .filter-row .form-group { min-width: 240px; }
 
-  .tiny { font-size: 12px; color: #888; }
+  .filter-row .form-group {
+    min-width: 240px;
+  }
+
+  .tiny {
+    font-size: 12px;
+    color: #888;
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
 
 <div class="container">
   <header>
@@ -164,10 +380,10 @@
   </header>
 
   {% if message %}
-    <div class="message message-success">✅ {{ message }}</div>
+  <div class="message message-success">✅ {{ message }}</div>
   {% endif %}
   {% if error %}
-    <div class="message message-error">❌ {{ error }}</div>
+  <div class="message message-error">❌ {{ error }}</div>
   {% endif %}
 
   <!-- Recent Releases Modal -->
@@ -189,10 +405,8 @@
             <label for="recentGradeFilter">🎓 Filter Student Grade</label>
             <select id="recentGradeFilter">
               <option value="">All Grades</option>
-              <option value="Nursery">Nursery</option>
-              <option value="Kinder">Kinder</option>
-              {% for i in range(1, 11) %}
-                <option value="Grade {{ i }}">Grade {{ i }}</option>
+              {% for g in grades %}
+              <option value="{{ g }}">{{ g }}</option>
               {% endfor %}
             </select>
             <div class="help-text">Shows only releases for the selected student grade</div>
@@ -206,35 +420,33 @@
         </div>
 
         {% if releases and releases|length > 0 %}
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Enrollment ID</th>
-                <th>Student Name</th>
-                <th>Student Grade</th>
-                <th>Book Details</th>
-                <th>Qty</th>
-              </tr>
-            </thead>
-            <tbody id="recentReleasesBody">
-              {% for r in releases %}
-                <tr
-                  data-student-grade="{{ r.student_grade|default('') }}"
-                  data-search="{{ (r.enrollment_id ~ ' ' ~ r.student_name ~ ' ' ~ r.book_display)|lower }}"
-                >
-                  <td>{{ r.created_at }}</td>
-                  <td><strong>{{ r.enrollment_id }}</strong></td>
-                  <td>{{ r.student_name }}</td>
-                  <td><strong>{{ r.student_grade|default('—') }}</strong></td>
-                  <td>{{ r.book_display }}</td>
-                  <td><strong>{{ r.qty }}</strong></td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Enrollment ID</th>
+              <th>Student Name</th>
+              <th>Student Grade</th>
+              <th>Book Details</th>
+              <th>Qty</th>
+            </tr>
+          </thead>
+          <tbody id="recentReleasesBody">
+            {% for r in releases %}
+            <tr data-student-grade="{{ r.student_grade|default('') }}"
+              data-search="{{ (r.enrollment_id ~ ' ' ~ r.student_name ~ ' ' ~ r.book_display)|lower }}">
+              <td>{{ r.created_at }}</td>
+              <td><strong>{{ r.enrollment_id }}</strong></td>
+              <td>{{ r.student_name }}</td>
+              <td><strong>{{ r.student_grade|default('—') }}</strong></td>
+              <td>{{ r.book_display }}</td>
+              <td><strong>{{ r.qty }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
         {% else %}
-          <div class="muted">📭 No releases recorded yet.</div>
+        <div class="muted">📭 No releases recorded yet.</div>
         {% endif %}
       </div>
     </div>
@@ -249,23 +461,13 @@
         <div class="form-row">
           <div class="form-group">
             <label for="enrollment_id">🆔 Enrollment ID (Recommended)</label>
-            <input
-              type="text"
-              id="enrollment_id"
-              name="enrollment_id"
-              placeholder="e.g., 123"
-              value="">
+            <input type="text" id="enrollment_id" name="enrollment_id" placeholder="e.g., 123" value="">
             <div class="help-text">Enter student enrollment ID</div>
           </div>
 
           <div class="form-group">
             <label for="student_name">👤 Student Name (Optional)</label>
-            <input
-              type="text"
-              id="student_name"
-              name="student_name"
-              placeholder="Student full name"
-              value="">
+            <input type="text" id="student_name" name="student_name" placeholder="Student full name" value="">
             <div class="help-text">Or search by student name</div>
           </div>
 
@@ -282,10 +484,8 @@
             <label for="bookGradeFilter">🎓 Filter Book Grade</label>
             <select id="bookGradeFilter">
               <option value="">All Grades</option>
-              <option value="Nursery">Nursery</option>
-              <option value="Kinder">Kinder</option>
-              {% for i in range(1, 11) %}
-                <option value="Grade {{ i }}">Grade {{ i }}</option>
+              {% for g in grades %}
+              <option value="{{ g }}">{{ g }}</option>
               {% endfor %}
             </select>
             <div class="help-text">Auto filter the book list by grade (Nursery → Kinder → Grade 1-10)</div>
@@ -304,41 +504,34 @@
 
           <div class="books-table-container">
             {% if books and books|length > 0 %}
-              <table>
-                <thead>
-                  <tr>
-                    <th style="width: 40px;"></th>
-                    <th>Grade Level</th>
-                    <th>Publisher</th>
-                    <th>Title</th>
-                    <th>Price</th>
-                  </tr>
-                </thead>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 40px;"></th>
+                  <th>Grade Level</th>
+                  <th>Publisher</th>
+                  <th>Title</th>
+                  <th>Price</th>
+                </tr>
+              </thead>
 
-                <tbody id="booksTbody">
-                  {% for b in books %}
-                    <tr
-                      data-grade="{{ b.grade_level }}"
-                      data-search="{{ (b.publisher ~ ' ' ~ b.title ~ ' ' ~ b.grade_level)|lower }}"
-                    >
-                      <td>
-                        <input
-                          type="radio"
-                          id="book_{{ b.item_id }}"
-                          name="item_id"
-                          value="{{ b.item_id }}"
-                          required>
-                      </td>
-                      <td>{{ b.grade_level }}</td>
-                      <td><strong>{{ b.publisher }}</strong></td>
-                      <td class="book-title">{{ b.title }}</td>
-                      <td class="price">₱{{ "%.2f"|format(b.price or 0) }}</td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
+              <tbody id="booksTbody">
+                {% for b in books %}
+                <tr data-grade="{{ b.grade_level }}"
+                  data-search="{{ (b.publisher ~ ' ' ~ b.title ~ ' ' ~ b.grade_level)|lower }}">
+                  <td>
+                    <input type="radio" id="book_{{ b.item_id }}" name="item_id" value="{{ b.item_id }}" required>
+                  </td>
+                  <td>{{ b.grade_level }}</td>
+                  <td><strong>{{ b.publisher }}</strong></td>
+                  <td class="book-title">{{ b.title }}</td>
+                  <td class="price">₱{{ "%.2f"|format(b.price or 0) }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
             {% else %}
-              <div class="muted">📭 No books available.</div>
+            <div class="muted">📭 No books available.</div>
             {% endif %}
           </div>
         </div>
@@ -371,7 +564,7 @@
   // Loading overlay on submit
   const form = document.getElementById('releaseForm');
   const loadingOverlay = document.getElementById('loadingOverlay');
-  form.addEventListener('submit', function() {
+  form.addEventListener('submit', function () {
     loadingOverlay.classList.add('active');
   });
 
@@ -399,16 +592,16 @@
 
     // Get all rows and sort them by grade order
     const rows = [...booksTbody.querySelectorAll('tr')];
-    
+
     rows.forEach(tr => {
       const trGrade = (tr.dataset.grade || '').trim();
       const trSearch = (tr.dataset.search || '').trim();
-      
+
       // Check grade filter
       const gradeOk = !selectedGrade || trGrade === selectedGrade;
       // Check search filter
       const searchOk = !q || trSearch.includes(q);
-      
+
       tr.style.display = (gradeOk && searchOk) ? '' : 'none';
     });
 

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Reservation Details{% endblock %}
+{% block title %}Reservation #{{ header[0] }}{% endblock %}
 
 {% block styles %}
 <style>
@@ -16,7 +16,7 @@
   }
 
   .container {
-    max-width: 900px;
+    max-width: 960px;
     margin: 0 auto;
     padding: 20px;
   }
@@ -25,41 +25,51 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
+    margin-bottom: 24px;
+    padding-bottom: 18px;
     border-bottom: 2px solid #ddd;
+    flex-wrap: wrap;
+    gap: 12px;
   }
 
   h1 {
-    font-size: 28px;
+    font-size: 26px;
     color: #222;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
   }
 
   .card {
     background: white;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    padding: 24px;
-    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 22px;
+    margin-bottom: 18px;
   }
 
   .card h2 {
-    font-size: 20px;
-    margin-bottom: 16px;
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 14px;
     color: #222;
   }
 
   .card h3 {
-    font-size: 16px;
+    font-size: 15px;
+    font-weight: 700;
     margin-bottom: 12px;
-    color: #555;
+    color: #444;
   }
 
   .info-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin-bottom: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 14px;
   }
 
   .info-item {
@@ -68,26 +78,26 @@
   }
 
   .info-label {
-    font-size: 12px;
+    font-size: 11px;
     color: #999;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
-    margin-bottom: 4px;
+    letter-spacing: 0.05em;
+    margin-bottom: 3px;
   }
 
   .info-value {
-    font-size: 16px;
+    font-size: 15px;
     color: #222;
     font-weight: 500;
   }
 
   .status-badge {
     display: inline-block;
-    padding: 6px 14px;
+    padding: 5px 14px;
     border-radius: 20px;
     font-size: 13px;
-    font-weight: 600;
-    width: fit-content;
+    font-weight: 700;
   }
 
   .status-reserved {
@@ -116,16 +126,17 @@
 
   .user-type-badge {
     display: inline-block;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-top: 4px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 6px;
+    vertical-align: middle;
   }
 
   .user-type-student {
     background: #e3f2fd;
-    color: #1976d2;
+    color: #1565c0;
     border: 1px solid #90caf9;
   }
 
@@ -140,7 +151,7 @@
     border-left: 4px solid #7b1fa2;
     padding: 12px 16px;
     border-radius: 8px;
-    margin-top: 16px;
+    margin-top: 14px;
     font-size: 13px;
   }
 
@@ -148,11 +159,41 @@
     color: #7b1fa2;
   }
 
+  /* Category tabs */
+  .category-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    padding: 7px 16px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #f8f8f8;
+    color: #555;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+
+  .tab-btn:hover {
+    background: #efefef;
+  }
+
+  .tab-btn.active {
+    background: #1a2e5a;
+    color: #fff;
+    border-color: #1a2e5a;
+  }
+
   table {
     border-collapse: collapse;
     width: 100%;
     font-size: 14px;
-    margin-top: 12px;
   }
 
   thead {
@@ -161,15 +202,19 @@
   }
 
   th {
-    padding: 12px 16px;
+    padding: 11px 14px;
     text-align: left;
     font-weight: 600;
     color: #555;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 
   td {
-    padding: 12px 16px;
+    padding: 11px 14px;
     border-bottom: 1px solid #eee;
+    vertical-align: middle;
   }
 
   tbody tr:hover {
@@ -178,82 +223,91 @@
 
   .total-row {
     background: #f8f9fa;
-    font-weight: 600;
+    font-weight: 700;
     border-top: 2px solid #ddd;
   }
 
   .total-row td {
-    padding: 14px 16px;
+    padding: 13px 14px;
+  }
+
+  .grand-total-row {
+    background: #1a2e5a;
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .grand-total-row td {
+    padding: 13px 14px;
+    color: #fff;
   }
 
   .btn {
-    padding: 10px 16px;
+    padding: 9px 16px;
     border: 1px solid #ddd;
     border-radius: 8px;
     background: #f8f8f8;
     color: #222;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: background 0.2s, box-shadow 0.2s;
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: all 0.15s;
     text-decoration: none;
-    display: inline-block;
-    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
 
   .btn:hover {
     background: #efefef;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
 
   .btn-primary {
-    background: #007bff;
-    color: white;
-    border-color: #007bff;
+    background: #2563eb;
+    color: #fff;
+    border-color: #2563eb;
   }
 
   .btn-primary:hover {
-    background: #0056b3;
-    box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+    background: #1d4ed8;
   }
 
   .btn-success {
-    background: #28a745;
-    color: white;
-    border-color: #28a745;
+    background: #16a34a;
+    color: #fff;
+    border-color: #16a34a;
   }
 
   .btn-success:hover {
-    background: #218838;
-    box-shadow: 0 4px 12px rgba(40,167,69,0.3);
+    background: #15803d;
   }
 
   .btn-danger {
-    background: #dc3545;
-    color: white;
-    border-color: #dc3545;
+    background: #dc2626;
+    color: #fff;
+    border-color: #dc2626;
   }
 
   .btn-danger:hover {
-    background: #c82333;
-    box-shadow: 0 4px 12px rgba(220,53,69,0.3);
+    background: #b91c1c;
   }
 
   .btn-info {
-    background: #17a2b8;
-    color: white;
-    border-color: #17a2b8;
+    background: #0891b2;
+    color: #fff;
+    border-color: #0891b2;
   }
 
   .btn-info:hover {
-    background: #138496;
-    box-shadow: 0 4px 12px rgba(23,162,184,0.3);
+    background: #0e7490;
   }
 
   .actions {
     display: flex;
-    gap: 12px;
-    margin-top: 20px;
+    gap: 10px;
+    margin-top: 16px;
     flex-wrap: wrap;
   }
 
@@ -264,55 +318,42 @@
   .alert {
     padding: 12px 16px;
     border-radius: 8px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     font-size: 13px;
+    border-left: 4px solid;
   }
 
   .alert-info {
-    background: #d1ecf1;
-    color: #0c5460;
-    border: 1px solid #bee5eb;
+    background: #eff6ff;
+    color: #1e40af;
+    border-color: #3b82f6;
   }
 
   .alert-success {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background: #f0fdf4;
+    color: #166534;
+    border-color: #16a34a;
+  }
+
+  .alert-warning {
+    background: #fffbeb;
+    color: #92400e;
+    border-color: #d97706;
   }
 
   @media (max-width: 600px) {
     .info-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
     }
 
     .actions {
       flex-direction: column;
     }
 
-    .actions form,
-    .actions a {
-      width: 100%;
-    }
-
     .actions button,
-    .actions .btn {
+    .actions a,
+    .actions form {
       width: 100%;
-    }
-  }
-
-  @media print {
-    body {
-      background: white;
-    }
-
-    header .btn,
-    .card:last-child {
-      display: none !important;
-    }
-
-    .card {
-      box-shadow: none;
-      page-break-inside: avoid;
     }
   }
 </style>
@@ -321,191 +362,231 @@
 {% block content %}
 <div class="container">
   <header>
-    <h1>📋 Reservation Details</h1>
-    <a href="{{ url_for('cashier.cashier_reservations') }}" class="btn">⬅ Back to List</a>
+    <h1>📋 Reservation #{{ header[0] }}</h1>
+    <div class="header-actions">
+      <a href="{{ url_for('cashier.cashier_reservations') }}" class="btn">⬅ Back to List</a>
+    </div>
   </header>
 
   {#
-    UPDATED header indexes (from your new SQL):
-    [0] = reservation_id
-    [1] = student username
-    [2] = student_user_id
-    [3] = student_grade_level
-    [4] = full_name (fallback = username)
-    [5] = grade_level (fallback = student_grade_level)
-    [6] = strand (NULL now)
-    [7] = status
-    [8] = created_at
-    [9] = reserved_by_role (student/parent)
-    [10] = parent_name (username)
-    [11] = relationship (from parent_student)
+  header indexes:
+  [0] reservation_id [1] username [2] student_user_id
+  [3] grade_level [4] full_name [5] grade_level(fallback)
+  [6] strand [7] status [8] created_at
+  [9] reserved_by_role [10] parent_name [11] relationship
   #}
 
-  <!-- Reservation Header Info -->
+  <!-- ── Reservation Info ── -->
   <div class="card">
-    <h2>Reservation #{{ header[0] }}</h2>
+    <h2>Student Information</h2>
 
     <div class="info-grid">
       <div class="info-item">
         <span class="info-label">Student ID</span>
-        <span class="info-value">{{ header[1] }}</span>
+        <span class="info-value">{{ header[1] or '-' }}</span>
       </div>
-
       <div class="info-item">
-        <span class="info-label">Student Name</span>
+        <span class="info-label">Full Name</span>
         <span class="info-value">{{ header[4] or '-' }}</span>
       </div>
-
       <div class="info-item">
         <span class="info-label">Grade Level</span>
         <span class="info-value">{{ header[5] or header[3] or '-' }}</span>
       </div>
-
-      <div class="info-item">
-        <span class="info-label">Strand</span>
-        <span class="info-value">{{ header[6] or '-' }}</span>
-      </div>
-
       <div class="info-item">
         <span class="info-label">Reserved By</span>
         <span class="info-value">
           {% if header|length > 9 and header[9] == 'parent' %}
-            <span class="user-type-badge user-type-parent">👨‍👩‍👧 Parent</span>
+          <span class="user-type-badge user-type-parent">👨‍👩‍👧 Parent</span>
           {% else %}
-            <span class="user-type-badge user-type-student">👨‍🎓 Student</span>
+          <span class="user-type-badge user-type-student">👨‍🎓 Student</span>
           {% endif %}
         </span>
       </div>
-
       <div class="info-item">
         <span class="info-label">Status</span>
         <span class="status-badge status-{{ header[7]|lower }}">{{ header[7] }}</span>
       </div>
-
       <div class="info-item">
-        <span class="info-label">Created Date</span>
+        <span class="info-label">Date Created</span>
         <span class="info-value">{{ header[8].strftime('%Y-%m-%d %H:%M') if header[8] else '-' }}</span>
       </div>
     </div>
 
-    <!-- Parent Information (if reserved by parent) -->
     {% if header|length > 9 and header[9] == 'parent' %}
-      <div class="parent-info-box">
-        <strong>👨‍👩‍👧 Reserved by Parent:</strong><br>
-        <div style="margin-top: 8px;">
-          {% if header|length > 10 and header[10] %}
-            <div><strong>Name:</strong> {{ header[10] }}</div>
-          {% endif %}
-          {% if header|length > 11 and header[11] %}
-            <div><strong>Relationship:</strong> {{ header[11] }}</div>
+    <div class="parent-info-box">
+      <strong>👨‍👩‍👧 Reserved by Parent</strong>
+      <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
+        {% if header|length > 10 and header[10] %}
+        <div>
+          <span
+            style="font-size:11px; color:#9c4dc4; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;">Parent
+            Name</span><br>
+          <strong>{{ header[10] }}</strong>
+        </div>
+        {% endif %}
+        {% if header|length > 11 and header[11] %}
+        <div>
+          <span
+            style="font-size:11px; color:#9c4dc4; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;">Relationship</span><br>
+          {{ header[11] }}
+        </div>
+        {% endif %}
+        <div style="margin-top:4px; padding-top:10px; border-top: 1px solid #ddb3ec;">
+          <span
+            style="font-size:11px; color:#9c4dc4; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;">For
+            Student</span><br>
+          <strong style="font-size:15px; color:#3b0764;">
+            {{ header[4] or header[1] or '-' }}
+          </strong>
+          {% if header[5] or header[3] %}
+          <span style="margin-left:8px; background:#e9d5f9; color:#7b1fa2; padding:2px 8px;
+                       border-radius:10px; font-size:12px; font-weight:600;">
+            {{ header[5] or header[3] }}
+          </span>
           {% endif %}
         </div>
       </div>
+    </div>
     {% endif %}
   </div>
 
-  <!-- Reserved Items -->
+  <!-- ── Items ── -->
   <div class="card">
-    <h3>📦 Reserved Items</h3>
+    <h2>📦 Reserved Items</h2>
+
+    {% if categories and categories|length > 1 %}
+    <div class="category-tabs">
+      {% for cat in categories %}
+      <a href="?category={{ cat }}" class="tab-btn {% if selected_category == cat %}active{% endif %}">
+        {% if cat == 'UNIFORM' %}👕{% elif cat == 'BOOK' %}📚{% else %}📦{% endif %}
+        {{ cat|title }}
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if items %}
     <table>
       <thead>
         <tr>
           <th>Item Name</th>
-          <th>Quantity</th>
-          <th>Size</th>
-          <th>Unit Price</th>
-          <th>Total</th>
+          <th>Qty</th>
+          {% if selected_category == 'BOOK' %}
+          <th>📚 Publisher</th>
+          {% elif selected_category == 'UNIFORM' %}
+          <th>📐 Size</th>
+          {% else %}
+          <th>Size / Publisher</th>
+          {% endif %}
+          <th style="text-align:right;">Unit Price</th>
+          <th style="text-align:right;">Total</th>
         </tr>
       </thead>
       <tbody>
-        {# items: [0]=item_name, [1]=qty, [2]=size_label, [3]=unit_price, [4]=line_total #}
         {% for it in items %}
+        {# it: [0]=item_name [1]=qty [2]=size_label [3]=unit_price [4]=line_total [5]=category #}
+        {% set item_cat = (it[5] or selected_category or '') | upper %}
         <tr>
           <td><strong>{{ it[0] }}</strong></td>
-          <td style="text-align: center;">{{ it[1] }}</td>
-          <td style="text-align: center;">
+          <td style="text-align:center;">{{ it[1] }}</td>
+          <td style="text-align:center;">
             {% if it[2] %}
-              <span style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px; font-size: 12px;">{{ it[2] }}</span>
+            {% if item_cat == 'BOOK' %}
+            {# Publisher — blue pill #}
+            <span style="background:#dbeafe; color:#1d4ed8; padding:3px 10px;
+                             border-radius:12px; font-size:12px; font-weight:600;
+                             border:1px solid #bfdbfe;">{{ it[2] }}</span>
+            {% elif item_cat == 'UNIFORM' %}
+            {# Size — grey pill #}
+            <span style="background:#f0f0f0; color:#444; padding:3px 10px;
+                             border-radius:12px; font-size:12px; font-weight:700;
+                             border:1px solid #ddd; letter-spacing:0.05em;">{{ it[2] }}</span>
             {% else %}
-              <span style="color: #999;">-</span>
+            <span style="background:#f0f0f0; padding:3px 8px; border-radius:4px;
+                             font-size:12px;">{{ it[2] }}</span>
+            {% endif %}
+            {% else %}
+            <span style="color:#bbb;">—</span>
             {% endif %}
           </td>
-          <td style="text-align: right;">₱{{ '%.2f'|format(it[3] or 0) }}</td>
-          <td style="text-align: right;"><strong>₱{{ '%.2f'|format(it[4] or 0) }}</strong></td>
+          <td style="text-align:right;">₱{{ '%.2f'|format(it[3] or 0) }}</td>
+          <td style="text-align:right;"><strong>₱{{ '%.2f'|format(it[4] or 0) }}</strong></td>
         </tr>
         {% endfor %}
         <tr class="total-row">
-          <td colspan="4" style="text-align: right;">TOTAL:</td>
-          <td style="text-align: right;">₱{{ '%.2f'|format(total or 0) }}</td>
+          <td colspan="4" style="text-align:right;">
+            {% if categories and categories|length > 1 %}
+            {{ selected_category|title }} Subtotal:
+            {% else %}
+            TOTAL:
+            {% endif %}
+          </td>
+          <td style="text-align:right;">₱{{ '%.2f'|format(total or 0) }}</td>
         </tr>
+        {% if categories and categories|length > 1 %}
+        <tr class="grand-total-row">
+          <td colspan="4" style="text-align:right;">GRAND TOTAL (All Items):</td>
+          <td style="text-align:right;">₱{{ '%.2f'|format(grand_total or 0) }}</td>
+        </tr>
+        {% endif %}
       </tbody>
     </table>
+    {% else %}
+    <div style="text-align:center; padding:30px; color:#999;">
+      📭 No items found for this reservation.
+    </div>
+    {% endif %}
   </div>
 
-  <!-- Action Buttons -->
+  <!-- ── Actions ── -->
   <div class="card">
-    <h3>Actions</h3>
+    <h3>⚡ Actions</h3>
 
     {% if header[7] == 'RESERVED' %}
-      <div class="alert alert-info">
-        ℹ️ This reservation is still unpaid. Please collect payment and mark as PAID.
-      </div>
+    <div class="alert alert-info">
+      ℹ️ Reservation is pending payment. Collect payment then mark as PAID.
+    </div>
+    <div class="actions">
+      <form method="post" action="{{ url_for('cashier.cashier_mark_paid', reservation_id=header[0]) }}">
+        <button class="btn btn-success" type="submit">✅ Mark as PAID</button>
+      </form>
+      <form method="post" action="{{ url_for('cashier.cashier_cancel_reservation', reservation_id=header[0]) }}">
+        <button class="btn btn-danger" type="submit" onclick="return confirm('Cancel this reservation?')">❌ Cancel
+          Reservation</button>
+      </form>
+    </div>
 
-      <div class="actions">
-        <form method="post" action="{{ url_for('cashier.cashier_mark_paid', reservation_id=header[0]) }}">
-          <button class="btn btn-success" type="submit">✅ Mark as PAID</button>
-        </form>
+    {% elif header[7] == 'PAID' %}
+    <div class="alert alert-info">
+      ℹ️ Payment received. Student/Parent can now claim the items.
+    </div>
+    <div class="actions">
+      <form method="post" action="{{ url_for('cashier.cashier_mark_claimed', reservation_id=header[0]) }}">
+        <button class="btn btn-success" type="submit">🎉 Mark as CLAIMED</button>
+      </form>
+      <form method="post" action="{{ url_for('cashier.cashier_cancel_reservation', reservation_id=header[0]) }}">
+        <button class="btn btn-danger" type="submit" onclick="return confirm('Cancel this reservation?')">❌ Cancel
+          Reservation</button>
+      </form>
+    </div>
 
-        <form method="post" action="{{ url_for('cashier.cashier_cancel_reservation', reservation_id=header[0]) }}">
-          <button class="btn btn-danger" type="submit" onclick="return confirm('Are you sure you want to cancel this reservation?')">❌ Cancel Reservation</button>
-        </form>
-      </div>
-    {% endif %}
+    {% elif header[7] == 'CLAIMED' %}
+    <div class="alert alert-success">
+      ✅ Completed — items have been claimed.
+    </div>
+    <div class="actions">
+      <a href="{{ url_for('cashier.reservation_receipt', reservation_id=header[0]) }}" class="btn btn-primary"
+        target="_blank">🖨️ Print Receipt</a>
+      <button class="btn btn-info" onclick="window.print()">📄 Print Page</button>
+    </div>
 
-    {% if header[7] == 'PAID' %}
-      <div class="alert alert-info">
-        ℹ️ Payment received.
-        {% if header|length > 9 and header[9] == 'parent' %}
-          Parent/Student can now claim the items.
-        {% else %}
-          Student can now claim their items.
-        {% endif %}
-      </div>
-
-      <div class="actions">
-        <form method="post" action="{{ url_for('cashier.cashier_mark_claimed', reservation_id=header[0]) }}">
-          <button class="btn btn-success" type="submit">🎉 Mark as CLAIMED</button>
-        </form>
-
-        <form method="post" action="{{ url_for('cashier.cashier_cancel_reservation', reservation_id=header[0]) }}">
-          <button class="btn btn-danger" type="submit" onclick="return confirm('Are you sure you want to cancel this reservation?')">❌ Cancel Reservation</button>
-        </form>
-      </div>
-    {% endif %}
-
-    {% if header[7] == 'CLAIMED' %}
-      <div class="alert alert-success">
-        ✅ This reservation has been completed and items were claimed.
-      </div>
-
-      <div class="actions">
-        <a href="{{ url_for('cashier.reservation_receipt', reservation_id=header[0]) }}"
-           class="btn btn-primary"
-           target="_blank">
-          🖨️ Print Receipt
-        </a>
-
-        <button class="btn btn-info" onclick="window.print()">
-          📄 Print This Page
-        </button>
-      </div>
-    {% endif %}
-
-    {% if header[7] == 'CANCELLED' %}
-      <div class="alert alert-info">
-        ⚠️ This reservation has been cancelled.
-      </div>
+    {% elif header[7] == 'CANCELLED' %}
+    <div class="alert alert-warning">
+      ⚠️ This reservation has been cancelled.
+    </div>
     {% endif %}
   </div>
+
 </div>
 {% endblock %}

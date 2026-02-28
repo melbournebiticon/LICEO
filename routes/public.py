@@ -33,7 +33,7 @@ def query_one(sql, params=None):
 @public_bp.route("/")
 def homepage():
     announcements = query_all("""
-        SELECT title, message, created_at
+        SELECT announcement_id AS id, title, message, created_at, image_url
         FROM announcements
         WHERE is_active = TRUE
         ORDER BY created_at DESC

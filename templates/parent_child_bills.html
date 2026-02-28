@@ -5,13 +5,13 @@
 {% block content %}
 <div class="card">
     <div class="card-header">{{ child.student_name }} - Billing Information</div>
-    
+
     <!-- Student Basic Info -->
     <div style="margin-bottom: 2rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
         <p><strong>Student:</strong> {{ child.student_name }}</p>
         <p><strong>Grade Level:</strong> {{ child.grade_level }}</p>
     </div>
-    
+
     {% if bill %}
     <!-- Bill Details -->
     <h3 style="margin-bottom: 1rem;">Bill Breakdown</h3>
@@ -49,18 +49,18 @@
             </td>
         </tr>
     </table>
-    
+
     <div style="margin-bottom: 2rem;">
-        <strong>Payment Status:</strong> 
+        <strong>Payment Status:</strong>
         {% if bill.status == 'paid' %}
-            <span class="badge badge-paid">Fully Paid</span>
+        <span class="badge badge-paid">Fully Paid</span>
         {% elif bill.status == 'partial' %}
-            <span class="badge badge-partial">Partially Paid</span>
+        <span class="badge badge-partial">Partially Paid</span>
         {% else %}
-            <span class="badge badge-unpaid">Unpaid</span>
+        <span class="badge badge-unpaid">Unpaid</span>
         {% endif %}
     </div>
-    
+
     <!-- Payment History -->
     <h3 style="margin-bottom: 1rem;">Payment History</h3>
     {% if payments %}
@@ -89,7 +89,7 @@
     {% else %}
     <p style="color: #6b7280;">No payments recorded yet</p>
     {% endif %}
-    
+
     {% if bill.balance > 0 %}
     <div style="margin-top: 2rem; padding: 1rem; background: #fef3c7; border-radius: 6px;">
         <p style="color: #92400e; font-weight: 500;">
@@ -97,7 +97,7 @@
         </p>
     </div>
     {% endif %}
-    
+
     {% else %}
     <!-- No Bill Created -->
     <div style="text-align: center; padding: 3rem;">
@@ -109,12 +109,12 @@
         </p>
     </div>
     {% endif %}
-    
+
     <!-- Actions -->
     <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-        <a href="{{ url_for('parent.child_detail', enrollment_id=child.enrollment_id) }}" 
-           class="btn btn-secondary">View Enrollment Details</a>
-        <a href="{{ url_for('parent.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+        <a href="{{ url_for('parent.child_detail', enrollment_id=child.enrollment_id) }}" class="btn btn-secondary">View
+            Enrollment Details</a>
+        <a href="{{ url_for('parent.dashboard') }}" class="btn btn-secondary">⬅ Back</a>
     </div>
 </div>
 {% endblock %}

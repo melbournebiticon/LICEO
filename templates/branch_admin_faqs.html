@@ -9,18 +9,18 @@
     padding: 0;
     box-sizing: border-box;
   }
-  
+
   body {
     background: #f5f7fa;
     color: #333;
   }
-  
+
   .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 40px 20px;
   }
-  
+
   header {
     display: flex;
     justify-content: space-between;
@@ -29,12 +29,12 @@
     padding-bottom: 20px;
     border-bottom: 2px solid #ddd;
   }
-  
+
   h1 {
     font-size: 28px;
     color: #222;
   }
-  
+
   .btn {
     padding: 10px 16px;
     border: 1px solid #ddd;
@@ -48,21 +48,21 @@
     font-weight: 500;
     transition: background 0.2s;
   }
-  
+
   .btn:hover {
     background: #efefef;
   }
-  
+
   .btn-primary {
     background: #28a745;
     color: white;
     border-color: #28a745;
   }
-  
+
   .btn-primary:hover {
     background: #218838;
   }
-  
+
   .btn-danger {
     background: #dc3545;
     color: white;
@@ -70,11 +70,11 @@
     padding: 6px 12px;
     font-size: 12px;
   }
-  
+
   .btn-danger:hover {
     background: #c82333;
   }
-  
+
   .btn-secondary {
     background: #007bff;
     color: white;
@@ -82,75 +82,76 @@
     padding: 6px 12px;
     font-size: 12px;
   }
-  
+
   .btn-secondary:hover {
     background: #0056b3;
   }
-  
+
   .card {
     background: white;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     padding: 24px;
     margin-bottom: 20px;
   }
-  
+
   .card h2 {
     font-size: 20px;
     margin-bottom: 16px;
     color: #222;
   }
-  
+
   .faq-list {
     display: grid;
     gap: 12px;
   }
-  
+
   .faq-item {
     background: #f8f9fa;
     border-radius: 8px;
     padding: 16px;
     border-left: 4px solid #007bff;
   }
-  
+
   .faq-item.general {
     border-left-color: #6c757d;
     opacity: 0.7;
   }
-  
+
   .faq-item.branch {
     border-left-color: #28a745;
   }
-  
+
   .faq-question {
     font-weight: 600;
     margin-bottom: 8px;
     color: #222;
   }
-  
+
   .faq-answer {
     color: #666;
     font-size: 14px;
     margin-bottom: 12px;
   }
-  
+
   .faq-actions {
     display: flex;
     gap: 8px;
   }
-  
+
   .form-group {
     margin-bottom: 16px;
   }
-  
+
   label {
     display: block;
     font-weight: 600;
     margin-bottom: 8px;
     color: #555;
   }
-  
-  input, textarea {
+
+  input,
+  textarea {
     width: 100%;
     padding: 12px;
     border: 1px solid #ddd;
@@ -158,18 +159,19 @@
     font-size: 14px;
     font-family: inherit;
   }
-  
+
   textarea {
     resize: vertical;
     min-height: 100px;
   }
-  
-  input:focus, textarea:focus {
+
+  input:focus,
+  textarea:focus {
     outline: none;
     border-color: #28a745;
-    box-shadow: 0 0 0 3px rgba(40,167,69,0.1);
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
   }
-  
+
   .badge {
     display: inline-block;
     padding: 4px 8px;
@@ -178,17 +180,17 @@
     font-weight: 600;
     margin-left: 8px;
   }
-  
+
   .badge-general {
     background: #e9ecef;
     color: #495057;
   }
-  
+
   .badge-branch {
     background: #d1e7dd;
     color: #0f5132;
   }
-  
+
   .edit-form {
     display: none;
     margin-top: 12px;
@@ -197,7 +199,7 @@
     border-radius: 8px;
     border: 1px solid #ddd;
   }
-  
+
   .edit-form.active {
     display: block;
   }
@@ -218,26 +220,27 @@
 <div class="container">
   <header>
     <h1>🤖 Manage Branch FAQs</h1>
-    <a href="{{ url_for('branch_admin.dashboard') }}" class="btn">⬅ Back to Dashboard</a>
+    <a href="{{ url_for('branch_admin.dashboard') }}" class="btn">⬅ Back</a>
   </header>
 
   <!-- Add New FAQ -->
   <div class="card">
     <h2>➕ Add New Branch FAQ</h2>
     <div class="info-box">
-      ℹ️ These FAQs will only be visible to users in <strong>your branch</strong>. General FAQs are managed by Super Admin.
+      ℹ️ These FAQs will only be visible to users in <strong>your branch</strong>. General FAQs are managed by Super
+      Admin.
     </div>
     <form method="POST" action="{{ url_for('branch_admin.branch_admin_faq_add') }}">
       <div class="form-group">
         <label>❓ Question *</label>
         <input type="text" name="question" placeholder="e.g., What time does the Majayjay library open?" required>
       </div>
-      
+
       <div class="form-group">
         <label>💬 Answer *</label>
         <textarea name="answer" placeholder="Enter the answer here..." required></textarea>
       </div>
-      
+
       <button type="submit" class="btn btn-primary">✅ Add Branch FAQ</button>
     </form>
   </div>
@@ -248,18 +251,18 @@
     <p style="color:#666; margin-bottom:16px; font-size:14px;">
       These FAQs are managed by Super Admin and shown to all branches. You cannot edit these.
     </p>
-    
+
     {% if general_faqs %}
-      <div class="faq-list">
-        {% for faq in general_faqs %}
-        <div class="faq-item general">
-          <div class="faq-question">{{ faq[1] }}</div>
-          <div class="faq-answer">{{ faq[2] }}</div>
-        </div>
-        {% endfor %}
+    <div class="faq-list">
+      {% for faq in general_faqs %}
+      <div class="faq-item general">
+        <div class="faq-question">{{ faq[1] }}</div>
+        <div class="faq-answer">{{ faq[2] }}</div>
       </div>
+      {% endfor %}
+    </div>
     {% else %}
-      <p style="color:#999; text-align:center; padding:20px;">No general FAQs yet.</p>
+    <p style="color:#999; text-align:center; padding:20px;">No general FAQs yet.</p>
     {% endif %}
   </div>
 
@@ -269,42 +272,44 @@
     <p style="color:#666; margin-bottom:16px; font-size:14px;">
       These FAQs are only shown to users in your branch. You can add, edit, or delete them.
     </p>
-    
+
     {% if branch_faqs %}
-      <div class="faq-list">
-        {% for faq in branch_faqs %}
-        <div class="faq-item branch">
-          <div class="faq-question">{{ faq[1] }}</div>
-          <div class="faq-answer">{{ faq[2] }}</div>
-          <div class="faq-actions">
-            <button class="btn btn-secondary" onclick="toggleEdit({{ faq[0] }})">✏️ Edit</button>
-            <form method="POST" action="{{ url_for('branch_admin.branch_admin_faq_delete', faq_id=faq[0]) }}" style="display:inline;">
-              <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this FAQ?')">🗑️ Delete</button>
-            </form>
-          </div>
-          
-          <!-- Edit Form (Hidden by default) -->
-          <div class="edit-form" id="edit-{{ faq[0] }}">
-            <form method="POST" action="{{ url_for('branch_admin.branch_admin_faq_edit', faq_id=faq[0]) }}">
-              <div class="form-group">
-                <label>Question</label>
-                <input type="text" name="question" value="{{ faq[1] }}" required>
-              </div>
-              <div class="form-group">
-                <label>Answer</label>
-                <textarea name="answer" required>{{ faq[2] }}</textarea>
-              </div>
-              <button type="submit" class="btn btn-primary">💾 Save Changes</button>
-              <button type="button" class="btn" onclick="toggleEdit({{ faq[0] }})">Cancel</button>
-            </form>
-          </div>
+    <div class="faq-list">
+      {% for faq in branch_faqs %}
+      <div class="faq-item branch">
+        <div class="faq-question">{{ faq[1] }}</div>
+        <div class="faq-answer">{{ faq[2] }}</div>
+        <div class="faq-actions">
+          <button class="btn btn-secondary" onclick="toggleEdit({{ faq[0] }})">✏️ Edit</button>
+          <form method="POST" action="{{ url_for('branch_admin.branch_admin_faq_delete', faq_id=faq[0]) }}"
+            style="display:inline;">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this FAQ?')">🗑️
+              Delete</button>
+          </form>
         </div>
-        {% endfor %}
+
+        <!-- Edit Form (Hidden by default) -->
+        <div class="edit-form" id="edit-{{ faq[0] }}">
+          <form method="POST" action="{{ url_for('branch_admin.branch_admin_faq_edit', faq_id=faq[0]) }}">
+            <div class="form-group">
+              <label>Question</label>
+              <input type="text" name="question" value="{{ faq[1] }}" required>
+            </div>
+            <div class="form-group">
+              <label>Answer</label>
+              <textarea name="answer" required>{{ faq[2] }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+            <button type="button" class="btn" onclick="toggleEdit({{ faq[0] }})">Cancel</button>
+          </form>
+        </div>
       </div>
+      {% endfor %}
+    </div>
     {% else %}
-      <p style="color:#999; text-align:center; padding:20px;">
-        📭 No branch-specific FAQs yet. Add your first FAQ above!
-      </p>
+    <p style="color:#999; text-align:center; padding:20px;">
+      📭 No branch-specific FAQs yet. Add your first FAQ above!
+    </p>
     {% endif %}
   </div>
 </div>

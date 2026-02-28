@@ -5,7 +5,7 @@
 {% block content %}
 <div class="card">
     <div class="card-header">Bill Details</div>
-    
+
     <!-- Student Information -->
     <div style="margin-bottom: 2rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
         <h3 style="margin-bottom: 0.5rem;">Student Information</h3>
@@ -20,7 +20,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Bill Information -->
     <h3 style="margin-bottom: 1rem;">Itemized Charges</h3>
     <table style="margin-bottom: 1.5rem;">
@@ -57,18 +57,18 @@
             </td>
         </tr>
     </table>
-    
+
     <div style="margin-bottom: 1.5rem;">
-        <strong>Status:</strong> 
+        <strong>Status:</strong>
         {% if bill.status == 'paid' %}
-            <span class="badge badge-paid">Paid</span>
+        <span class="badge badge-paid">Paid</span>
         {% elif bill.status == 'partial' %}
-            <span class="badge badge-partial">Partially Paid</span>
+        <span class="badge badge-partial">Partially Paid</span>
         {% else %}
-            <span class="badge badge-unpaid">Unpaid</span>
+        <span class="badge badge-unpaid">Unpaid</span>
         {% endif %}
     </div>
-    
+
     <!-- Payment History -->
     <h3 style="margin-bottom: 1rem; margin-top: 2rem;">Payment History</h3>
     {% if payments %}
@@ -92,8 +92,8 @@
                 <td>{{ payment.reference_number or '-' }}</td>
                 <td>{{ payment.received_by_name }}</td>
                 <td>
-                    <a href="{{ url_for('cashier.receipt', payment_id=payment.payment_id) }}" 
-                       class="btn btn-secondary btn-sm">View Receipt</a>
+                    <a href="{{ url_for('cashier.receipt', payment_id=payment.payment_id) }}"
+                        class="btn btn-secondary btn-sm">View Receipt</a>
                 </td>
             </tr>
             {% endfor %}
@@ -102,14 +102,14 @@
     {% else %}
     <p style="color: #6b7280;">No payments recorded yet</p>
     {% endif %}
-    
+
     <!-- Actions -->
     <div style="margin-top: 2rem; display: flex; gap: 1rem;">
         {% if bill.status != 'paid' %}
-            <a href="{{ url_for('cashier.record_payment', bill_id=bill.bill_id) }}" 
-               class="btn btn-success">Record Payment</a>
+        <a href="{{ url_for('cashier.record_payment', bill_id=bill.bill_id) }}" class="btn btn-success">Record
+            Payment</a>
         {% endif %}
-        <a href="{{ url_for('cashier.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+        <a href="{{ url_for('cashier.dashboard') }}" class="btn btn-secondary">⬅ Back</a>
     </div>
 </div>
 {% endblock %}

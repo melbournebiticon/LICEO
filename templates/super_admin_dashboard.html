@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Super Admin Dashboard{% endblock %}
+{% block title %}Super Admin{% endblock %}
 
 {% block content %}
 <style>
@@ -10,23 +10,25 @@
         padding: 20px;
     }
 
-    .header-row{
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
+    .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         gap: 12px;
-        flex-wrap:wrap;
+        flex-wrap: wrap;
         margin-bottom: 10px;
     }
 
-    .header-row h1{ margin:0; }
+    .header-row h1 {
+        margin: 0;
+    }
 
     .card {
         background: white;
         padding: 25px;
         margin-bottom: 25px;
         border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .card h2 {
@@ -65,11 +67,11 @@
         font-size: 14px;
         font-weight: bold;
         transition: 0.2s;
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         gap: 8px;
-        text-decoration:none;
+        text-decoration: none;
     }
 
     .btn-primary {
@@ -82,12 +84,13 @@
         transform: translateY(-1px);
     }
 
-    .btn-secondary{
-        background:#6c757d;
-        color:#fff;
+    .btn-secondary {
+        background: #6c757d;
+        color: #fff;
     }
-    .btn-secondary:hover{
-        background:#545b62;
+
+    .btn-secondary:hover {
+        background: #545b62;
         transform: translateY(-1px);
     }
 
@@ -141,8 +144,8 @@
         color: #6c757d;
     }
 
-    .muted{
-        color:#6c757d;
+    .muted {
+        color: #6c757d;
         font-size: 14px;
         margin-top: -10px;
     }
@@ -151,7 +154,7 @@
 <div class="dashboard-container">
 
     <div class="header-row">
-        <h1>🔐 Super Admin Dashboard</h1>
+        <h1>🔐 Super Admin</h1>
 
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <a href="/super-admin/faqs" class="btn btn-secondary">💬 Manage FAQs</a>
@@ -168,13 +171,12 @@
             <div class="form-group">
                 <label for="branch_name">Branch Name:</label>
                 <input type="text" id="branch_name" name="branch_name"
-                       placeholder="e.g., Main Campus, Quezon City Branch" required>
+                    placeholder="e.g., Main Campus, Quezon City Branch" required>
             </div>
 
             <div class="form-group">
                 <label for="location">Location:</label>
-                <input type="text" id="location" name="location"
-                       placeholder="e.g., Manila, Cebu, Davao" required>
+                <input type="text" id="location" name="location" placeholder="e.g., Manila, Cebu, Davao" required>
             </div>
 
             <button type="submit" class="btn btn-primary">
@@ -197,46 +199,46 @@
         <h2>🏢 All Branches ({{ branches|length }})</h2>
 
         {% if branches and branches|length > 0 %}
-            <table class="branches-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Branch Name</th>
-                        <th>Location</th>
-                        <th>Admin Username</th>
-                        <th>Status</th>
-                        <th>Created</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for branch in branches %}
-                        <tr>
-                            <td><strong>{{ branch.branch_id }}</strong></td>
-                            <td>{{ branch.branch_name }}</td>
-                            <td>📍 {{ branch.location or 'N/A' }}</td>
-                            <td>
-                                {% if branch.admin_username %}
-                                    <span class="badge badge-success">👤 {{ branch.admin_username }}</span>
-                                {% else %}
-                                    <span class="badge badge-warning">⚠️ No Admin</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if branch.is_active %}
-                                    <span class="badge badge-success">✓ Active</span>
-                                {% else %}
-                                    <span class="badge badge-warning">✗ Inactive</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ branch.created_at.strftime('%Y-%m-%d') if branch.created_at else 'N/A' }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <table class="branches-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Branch Name</th>
+                    <th>Location</th>
+                    <th>Admin Username</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for branch in branches %}
+                <tr>
+                    <td><strong>{{ branch.branch_id }}</strong></td>
+                    <td>{{ branch.branch_name }}</td>
+                    <td>📍 {{ branch.location or 'N/A' }}</td>
+                    <td>
+                        {% if branch.admin_username %}
+                        <span class="badge badge-success">👤 {{ branch.admin_username }}</span>
+                        {% else %}
+                        <span class="badge badge-warning">⚠️ No Admin</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if branch.is_active %}
+                        <span class="badge badge-success">✓ Active</span>
+                        {% else %}
+                        <span class="badge badge-warning">✗ Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ branch.created_at.strftime('%Y-%m-%d') if branch.created_at else 'N/A' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
         {% else %}
-            <div class="no-data">
-                <p>📭 No branches created yet.</p>
-            </div>
+        <div class="no-data">
+            <p>📭 No branches created yet.</p>
+        </div>
         {% endif %}
     </div>
 

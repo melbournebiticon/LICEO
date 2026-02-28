@@ -7,7 +7,7 @@
     <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
       <h2 style="margin:0;">✅ My Reservations</h2>
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <a class="btn btn-secondary" href="{{ url_for('student_portal.dashboard') }}">⬅ Back to Dashboard</a>
+        <a class="btn btn-secondary" href="{{ url_for('student_portal.dashboard') }}">⬅ Back</a>
         <a class="btn btn-success" href="{{ url_for('student.student_reservation') }}">🛒 New Reservation</a>
       </div>
     </div>
@@ -15,58 +15,71 @@
     <hr style="margin: 14px 0;">
 
     {% if rows and rows|length > 0 %}
-      <div style="overflow:auto;">
-        <table style="width:100%; border-collapse:collapse;">
-          <thead>
-            <tr style="background:#f3f4f6;">
-              <th style="text-align:left; padding:10px; border-bottom:1px solid #e5e7eb;">Reservation ID</th>
-              <th style="text-align:left; padding:10px; border-bottom:1px solid #e5e7eb;">Items</th>
-              <th style="text-align:left; padding:10px; border-bottom:1px solid #e5e7eb;">Date</th>
-              <th style="text-align:left; padding:10px; border-bottom:1px solid #e5e7eb;">Status</th>
-              <th style="text-align:right; padding:10px; border-bottom:1px solid #e5e7eb;">Total Qty</th>
-              <th style="text-align:right; padding:10px; border-bottom:1px solid #e5e7eb;">Total</th>
-              <th style="text-align:left; padding:10px; border-bottom:1px solid #e5e7eb;">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for r in rows %}
-              {# This line converts the RealDictRow into a standard list so val[0], val[1] works #}
-              {% set val = r.values() | list %}
-              <tr>
-                <td style="padding:10px; border-bottom:1px solid #f0f0f0;">#{{ val[0] }}</td>
-                <td style="padding:10px; border-bottom:1px solid #f0f0f0;">{{ val[5] if val[5] else 'N/A' }}</td>
-                <td style="padding:10px; border-bottom:1px solid #f0f0f0;">
-                  {{ val[2].strftime('%Y-%m-%d') if val[2] and val[2].strftime else val[2] }}
-                </td>
-                <td style="padding:10px; border-bottom:1px solid #f0f0f0;">
-                  <span class="badge">{{ val[1] }}</span>
-                </td>
-                <td style="padding:10px; border-bottom:1px solid #f0f0f0; text-align:right;">{{ val[4] }}</td>
-                <td style="padding:10px; border-bottom:1px solid #f0f0f0; text-align:right;">
-                  ₱{{ "%.2f"|format(val[3]|float) }}
-                </td>
-                <td style="padding:10px; border-bottom:1px solid #f0f0f0;">
-                  <a class="btn btn-primary btn-sm"
-                     href="{{ url_for('student.student_reservation_success', reservation_id=val[0]) }}">
-                    View
-                  </a>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+    <div style="overflow:auto;">
+      <table style="width:100%; border-collapse:collapse;">
+        <thead>
+          <tr style="background:#f3f4f6;">
+            <th style="text-align:left; padding:10px; border-bottom:1px solid #e5e7eb;">Reservation ID</th>
+            <th style="text-align:left; padding:10px; border-bottom:1px solid #e5e7eb;">Items</th>
+            <th style="text-align:left; padding:10px; border-bottom:1px solid #e5e7eb;">Date</th>
+            <th style="text-align:left; padding:10px; border-bottom:1px solid #e5e7eb;">Status</th>
+            <th style="text-align:right; padding:10px; border-bottom:1px solid #e5e7eb;">Total Qty</th>
+            <th style="text-align:right; padding:10px; border-bottom:1px solid #e5e7eb;">Total</th>
+            <th style="text-align:left; padding:10px; border-bottom:1px solid #e5e7eb;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          {# This line converts the RealDictRow into a standard list so val[0], val[1] works #}
+          {% set val = r.values() | list %}
+          <tr>
+            <td style="padding:10px; border-bottom:1px solid #f0f0f0;">#{{ val[0] }}</td>
+            <td style="padding:10px; border-bottom:1px solid #f0f0f0;">{{ val[5] if val[5] else 'N/A' }}</td>
+            <td style="padding:10px; border-bottom:1px solid #f0f0f0;">
+              {{ val[2].strftime('%Y-%m-%d') if val[2] and val[2].strftime else val[2] }}
+            </td>
+            <td style="padding:10px; border-bottom:1px solid #f0f0f0;">
+              <span class="badge">{{ val[1] }}</span>
+            </td>
+            <td style="padding:10px; border-bottom:1px solid #f0f0f0; text-align:right;">{{ val[4] }}</td>
+            <td style="padding:10px; border-bottom:1px solid #f0f0f0; text-align:right;">
+              ₱{{ "%.2f"|format(val[3]|float) }}
+            </td>
+            <td style="padding:10px; border-bottom:1px solid #f0f0f0;">
+              <a class="btn btn-primary btn-sm"
+                href="{{ url_for('student.student_reservation_success', reservation_id=val[0]) }}">
+                View
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
     {% else %}
-      <div style="padding:12px; background:#fef3c7; border-radius:8px; margin-top:10px;">
-        Wala ka pang reservations.
-      </div>
+    <div style="padding:12px; background:#fef3c7; border-radius:8px; margin-top:10px;">
+      Wala ka pang reservations.
+    </div>
     {% endif %}
   </div>
 </div>
 
 <style>
-  .btn-success { background:#10b981; color:#fff; border-color:#10b981; }
-  .btn-success:hover { background:#059669; }
-  .badge { padding: 4px 8px; border-radius: 4px; background: #e5e7eb; font-size: 0.85em; }
+  .btn-success {
+    background: #10b981;
+    color: #fff;
+    border-color: #10b981;
+  }
+
+  .btn-success:hover {
+    background: #059669;
+  }
+
+  .badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: #e5e7eb;
+    font-size: 0.85em;
+  }
 </style>
 {% endblock %}

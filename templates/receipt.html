@@ -9,7 +9,7 @@
         <p>{{ receipt.location }}</p>
         <p style="margin-top: 1rem; font-weight: bold; font-size: 1.2rem;">OFFICIAL RECEIPT</p>
     </div>
-    
+
     <div class="receipt-info">
         <div>
             <p><strong>Receipt No:</strong> OR-{{ "%06d"|format(receipt.payment_id) }}</p>
@@ -26,7 +26,7 @@
             <p><strong>Contact:</strong> {{ receipt.contact_number }}</p>
         </div>
     </div>
-    
+
     <div class="receipt-items">
         <h3 style="margin-bottom: 1rem;">Bill Breakdown</h3>
         <table>
@@ -72,23 +72,23 @@
             </tr>
         </table>
     </div>
-    
+
     {% if receipt.notes %}
     <div style="margin-bottom: 1.5rem;">
         <strong>Notes:</strong> {{ receipt.notes }}
     </div>
     {% endif %}
-    
+
     <div style="margin-top: 2rem; text-align: center; padding-top: 1rem; border-top: 1px solid #ccc;">
         <p><strong>Received by:</strong> {{ receipt.received_by_name }}</p>
         <p style="margin-top: 2rem;">_______________________________</p>
         <p>Authorized Signature</p>
     </div>
-    
+
     <div class="no-print" style="margin-top: 2rem; text-align: center;">
         <button onclick="window.print()" class="btn btn-primary">Print Receipt</button>
         <a href="{{ url_for('cashier.view_bill', bill_id=receipt.bill_id) }}" class="btn btn-secondary">Back to Bill</a>
-        <a href="{{ url_for('cashier.dashboard') }}" class="btn btn-secondary">Dashboard</a>
+        <a href="{{ url_for('cashier.dashboard') }}" class="btn btn-secondary">⬅ Back</a>
     </div>
 </div>
 {% endblock %}

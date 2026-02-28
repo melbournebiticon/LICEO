@@ -5,7 +5,7 @@
 {% block content %}
 <div class="card">
     <div class="card-header">{{ child.student_name }} - Enrollment Details</div>
-    
+
     <!-- Student Information -->
     <div style="margin-bottom: 2rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
         <h3 style="margin-bottom: 1rem;">Student Information</h3>
@@ -24,22 +24,22 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Enrollment Status -->
     <div style="margin-bottom: 2rem;">
         <h3 style="margin-bottom: 0.5rem;">Enrollment Status</h3>
         {% if child.status == 'approved' %}
-            <span class="badge badge-approved">Approved</span>
+        <span class="badge badge-approved">Approved</span>
         {% elif child.status == 'rejected' %}
-            <span class="badge badge-rejected">Rejected</span>
+        <span class="badge badge-rejected">Rejected</span>
         {% else %}
-            <span class="badge badge-pending">Pending Review</span>
+        <span class="badge badge-pending">Pending Review</span>
         {% endif %}
         <p style="margin-top: 0.5rem; color: #6b7280;">
             Submitted on: {{ child.created_at.strftime('%B %d, %Y') }}
         </p>
     </div>
-    
+
     <!-- Guardian Information -->
     <div style="margin-bottom: 2rem; padding: 1rem; background: #f9fafb; border-radius: 6px;">
         <h3 style="margin-bottom: 1rem;">Guardian Information</h3>
@@ -47,7 +47,7 @@
         <p><strong>Contact:</strong> {{ child.guardian_contact }}</p>
         <p><strong>Address:</strong> {{ child.address }}</p>
     </div>
-    
+
     <!-- Documents -->
     <div style="margin-bottom: 2rem;">
         <h3 style="margin-bottom: 1rem;">Uploaded Documents</h3>
@@ -65,7 +65,7 @@
         <p style="color: #6b7280;">No documents uploaded</p>
         {% endif %}
     </div>
-    
+
     <!-- Books -->
     <div style="margin-bottom: 2rem;">
         <h3 style="margin-bottom: 1rem;">Books Ordered</h3>
@@ -90,7 +90,7 @@
         <p style="color: #6b7280;">No books ordered</p>
         {% endif %}
     </div>
-    
+
     <!-- Uniforms -->
     <div style="margin-bottom: 2rem;">
         <h3 style="margin-bottom: 1rem;">Uniforms Ordered</h3>
@@ -117,12 +117,12 @@
         <p style="color: #6b7280;">No uniforms ordered</p>
         {% endif %}
     </div>
-    
+
     <!-- Actions -->
     <div style="display: flex; gap: 1rem;">
-        <a href="{{ url_for('parent.child_bills', enrollment_id=child.enrollment_id) }}" 
-           class="btn btn-primary">View Billing</a>
-        <a href="{{ url_for('parent.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+        <a href="{{ url_for('parent.child_bills', enrollment_id=child.enrollment_id) }}" class="btn btn-primary">View
+            Billing</a>
+        <a href="{{ url_for('parent.dashboard') }}" class="btn btn-secondary">⬅ Back</a>
     </div>
 </div>
 {% endblock %}

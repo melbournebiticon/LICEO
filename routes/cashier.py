@@ -457,11 +457,16 @@ def cashier_reservations():
         cur.execute("""
             SELECT
                 r.reservation_id,          -- 0
-                COALESCE(u.username, '') AS username,   -- 1 (username only; Info/ID column)
+                COALESCE(u.username, '') AS username,   -- 1
                 r.student_user_id,         -- 2
                 r.student_grade_level,     -- 3
-                COALESCE(e.student_name, u.username, '') AS full_name,  -- 4 (full name from enrollments only)
-                r.student_grade_level,     -- 5 (fallback grade)
+                COALESCE(
+                    e.student_name,
+                    svp.student_name,
+                    u.username,
+                    ''
+                ) AS full_name,            -- 4
+                COALESCE(r.student_grade_level, svp.grade_level) AS grade_level, -- 5
                 NULL AS strand,            -- 6
                 r.status,                  -- 7
                 r.created_at,              -- 8
@@ -475,27 +480,29 @@ def cashier_reservations():
                   WHEN r.reserved_by_user_id IS NOT NULL
                        AND reserved_by.role = 'parent'
                   THEN COALESCE(
-                    e.guardian_name,
-                    e_parent.guardian_name,
-                    (SELECT e2.guardian_name
-                     FROM parent_student ps2
-                     JOIN enrollments e2 ON e2.enrollment_id = ps2.student_id
-                     WHERE ps2.parent_id = r.reserved_by_user_id
-                     LIMIT 1),
+                    svp.guardian_name,
                     reserved_by.username
                   )
                   ELSE NULL
-                END AS parent_name,        -- 10 (guardian full name from enrollments.guardian_name)
-                ps.relationship            -- 11
+                END AS parent_name,        -- 10
+                svp.relationship           -- 11
             FROM reservations r
             LEFT JOIN users u ON u.user_id = r.student_user_id
             LEFT JOIN student_accounts sa ON sa.username = u.username
             LEFT JOIN enrollments e ON e.enrollment_id = sa.enrollment_id
             LEFT JOIN users reserved_by ON reserved_by.user_id = r.reserved_by_user_id
-            LEFT JOIN parent_student ps
-              ON ps.parent_id = r.reserved_by_user_id
-             AND ps.student_id = sa.enrollment_id
-            LEFT JOIN enrollments e_parent ON e_parent.enrollment_id = ps.student_id
+            LEFT JOIN LATERAL (
+                SELECT
+                    e2.student_name,
+                    e2.grade_level,
+                    e2.guardian_name,
+                    ps2.relationship
+                FROM parent_student ps2
+                JOIN enrollments e2 ON e2.enrollment_id = ps2.student_id
+                WHERE ps2.parent_id = r.reserved_by_user_id
+                ORDER BY ps2.student_id
+                LIMIT 1
+            ) svp ON (reserved_by.role = 'parent')
             WHERE r.branch_id = %s
             ORDER BY r.created_at DESC
         """, (branch_id,))
@@ -528,8 +535,13 @@ def cashier_reservation_view(reservation_id):
                 COALESCE(u.username, '') AS username,
                 r.student_user_id,
                 r.student_grade_level,
-                COALESCE(e.student_name, u.username, '') AS full_name,
-                r.student_grade_level,
+                COALESCE(
+                    e.student_name,
+                    svp.student_name,
+                    u.username,
+                    ''
+                ) AS full_name,
+                COALESCE(r.student_grade_level, svp.grade_level) AS grade_level,
                 NULL AS strand,
                 r.status,
                 r.created_at,
@@ -543,27 +555,29 @@ def cashier_reservation_view(reservation_id):
                   WHEN r.reserved_by_user_id IS NOT NULL
                        AND reserved_by.role = 'parent'
                   THEN COALESCE(
-                    e.guardian_name,
-                    e_parent.guardian_name,
-                    (SELECT e2.guardian_name
-                     FROM parent_student ps2
-                     JOIN enrollments e2 ON e2.enrollment_id = ps2.student_id
-                     WHERE ps2.parent_id = r.reserved_by_user_id
-                     LIMIT 1),
+                    svp.guardian_name,
                     reserved_by.username
                   )
                   ELSE NULL
                 END AS parent_name,
-                ps.relationship
+                svp.relationship
             FROM reservations r
             LEFT JOIN users u ON u.user_id = r.student_user_id
             LEFT JOIN student_accounts sa ON sa.username = u.username
             LEFT JOIN enrollments e ON e.enrollment_id = sa.enrollment_id
             LEFT JOIN users reserved_by ON reserved_by.user_id = r.reserved_by_user_id
-            LEFT JOIN parent_student ps
-              ON ps.parent_id = r.reserved_by_user_id
-             AND ps.student_id = sa.enrollment_id
-            LEFT JOIN enrollments e_parent ON e_parent.enrollment_id = ps.student_id
+            LEFT JOIN LATERAL (
+                SELECT
+                    e2.student_name,
+                    e2.grade_level,
+                    e2.guardian_name,
+                    ps2.relationship
+                FROM parent_student ps2
+                JOIN enrollments e2 ON e2.enrollment_id = ps2.student_id
+                WHERE ps2.parent_id = r.reserved_by_user_id
+                ORDER BY ps2.student_id
+                LIMIT 1
+            ) svp ON (reserved_by.role = 'parent')
             WHERE r.reservation_id = %s AND r.branch_id = %s
             LIMIT 1
         """, (reservation_id, branch_id))
@@ -603,7 +617,9 @@ def cashier_reservation_view(reservation_id):
         # 4) Fetch items (filtered by selected_category, like your UI tabs/filter)
         if selected_category:
             cur.execute("""
-                SELECT ii.item_name, ri.qty, ri.size_label, ri.unit_price, ri.line_total, ii.category
+                SELECT ii.item_name, ri.qty,
+                       COALESCE(NULLIF(TRIM(ri.size_label), ''), ii.publisher, ii.size_label) AS display_label,
+                       ri.unit_price, ri.line_total, ii.category
                 FROM reservation_items ri
                 JOIN inventory_items ii ON ii.item_id = ri.item_id
                 WHERE ri.reservation_id = %s
@@ -613,7 +629,9 @@ def cashier_reservation_view(reservation_id):
         else:
             # no items / no category
             cur.execute("""
-                SELECT ii.item_name, ri.qty, ri.size_label, ri.unit_price, ri.line_total, ii.category
+                SELECT ii.item_name, ri.qty,
+                       COALESCE(NULLIF(TRIM(ri.size_label), ''), ii.publisher, ii.size_label) AS display_label,
+                       ri.unit_price, ri.line_total, ii.category
                 FROM reservation_items ri
                 JOIN inventory_items ii ON ii.item_id = ri.item_id
                 WHERE ri.reservation_id = %s
@@ -830,45 +848,45 @@ def reservation_receipt(reservation_id):
 
         cur.execute("""
             SELECT
-                r.reservation_id,
-                COALESCE(u.username, '') AS username,
-                r.student_grade_level,
-                r.status,
-                r.created_at,
-                r.claimed_at,
-                b.branch_name,
+                r.reservation_id,                       -- 0
+                COALESCE(u.username, '') AS username,   -- 1
+                r.student_grade_level,                  -- 2
+                r.status,                               -- 3
+                r.created_at,                           -- 4
+                r.claimed_at,                           -- 5
+                b.branch_name,                          -- 6
                 CASE
                   WHEN r.reserved_by_user_id IS NOT NULL
                        AND reserved_by.role = 'parent'
                   THEN 'parent'
                   ELSE 'student'
-                END AS reserved_by_role,
+                END AS reserved_by_role,                -- 7
                 CASE
                   WHEN r.reserved_by_user_id IS NOT NULL
                        AND reserved_by.role = 'parent'
-                  THEN COALESCE(
-                    e.guardian_name,
-                    e_parent.guardian_name,
-                    (SELECT e2.guardian_name
-                     FROM parent_student ps2
-                     JOIN enrollments e2 ON e2.enrollment_id = ps2.student_id
-                     WHERE ps2.parent_id = r.reserved_by_user_id
-                     LIMIT 1),
-                    reserved_by.username
-                  )
+                  THEN COALESCE(svp.guardian_name, reserved_by.username)
                   ELSE NULL
-                END AS parent_name,
-                ps.relationship
+                END AS parent_name,                     -- 8
+                svp.relationship,                       -- 9
+                COALESCE(e.student_name, svp.student_name, u.username, '') AS student_name -- 10
             FROM reservations r
             LEFT JOIN users u ON u.user_id = r.student_user_id
             LEFT JOIN student_accounts sa ON sa.username = u.username
             LEFT JOIN enrollments e ON e.enrollment_id = sa.enrollment_id
             LEFT JOIN branches b ON b.branch_id = r.branch_id
             LEFT JOIN users reserved_by ON reserved_by.user_id = r.reserved_by_user_id
-            LEFT JOIN parent_student ps
-              ON ps.parent_id = r.reserved_by_user_id
-             AND ps.student_id = sa.enrollment_id
-            LEFT JOIN enrollments e_parent ON e_parent.enrollment_id = ps.student_id
+            LEFT JOIN LATERAL (
+                SELECT
+                    e2.student_name,
+                    e2.grade_level,
+                    e2.guardian_name,
+                    ps2.relationship
+                FROM parent_student ps2
+                JOIN enrollments e2 ON e2.enrollment_id = ps2.student_id
+                WHERE ps2.parent_id = r.reserved_by_user_id
+                ORDER BY ps2.student_id
+                LIMIT 1
+            ) svp ON (reserved_by.role = 'parent')
             WHERE r.reservation_id = %s AND r.branch_id = %s
             LIMIT 1
         """, (reservation_id, branch_id))
@@ -877,12 +895,14 @@ def reservation_receipt(reservation_id):
         if not header:
             return render_template("template_missing.html", missing="Receipt not found"), 404
 
-        # NOTE: status in this receipt header is index 3
+        # NOTE: status is header[3]
         if header[3] != "CLAIMED":
             return render_template("template_missing.html", missing="Receipt only for claimed"), 403
 
         cur.execute("""
-            SELECT ii.item_name, ri.qty, ri.size_label, ri.unit_price, ri.line_total, ii.category
+            SELECT ii.item_name, ri.qty,
+                   COALESCE(NULLIF(TRIM(ri.size_label), ''), ii.publisher, ii.size_label) AS display_label,
+                   ri.unit_price, ri.line_total, ii.category
             FROM reservation_items ri
             JOIN inventory_items ii ON ii.item_id = ri.item_id
             WHERE ri.reservation_id = %s
@@ -892,7 +912,7 @@ def reservation_receipt(reservation_id):
 
         total = sum(item[4] for item in items)
 
-        return render_template("receipt.html", header=header, items=items, total=total, now=datetime.now)
+        return render_template("reservation_receipt.html", header=header, items=items, total=total, now=datetime.now)
     finally:
         if cur:
             try:

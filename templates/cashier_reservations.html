@@ -9,39 +9,34 @@
     padding: 0;
     box-sizing: border-box;
   }
-  
+
   body {
     background: #f5f7fa;
     color: #333;
   }
-  
+
   .container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
   }
-  
+
   header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
+    margin-bottom: 24px;
+    padding-bottom: 18px;
     border-bottom: 2px solid #ddd;
   }
-  
+
   h1 {
-    font-size: 28px;
+    font-size: 26px;
     color: #222;
   }
-  
-  .header-actions {
-    display: flex;
-    gap: 12px;
-  }
-  
+
   .btn {
-    padding: 10px 16px;
+    padding: 9px 16px;
     border: 1px solid #ddd;
     border-radius: 8px;
     background: #f8f8f8;
@@ -49,200 +44,116 @@
     cursor: pointer;
     text-decoration: none;
     display: inline-block;
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 500;
-    transition: background 0.2s, box-shadow 0.2s;
+    transition: background 0.15s;
   }
-  
+
   .btn:hover {
     background: #efefef;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   }
-  
+
   .card {
     background: white;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     padding: 20px;
     margin-bottom: 20px;
   }
-  
-  .table-wrapper {
-    overflow-x: auto;
-  }
-  
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    font-size: 14px;
-  }
-  
-  thead {
-    background: #f8f9fa;
-    border-bottom: 2px solid #ddd;
-  }
-  
-  th {
-    padding: 12px 16px;
-    text-align: left;
-    font-weight: 600;
-    color: #555;
-  }
-  
-  td {
-    padding: 12px 16px;
-    border-bottom: 1px solid #eee;
-    vertical-align: top;
-  }
-  
-  tbody tr:hover {
-    background: #f9f9f9;
-  }
-  
-  .status-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-  
-  .status-reserved {
-    background: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeaa7;
-  }
-  
-  .status-paid {
-    background: #cfe2ff;
-    color: #084298;
-    border: 1px solid #b6d4fe;
-  }
-  
-  .status-claimed {
-    background: #d1e7dd;
-    color: #0f5132;
-    border: 1px solid #badbcc;
-  }
-  
-  .status-cancelled {
-    background: #f8d7da;
-    color: #842029;
-    border: 1px solid #f5c2c7;
-  }
 
-  .user-type-badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-    margin-left: 8px;
-  }
-
-  .user-type-parent {
-    background: #f3e5f5;
-    color: #7b1fa2;
-    border: 1px solid #ce93d8;
-  }
-
-  .parent-details {
-    font-size: 13px;
-    color: #333;
-    margin-top: 2px;
-  }
-
-  .parent-details .relationship {
-    font-style: italic;
-    color: #7b1fa2;
-    font-size: 12px;
-  }
-
-  .student-ref {
-    font-size: 11px;
-    color: #999;
-    margin-top: 4px;
-  }
-  
-  .action-link {
-    color: #007bff;
-    text-decoration: none;
-    font-weight: 500;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: background 0.2s;
-  }
-  
-  .action-link:hover {
-    background: #f0f8ff;
-  }
-  
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: #999;
-  }
-  
-  .empty-state-icon {
-    font-size: 48px;
-    margin-bottom: 12px;
-  }
-  
-  .filter-bar {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 20px;
-  }
-
-  .filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  
-  .filter-bar label {
-    font-weight: 600;
-    color: #555;
-    font-size: 13px;
-  }
-  
-  .filter-bar select {
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: white;
-    color: #333;
-    cursor: pointer;
-    font-size: 14px;
-  }
-  
+  /* Stats */
   .stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 12px;
     margin-bottom: 20px;
   }
-  
+
   .stat-box {
     background: white;
     border-radius: 8px;
     padding: 16px;
     text-align: center;
     border-left: 4px solid #007bff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
   }
-  
-  .stat-value {
-    font-size: 24px;
+
+  .stat-box .num {
+    font-size: 26px;
     font-weight: 700;
     color: #222;
   }
-  
-  .stat-label {
+
+  .stat-box .lbl {
     font-size: 12px;
     color: #999;
     margin-top: 4px;
+  }
+
+  /* Filter bar */
+  .filter-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .filter-group label {
+    font-weight: 600;
+    color: #555;
+    font-size: 13px;
+  }
+
+  .filter-group select,
+  .filter-group input {
+    padding: 9px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font-size: 13.5px;
+    color: #333;
+  }
+
+  /* Table */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
+  }
+
+  thead {
+    background: #f8f9fa;
+    border-bottom: 2px solid #ddd;
+  }
+
+  th {
+    padding: 11px 14px;
+    text-align: left;
+    font-weight: 600;
+    color: #555;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+  }
+
+  tbody tr:hover {
+    background: #f9f9f9;
+  }
+
+  tbody tr.hidden {
+    display: none;
   }
 
   .parent-row {
@@ -253,10 +164,89 @@
     background: #f0f8ff;
   }
 
-  .no-results {
-    text-align: center;
-    padding: 40px 20px;
+  /* Badges */
+  .status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .status-reserved {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+  }
+
+  .status-paid {
+    background: #cfe2ff;
+    color: #084298;
+    border: 1px solid #b6d4fe;
+  }
+
+  .status-claimed {
+    background: #d1e7dd;
+    color: #0f5132;
+    border: 1px solid #badbcc;
+  }
+
+  .status-cancelled {
+    background: #f8d7da;
+    color: #842029;
+    border: 1px solid #f5c2c7;
+  }
+
+  .badge-parent {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    background: #f3e5f5;
+    color: #7b1fa2;
+    border: 1px solid #ce93d8;
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+
+  .action-link {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+
+  .action-link:hover {
+    background: #eff6ff;
+  }
+
+  .student-sub {
+    font-size: 11px;
     color: #999;
+    margin-top: 2px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: #999;
+  }
+
+  .empty-icon {
+    font-size: 44px;
+    margin-bottom: 10px;
+  }
+
+  #noFilterResults {
+    text-align: center;
+    padding: 30px;
+    color: #999;
+    display: none;
   }
 </style>
 {% endblock %}
@@ -265,273 +255,175 @@
 <div class="container">
   <header>
     <h1>📋 Reservations</h1>
-    <div class="header-actions">
-      <!-- FIX: go back to cashier dashboard inside blueprint -->
-      <a href="{{ url_for('cashier.dashboard') }}" class="btn">⬅ Back to Dashboard</a>
-    </div>
+    <a href="{{ url_for('cashier.dashboard') }}" class="btn">⬅ Back</a>
   </header>
 
-  {% if rows|length > 0 %}
-    <!-- Statistics -->
-    <div class="stats">
-      <div class="stat-box">
-        <div class="stat-value">{{ rows|length }}</div>
-        <div class="stat-label">Total Reservations</div>
-      </div>
-      <div class="stat-box" style="border-left-color: #ffc107;">
-        <div class="stat-value">{{ rows|selectattr('7', 'equalto', 'RESERVED')|list|length }}</div>
-        <div class="stat-label">Reserved</div>
-      </div>
-      <div class="stat-box" style="border-left-color: #17a2b8;">
-        <div class="stat-value">{{ rows|selectattr('7', 'equalto', 'PAID')|list|length }}</div>
-        <div class="stat-label">Paid</div>
-      </div>
-      <div class="stat-box" style="border-left-color: #28a745;">
-        <div class="stat-value">{{ rows|selectattr('7', 'equalto', 'CLAIMED')|list|length }}</div>
-        <div class="stat-label">Claimed</div>
-      </div>
+  {% if rows and rows|length > 0 %}
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-box">
+      <div class="num">{{ rows|length }}</div>
+      <div class="lbl">Total</div>
     </div>
-
-    <!-- Filter Bar -->
-    <div class="card filter-bar">
-      <div class="filter-group">
-        <label for="userTypeFilter">👤 Reserved By:</label>
-        <select id="userTypeFilter" onchange="filterTable()">
-          <option value="" selected>All (Students & Parents)</option>
-          <option value="student">👨‍🎓 Students Only</option>
-          <option value="parent">👨‍👩‍👧 Parents Only</option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label for="statusFilter">📊 Status:</label>
-        <select id="statusFilter" onchange="filterTable()">
-          <option value="" selected>All statuses</option>
-          <option value="RESERVED">Reserved</option>
-          <option value="PAID">Paid</option>
-          <option value="CLAIMED">Claimed</option>
-          <option value="CANCELLED">Cancelled</option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label for="gradeFilter">🎓 Grade Level:</label>
-        <select id="gradeFilter" onchange="filterTable()">
-          <option value="" selected>All grades</option>
-          <option value="Kinder">Kinder</option>
-          {% for i in range(1, 13) %}
-          <option value="Grade {{ i }}">Grade {{ i }}</option>
-          {% endfor %}
-        </select>
-      </div>
+    <div class="stat-box" style="border-left-color:#ffc107;">
+      <div class="num">{{ rows|selectattr(7, 'equalto', 'RESERVED')|list|length }}</div>
+      <div class="lbl">Reserved</div>
     </div>
-
-    <!-- Reservations Table -->
-    <div class="card">
-      <div class="table-wrapper">
-        <table id="reservationsTable">
-          <thead id="tableHeader">
-            <!-- Dynamic header -->
-          </thead>
-          <tbody id="tableBody">
-            <!-- Dynamic body -->
-          </tbody>
-        </table>
-      </div>
-      <div id="noResults" class="no-results" style="display: none;">
-        <div class="empty-state-icon">🔍</div>
-        <h3>No Reservations Found</h3>
-        <p>No reservations match the selected filters.</p>
-      </div>
+    <div class="stat-box" style="border-left-color:#17a2b8;">
+      <div class="num">{{ rows|selectattr(7, 'equalto', 'PAID')|list|length }}</div>
+      <div class="lbl">Paid</div>
     </div>
+    <div class="stat-box" style="border-left-color:#28a745;">
+      <div class="num">{{ rows|selectattr(7, 'equalto', 'CLAIMED')|list|length }}</div>
+      <div class="lbl">Claimed</div>
+    </div>
+  </div>
+
+  <!-- Filters (client-side) -->
+  <div class="card filter-bar">
+    <div class="filter-group">
+      <label>👤 Reserved By</label>
+      <select id="fUserType" onchange="applyFilters()">
+        <option value="">All (Students &amp; Parents)</option>
+        <option value="student">👨‍🎓 Students Only</option>
+        <option value="parent">👨‍👩‍👧 Parents Only</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>📊 Status</label>
+      <select id="fStatus" onchange="applyFilters()">
+        <option value="">All statuses</option>
+        <option value="RESERVED">Reserved</option>
+        <option value="PAID">Paid</option>
+        <option value="CLAIMED">Claimed</option>
+        <option value="CANCELLED">Cancelled</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>🎓 Grade Level</label>
+      <select id="fGrade" onchange="applyFilters()">
+        <option value="">All grades</option>
+        <option value="Nursery">Nursery</option>
+        <option value="Kinder">Kinder</option>
+        {% for i in range(1, 13) %}
+        <option value="Grade {{ i }}">Grade {{ i }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>🔍 Search Name</label>
+      <input type="text" id="fSearch" placeholder="Student name..." oninput="applyFilters()">
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="card">
+    <table id="resTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Student</th>
+          <th>Grade</th>
+          <th>Reserved By</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="resBody">
+        {% for r in rows %}
+        {#
+        r[0]=reservation_id r[1]=username r[2]=student_user_id
+        r[3]=student_grade r[4]=full_name r[5]=grade_level
+        r[6]=strand r[7]=status r[8]=created_at
+        r[9]=reserved_by_role r[10]=parent_name r[11]=relationship
+        #}
+        {% set role = (r[9] if r|length > 9 else 'student') or 'student' %}
+        {% set grade = (r[5] or r[3] or '') %}
+        {% set status = (r[7] or '') %}
+        {% set fullname = (r[4] or r[1] or '') %}
+        <tr class="{{ 'parent-row' if role == 'parent' else 'student-row' }}" data-role="{{ role }}"
+          data-status="{{ status|upper }}" data-grade="{{ grade }}" data-name="{{ fullname|lower }}">
+          <td><strong>#{{ r[0] }}</strong></td>
+          <td>
+            <div><strong>{{ fullname or '-' }}</strong></div>
+            <div class="student-sub">{{ r[1] or '' }}</div>
+          </td>
+          <td>{{ grade or '-' }}</td>
+          <td>
+            {% if role == 'parent' %}
+            <div>{{ r[10] or '-' }}</div>
+            <span class="badge-parent">👨‍👩‍👧 Parent</span>
+            <div class="student-sub">
+              {{ r[11] or 'Guardian' }} of {{ fullname or '-' }}
+            </div>
+            {% else %}
+            👨‍🎓 Student
+            {% endif %}
+          </td>
+          <td>
+            <span class="status-badge status-{{ status|lower }}">{{ status }}</span>
+          </td>
+          <td>{{ r[8].strftime('%Y-%m-%d %H:%M') if r[8] else '-' }}</td>
+          <td>
+            <a href="{{ url_for('cashier.cashier_reservation_view', reservation_id=r[0]) }}" class="action-link">View
+              →</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div id="noFilterResults">
+      🔍 No reservations match the selected filters.
+    </div>
+  </div>
+
   {% else %}
-    <div class="card">
-      <div class="empty-state">
-        <div class="empty-state-icon">📭</div>
-        <h3>No Reservations Yet</h3>
-        <p>There are no student or parent reservations at the moment.</p>
-      </div>
+  <div class="card">
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>No Reservations Yet</h3>
+      <p>There are no student or parent reservations at the moment.</p>
     </div>
+  </div>
   {% endif %}
+
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-  // NOTE: rows now have only 12 fields:
-  // 0 id
-  // 1 student username (display)
-  // 2 student_user_id
-  // 3 student_grade_level (from reservations)
-  // 4 student full_name
-  // 5 grade_level (from students)
-  // 6 strand
-  // 7 status
-  // 8 created_at
-  // 9 reserved_by_role
-  // 10 parent_name (reserved_by username)
-  // 11 relationship (from parent_student)
+  function applyFilters() {
+    const fRole = (document.getElementById('fUserType')?.value || '').toLowerCase();
+    const fStatus = (document.getElementById('fStatus')?.value || '').toUpperCase();
+    const fGrade = (document.getElementById('fGrade')?.value || '').toLowerCase().trim();
+    const fSearch = (document.getElementById('fSearch')?.value || '').toLowerCase().trim();
 
-  const allReservations = [
-    {% for r in rows %}
-    {
-      id: {{ r[0]|tojson }},
-      studentId: {{ (r[1] or '')|tojson }},
-      studentUserId: {{ r[2]|default(None)|tojson }},
-      studentGradeLevel: {{ (r[3] or '')|tojson }},
-      studentFullName: {{ (r[4] or '')|tojson }},
-      gradeLevel: {{ (r[5] or '')|tojson }},
-      strand: {{ (r[6] or '')|tojson }},
-      status: {{ (r[7] or '')|tojson }},
-      createdAt: {{ (r[8].strftime('%Y-%m-%d %H:%M') if r[8] else '')|tojson }},
-      reservedByRole: {{ (r[9] if r|length > 9 else 'student')|tojson }},
-      parentName: {{ (r[10] if r|length > 10 else '')|tojson }},
-      relationship: {{ (r[11] if r|length > 11 else '')|tojson }}
-    }{{ "," if not loop.last else "" }}
-    {% endfor %}
-  ];
+    const rows = document.querySelectorAll('#resBody tr');
+    let visible = 0;
 
-  function normalizeGrade(g) {
-    if (g == null || g === undefined) return '';
-    return String(g).trim().replace(/\s+/g, ' ');
-  }
+    rows.forEach(function (row) {
+      const role = (row.dataset.role || '').toLowerCase();
+      const status = (row.dataset.status || '').toUpperCase();
+      const grade = (row.dataset.grade || '').toLowerCase().trim();
+      const name = (row.dataset.name || '').toLowerCase();
 
-  function gradeMatches(dataGrade, filterGrade) {
-    const d = normalizeGrade(dataGrade).toLowerCase();
-    const f = normalizeGrade(filterGrade).toLowerCase();
-    if (!f) return true;
-    return d === f;
-  }
+      const okRole = !fRole || role === fRole;
+      const okStatus = !fStatus || status === fStatus;
+      const okGrade = !fGrade || grade === fGrade;
+      const okSearch = !fSearch || name.includes(fSearch);
 
-  function filterTable() {
-    const userTypeFilter = (document.getElementById('userTypeFilter').value || '').trim();
-    const statusFilter = (document.getElementById('statusFilter').value || '').trim();
-    const gradeFilter = (document.getElementById('gradeFilter').value || '').trim();
-
-    let filtered = allReservations.filter(r => {
-      // Filter by user type (normalize: empty or unknown = treat as student for "student" filter)
-      if (userTypeFilter !== '') {
-        const role = (r.reservedByRole || 'student').toLowerCase();
-        if (role !== userTypeFilter.toLowerCase()) return false;
+      if (okRole && okStatus && okGrade && okSearch) {
+        row.classList.remove('hidden');
+        visible++;
+      } else {
+        row.classList.add('hidden');
       }
-
-      // Filter by status (case-insensitive)
-      if (statusFilter !== '') {
-        const status = (r.status || '').toString().trim().toUpperCase();
-        if (status !== statusFilter.toUpperCase()) return false;
-      }
-
-      // Filter by grade level (case-insensitive, normalize spaces)
-      if (gradeFilter !== '' && !gradeMatches((r.gradeLevel || r.studentGradeLevel), gradeFilter)) return false;
-
-      return true;
     });
 
-    renderTable(filtered, userTypeFilter);
+    const noRes = document.getElementById('noFilterResults');
+    if (noRes) noRes.style.display = visible === 0 ? 'block' : 'none';
   }
-
-  function renderTable(data, userType) {
-    const header = document.getElementById('tableHeader');
-    const body = document.getElementById('tableBody');
-    const noResults = document.getElementById('noResults');
-    const table = document.getElementById('reservationsTable');
-
-    header.innerHTML = '';
-    body.innerHTML = '';
-
-    if (data.length === 0) {
-      table.style.display = 'none';
-      noResults.style.display = 'block';
-      return;
-    } else {
-      table.style.display = 'table';
-      noResults.style.display = 'none';
-    }
-
-    const hasParents = data.some(r => r.reservedByRole === 'parent');
-    const hasStudents = data.some(r => r.reservedByRole === 'student');
-
-    const viewUrlTemplate = "{{ url_for('cashier.cashier_reservation_view', reservation_id=0) }}";
-
-    if (userType === 'parent' || (hasParents && !hasStudents)) {
-      // Parent-only table
-      header.innerHTML = '<tr><th>Reservation ID</th><th>Reserved By (Parent)</th><th>Status</th><th>Created Date</th><th>Action</th></tr>';
-
-      data.forEach(r => {
-        const row = document.createElement('tr');
-        row.className = 'parent-row';
-        const studentGrade = r.gradeLevel || r.studentGradeLevel || 'N/A';
-
-        row.innerHTML =
-          '<td><strong>#' + r.id + '</strong></td>' +
-          '<td>' +
-            '<div class="parent-details"><strong>' + (r.parentName || '-') + '</strong>' +
-            '<span class="user-type-badge user-type-parent">👨‍👩‍👧 Parent</span></div>' +
-            '<div class="parent-details"><span class="relationship">' + (r.relationship || 'Guardian') + '</span></div>' +
-            '<div class="student-ref">For Student: ' + r.studentId + ' - ' + (r.studentFullName || '-') + ' (' + studentGrade + ')</div>' +
-          '</td>' +
-          '<td><span class="status-badge status-' + (r.status || '').toString().toLowerCase() + '">' + (r.status || '-') + '</span></td>' +
-          '<td>' + r.createdAt + '</td>' +
-          '<td><a href="' + viewUrlTemplate.replace("0", r.id) + '" class="action-link">View Details →</a></td>';
-
-        body.appendChild(row);
-      });
-
-    } else if (userType === 'student' || (!hasParents && hasStudents)) {
-      // Student-only table
-      header.innerHTML = '<tr><th>Reservation ID</th><th>Student ID</th><th>Full Name</th><th>Grade Level</th><th>Strand</th><th>Status</th><th>Created Date</th><th>Action</th></tr>';
-
-      data.forEach(r => {
-        const row = document.createElement('tr');
-        row.className = 'student-row';
-
-        row.innerHTML =
-          '<td><strong>#' + r.id + '</strong></td>' +
-          '<td>' + r.studentId + '</td>' +
-          '<td>' + (r.studentFullName || '-') + '</td>' +
-          '<td>' + (r.gradeLevel || r.studentGradeLevel || '-') + '</td>' +
-          '<td>' + (r.strand || '-') + '</td>' +
-          '<td><span class="status-badge status-' + (r.status || '').toString().toLowerCase() + '">' + (r.status || '-') + '</span></td>' +
-          '<td>' + r.createdAt + '</td>' +
-          '<td><a href="' + viewUrlTemplate.replace("0", r.id) + '" class="action-link">View Details →</a></td>';
-
-        body.appendChild(row);
-      });
-
-    } else {
-      // Mixed table
-      header.innerHTML = '<tr><th>Reservation ID</th><th>ID</th><th>Full Name</th><th>Grade Level</th><th>Status</th><th>Created Date</th><th>Action</th></tr>';
-
-      data.forEach(r => {
-        const row = document.createElement('tr');
-        row.className = r.reservedByRole === 'parent' ? 'parent-row' : 'student-row';
-        const studentGrade = r.gradeLevel || r.studentGradeLevel || '-';
-
-        if (r.reservedByRole === 'parent') {
-          row.innerHTML =
-            '<td><strong>#' + r.id + '</strong></td>' +
-            '<td>' + r.studentId + '<br><span class="user-type-badge user-type-parent">👨‍👩‍👧 Parent</span></td>' +
-            '<td>' + (r.studentFullName || '-') + '<br><small style="color:#999;">Reserved by: ' + (r.parentName || '-') + '</small></td>' +
-            '<td>' + studentGrade + '</td>' +
-            '<td><span class="status-badge status-' + (r.status || '').toString().toLowerCase() + '">' + (r.status || '-') + '</span></td>' +
-            '<td>' + r.createdAt + '</td>' +
-            '<td><a href="' + viewUrlTemplate.replace("0", r.id) + '" class="action-link">View Details →</a></td>';
-        } else {
-          row.innerHTML =
-            '<td><strong>#' + r.id + '</strong></td>' +
-            '<td>' + r.studentId + '</td>' +
-            '<td>' + (r.studentFullName || '-') + '</td>' +
-            '<td>' + studentGrade + '</td>' +
-            '<td><span class="status-badge status-' + (r.status || '').toString().toLowerCase() + '">' + (r.status || '-') + '</span></td>' +
-            '<td>' + r.createdAt + '</td>' +
-            '<td><a href="' + viewUrlTemplate.replace("0", r.id) + '" class="action-link">View Details →</a></td>';
-        }
-
-        body.appendChild(row);
-      });
-    }
-  }
-
-  filterTable();
 </script>
 {% endblock %}
