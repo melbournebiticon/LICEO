@@ -151,14 +151,22 @@
 
       {% for enrollment in enrollments %}
       <tr>
-        <td>{{ enrollment.enrollment_id }}</td>
+        <td>
+          <span style="font-weight:800; color:var(--text);">
+            #{{ enrollment.display_no or enrollment.enrollment_id }}
+          </span>
+          <div style="font-size:11px; color:var(--muted);">ID: {{ enrollment.enrollment_id }}</div>
+        </td>
         <td>{{ enrollment.student_name }}</td>
         <td>{{ enrollment.grade_level }}</td>
 
         <td class="docs">
           {% if enrollment.documents and enrollment.documents|length > 0 %}
           {% for doc in enrollment.documents %}
-          <a href="{{ doc.file_path }}" target="_blank">{{ doc.file_name }}</a><br>
+            <div>
+              <b>{{ doc.doc_type }}</b>:
+              <a href="{{ doc.file_path }}" target="_blank">{{ doc.file_name }}</a>
+            </div>
           {% endfor %}
           {% else %}
           <span class="muted-note">No documents</span>

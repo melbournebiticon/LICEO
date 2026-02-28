@@ -124,13 +124,14 @@ def dashboard():
     cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     try:
-        # Load announcements for homepage (all active; visible to all branches)
+        # Load announcements for THIS branch only
         cursor.execute("""
             SELECT announcement_id AS id, title, message, created_at, is_active,
                    image_url, branch_id
             FROM announcements
+            WHERE branch_id = %s
             ORDER BY created_at DESC
-        """)
+        """, (session.get("branch_id"),))
         announcements_list = cursor.fetchall() or []
     except Exception:
         pass
@@ -184,9 +185,11 @@ def dashboard():
         # Form: Create User
         role = (request.form.get("role") or "").strip()
         base_username = (request.form.get("username") or "").strip()
+        grade_level = (request.form.get("grade_level") or "").strip()
+        full_name   = (request.form.get("full_name")   or "").strip()
+        gender      = (request.form.get("gender")      or "").strip().lower()
 
-        # ✅ UPDATED: allow librarian
-        if role not in ("registrar", "cashier", "librarian"):
+        if role not in ("registrar", "cashier", "librarian", "teacher"):
             flash("Invalid role selected.", "error")
             return redirect("/branch-admin")
 
@@ -207,24 +210,39 @@ def dashboard():
                 flash("Username already exists. Try another base username.", "error")
                 return redirect("/branch-admin")
 
-            cursor.execute("""
-                INSERT INTO users (branch_id, username, password, role, require_password_change)
-                VALUES (%s, %s, %s, %s, 1)
-            """, (
-                session.get("branch_id"),
-                username,
-                hashed_password,
-                role
-            ))
+            if role == "teacher":
+                cursor.execute("""
+                    INSERT INTO users (branch_id, username, password, role, require_password_change, grade_level, full_name, gender)
+                    VALUES (%s, %s, %s, %s, TRUE, %s, %s, %s)
+                """, (
+                    session.get("branch_id"),
+                    username,
+                    hashed_password,
+                    role,
+                    grade_level or None,
+                    full_name   or None,
+                    gender      or None,
+                ))
+            else:
+                cursor.execute("""
+                    INSERT INTO users (branch_id, username, password, role, require_password_change)
+                    VALUES (%s, %s, %s, %s, TRUE)
+                """, (
+                    session.get("branch_id"),
+                    username,
+                    hashed_password,
+                    role
+                ))
 
             db.commit()
+
 
             created_user = {"username": username, "password": temp_password, "role": role}
             flash("User created successfully!", "success")
 
-        except Exception:
+        except Exception as e:
             db.rollback()
-            flash("Failed to create user. Please try again.", "error")
+            flash(f"Failed to create user: {str(e)}", "error")
         finally:
             cursor.close()
             db.close()

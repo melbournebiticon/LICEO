@@ -33,18 +33,71 @@ def login():
                     password_valid = (stored == password)
 
                 if password_valid:
-                    # ✅ prevent leftover sessions
                     session.clear()
 
-                    session["user_id"] = user["user_id"]
-                    session["role"] = user["role"]
+                    session["user_id"]   = user["user_id"]
+                    session["role"]      = user["role"]
                     session["branch_id"] = user.get("branch_id")
+                    session["username"]  = user.get("username")
+                    session["full_name"] = user.get("full_name")  # for display in sidebar
 
-                    # Force password change if required
+                    # Fetch branch name for sidebar display
+                    if user.get("branch_id"):
+                        cursor.execute(
+                            "SELECT branch_name FROM branches WHERE branch_id = %s",
+                            (user["branch_id"],)
+                        )
+                        brow = cursor.fetchone()
+                        session["branch_name"] = brow["branch_name"] if brow else None
+                    else:
+                        session["branch_name"] = None
+
+                    role = user["role"]
+
+                    # ── For students: load enrollment session FIRST (before any redirects)
+                    if role == "student":
+                        enrollment_id = user.get("enrollment_id")
+                        if enrollment_id:
+                            cursor.execute("""
+                                SELECT e.enrollment_id, e.student_name, e.grade_level, e.branch_id,
+                                       sa.account_id
+                                FROM enrollments e
+                                LEFT JOIN student_accounts sa ON sa.enrollment_id = e.enrollment_id
+                                WHERE e.enrollment_id = %s
+                                LIMIT 1
+                            """, (enrollment_id,))
+                        else:
+                            cursor.execute("""
+                                SELECT sa.account_id, sa.enrollment_id,
+                                       e.student_name, e.grade_level, e.branch_id
+                                FROM student_accounts sa
+                                JOIN enrollments e ON e.enrollment_id = sa.enrollment_id
+                                WHERE sa.username = %s
+                                LIMIT 1
+                            """, (username,))
+                        en = cursor.fetchone()
+                        if en:
+                            session["student_account_id"]  = en.get("account_id")
+                            session["enrollment_id"]       = en.get("enrollment_id")
+                            session["student_name"]        = en.get("student_name")
+                            session["student_grade_level"] = en.get("grade_level")
+                            session["branch_id"]           = en.get("branch_id") or session.get("branch_id")
+
+                            # Make sure sidebar branch label follows the student's actual branch
+                            if session.get("branch_id"):
+                                cursor.execute(
+                                    "SELECT branch_name FROM branches WHERE branch_id = %s",
+                                    (session["branch_id"],),
+                                )
+                                brow = cursor.fetchone()
+                                if brow:
+                                    session["branch_name"] = brow["branch_name"]
+
+                    # ── Force password change if required (session is already complete)
                     if check_password_change_required(user):
                         return redirect(url_for("auth.change_password"))
 
-                    role = user["role"]
+                    # ── Route to correct dashboard
                     if role == "super_admin":
                         return redirect("/super-admin")
                     elif role == "branch_admin":
@@ -58,25 +111,10 @@ def login():
                     elif role == "parent":
                         return redirect("/parent/dashboard")
                     elif role == "student":
-                        # ✅ if student exists in users table already, still set enrollment context if possible
-                        # (optional: best effort)
-                        cursor.execute("""
-                            SELECT sa.enrollment_id, e.student_name, e.grade_level, e.branch_id
-                            FROM student_accounts sa
-                            JOIN enrollments e ON e.enrollment_id = sa.enrollment_id
-                            WHERE sa.username = %s
-                            LIMIT 1
-                        """, (username,))
-                        en = cursor.fetchone()
-                        if en:
-                            session["student_account_id"] = en.get("account_id")  # might be None; safe
-                            session["enrollment_id"] = en.get("enrollment_id")
-                            session["student_name"] = en.get("student_name")
-                            session["student_grade_level"] = en.get("grade_level")
-                            session["branch_id"] = en.get("branch_id") or session.get("branch_id")
                         return redirect("/student/dashboard")
                     else:
                         return redirect("/")
+
 
             # ✅ 2) Check student accounts (MAIN student login path)
             cursor.execute("""
@@ -115,11 +153,13 @@ def login():
 
                     if urow:
                         student_user_id = urow["user_id"]
+                        # Sync require_password_change from student_accounts → users
                         cursor.execute("""
                             UPDATE users
-                            SET role='student', branch_id=%s
+                            SET role='student', branch_id=%s,
+                                require_password_change=%s
                             WHERE user_id=%s
-                        """, (branch_id, student_user_id))
+                        """, (branch_id, student.get("require_password_change", False), student_user_id))
                     else:
                         cursor.execute("""
                             INSERT INTO users (branch_id, username, password, role, require_password_change, last_password_change)
@@ -141,6 +181,17 @@ def login():
                     session["student_account_id"] = student["account_id"]
                     session["role"] = "student"
                     session["branch_id"] = branch_id
+
+                    # Sidebar branch label for student logins (student_accounts path)
+                    if branch_id:
+                        cursor.execute(
+                            "SELECT branch_name FROM branches WHERE branch_id = %s",
+                            (branch_id,),
+                        )
+                        brow = cursor.fetchone()
+                        session["branch_name"] = brow["branch_name"] if brow else None
+                    else:
+                        session["branch_name"] = None
 
                     # ✅ enrollment reference for filters (THIS IS WHAT YOU NEED)
                     session["enrollment_id"] = enrollment_id
@@ -244,38 +295,29 @@ def change_password():
             hashed_password = generate_password_hash(new_password)
 
             try:
-                if session["role"] == "student" and session.get("student_account_id"):
-                    # Try full UPDATE first; if any fails (e.g. column missing), rollback and do password-only for both
-                    try:
+                if session["role"] == "student":
+                    # Always update BOTH tables so require_password_change is in sync
+                    if session.get("student_account_id"):
                         cursor.execute("""
                             UPDATE student_accounts
-                            SET password=%s, require_password_change=0
+                            SET password=%s, require_password_change=FALSE
                             WHERE account_id=%s
                         """, (hashed_password, session.get("student_account_id")))
-                        cursor.execute("""
-                            UPDATE users SET password=%s, require_password_change=0 WHERE user_id=%s
-                        """, (hashed_password, session.get("user_id")))
-                    except Exception:
-                        db.rollback()
-                        cursor.execute("""
-                            UPDATE student_accounts SET password=%s WHERE account_id=%s
-                        """, (hashed_password, session.get("student_account_id")))
-                        cursor.execute("""
-                            UPDATE users SET password=%s WHERE user_id=%s
-                        """, (hashed_password, session.get("user_id")))
+                    # Always update users table too
+                    cursor.execute("""
+                        UPDATE users
+                        SET password=%s, require_password_change=FALSE
+                        WHERE user_id=%s
+                    """, (hashed_password, session.get("user_id")))
 
                 else:
-                    try:
-                        cursor.execute("""
-                            UPDATE users
-                            SET password=%s, require_password_change=0
-                            WHERE user_id=%s
-                        """, (hashed_password, session.get("user_id")))
-                    except Exception:
-                        db.rollback()
-                        cursor.execute("""
-                            UPDATE users SET password=%s WHERE user_id=%s
-                        """, (hashed_password, session.get("user_id")))
+                    # All other roles: update users only
+                    cursor.execute("""
+                        UPDATE users
+                        SET password=%s, require_password_change=FALSE,
+                            last_password_change=NOW()
+                        WHERE user_id=%s
+                    """, (hashed_password, session.get("user_id")))
 
                 db.commit()
                 flash("Password changed successfully!", "success")
@@ -291,12 +333,14 @@ def change_password():
                     return redirect("/cashier")
                 elif role == "librarian":
                     return redirect("/librarian")
+                elif role == "teacher":
+                    return redirect("/teacher")
                 elif role == "parent":
                     return redirect("/parent/dashboard")
                 elif role == "student":
                     return redirect("/student/dashboard")
                 else:
-                    return redirect("/")
+                    return redirect("/super-admin")
 
             except Exception as e:
                 db.rollback()

@@ -240,7 +240,7 @@
 
   <!-- CREATE USERS -->
   <div class="card">
-    <h2 style="margin:0 0 6px 0;">Create Registrar / Cashier</h2>
+    <h2 style="margin:0 0 6px 0;">Create Registrar / Cashier / Teacher</h2>
     <div class="muted" style="margin-bottom:12px;">
       Creates a user under your branch.
     </div>
@@ -255,16 +255,71 @@
 
         <div style="flex:1; min-width:220px;">
           <label style="font-weight:700; font-size:13px;">Role</label>
-          <select class="field" name="role" required>
+          <select class="field" name="role" required id="roleSelect" onchange="toggleTeacherFields(this.value)">
             <option value="registrar">Registrar</option>
             <option value="cashier">Cashier</option>
             <option value="librarian">Librarian</option>
-
+            <option value="teacher">Teacher</option>
           </select>
         </div>
 
         <div style="display:flex; align-items:flex-end;">
           <button class="btn btn-primary" type="submit">Create User</button>
+        </div>
+      </div>
+
+      <!-- Teacher-only fields -->
+      <div id="teacherFields" style="display:none; margin-top:14px;
+           background:#f0f9ff; border:1px solid #bae6fd; border-radius:12px; padding:14px;">
+        <div style="font-weight:700; font-size:13px; margin-bottom:10px; color:#0369a1;">
+          👩‍🏫 Teacher Details
+        </div>
+        <div class="row" style="gap:12px; flex-wrap:wrap;">
+
+          <!-- Full Name -->
+          <div style="flex:2; min-width:220px;">
+            <label style="font-weight:700; font-size:13px;">Full Name *</label>
+            <input class="field" name="full_name" id="fullNameInput" placeholder="e.g., Joy Cruz"
+              style="margin-top:4px;">
+            <div class="muted" style="font-size:12px; margin-top:3px;">
+              This will show on class announcements (e.g., Ms. Joy Cruz).
+            </div>
+          </div>
+
+          <!-- Gender -->
+          <div style="flex:1; min-width:160px;">
+            <label style="font-weight:700; font-size:13px;">Gender *</label>
+            <select class="field" name="gender" id="genderSelect" style="margin-top:4px;">
+              <option value="">— Select —</option>
+              <option value="female">Female (Ms.)</option>
+              <option value="male">Male (Mr.)</option>
+            </select>
+          </div>
+
+          <!-- Grade Level -->
+          <div style="flex:1; min-width:180px;">
+            <label style="font-weight:700; font-size:13px;">Assigned Grade Level</label>
+            <select class="field" name="grade_level" style="margin-top:4px;">
+              <option value="">— Select Grade —</option>
+              <option>Kinder</option>
+              <option>Grade 1</option>
+              <option>Grade 2</option>
+              <option>Grade 3</option>
+              <option>Grade 4</option>
+              <option>Grade 5</option>
+              <option>Grade 6</option>
+              <option>Grade 7</option>
+              <option>Grade 8</option>
+              <option>Grade 9</option>
+              <option>Grade 10</option>
+              <option>Grade 11</option>
+              <option>Grade 12</option>
+            </select>
+            <div class="muted" style="font-size:12px; margin-top:3px;">
+              Teacher will auto-load this grade on their dashboard.
+            </div>
+          </div>
+
         </div>
       </div>
     </form>
@@ -279,4 +334,24 @@
     {% endif %}
   </div>
 </div>
+
+<script>
+  function toggleTeacherFields(role) {
+    const show = role === 'teacher';
+    document.getElementById('teacherFields').style.display = show ? 'block' : 'none';
+    document.getElementById('fullNameInput').required = show;
+    document.getElementById('genderSelect').required = show;
+  }
+
+  function previewPhoto(input) {
+    const wrap = document.getElementById('photoPreviewWrap');
+    const img = document.getElementById('photoPreview');
+    if (input.files && input.files[0]) {
+      img.src = URL.createObjectURL(input.files[0]);
+      wrap.style.display = 'inline';
+    } else {
+      wrap.style.display = 'none';
+    }
+  }
+</script>
 {% endblock %}

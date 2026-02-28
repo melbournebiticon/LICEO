@@ -3,21 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>{{ branch.branch_name }} | LICEO Enrollment System</title>
+    <style>
+        :root {
+            --blue-100: #e6f0ff;
+            --blue-200: #d0e2ff;
+            --blue-400: #6096fd;
+            --blue-500: #2563eb;
+            --blue-700: #153c73;
+            --gray-100: #f4f6f9;
+            --gray-300: #dde7f0;
+        }
+        body {
+            background: var(--gray-100);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 560px;
+            background: white;
+            margin: 40px auto;
+            border-radius: 15px;
+            padding: 38px 36px 34px 36px;
+            box-shadow: 0 4px 18px rgba(38,99,235,0.10);
+        }
+        .main-heading {
+            color: var(--blue-700);
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2rem;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+        .small-label {
+            color: var(--blue-500);
+            letter-spacing: 1.2px;
+            text-align: center;
+            display: block;
+            margin-bottom: 33px;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        .card {
+            background: var(--blue-100);
+            border-left: 5px solid var(--blue-500);
+            border-radius: 5px;
+            margin-bottom: 22px;
+            padding: 24px 18px;
+        }
+        .card strong {
+            color: var(--blue-700);
+            font-size: 1.12rem;
+            margin-right: 8px;
+        }
+        .btn, button.btn {
+            background: linear-gradient(90deg, var(--blue-500) 85%, var(--blue-400) 100%);
+            color: white;
+            padding: 13px 32px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            margin-top: 15px;
+            display: inline-block;
+            transition: background 0.18s, transform 0.2s;
+        }
+        .btn:hover, button.btn:hover {
+            background: linear-gradient(90deg, var(--blue-700) 75%, var(--blue-500) 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+        hr {
+            margin: 36px 0 28px 0;
+            border: none;
+            border-top: 2px solid var(--gray-300);
+        }
+        .next-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 12px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 18px 5vw 20px 5vw;
+            }
+            .main-heading { font-size: 1.3rem; }
+        }
+    </style>
 </head>
 <body>
-    <h2>{{ branch.branch_name }}</h2>
-    <p>{{ branch.location }}</p>
-
-    <a href="/branch/{{ branch.branch_id }}/enroll">
-    Enroll in this Branch
-    </a>
-
+    <div class="container">
+        <div class="main-heading">{{ branch.branch_name }}</div>
+        <span class="small-label">LICEO Enrollment System</span>
+        <div class="card">
+            <strong>Location:</strong> {{ branch.location }}
+        </div>
+        <a href="/branch/{{ branch.branch_id }}/enroll" class="btn">Start Enrollment</a>
+        <hr>
+        <div class="next-actions">
+            <a href="/track" class="btn" style="padding: 10px 18px; font-size: 14px;">Track Enrollment Status</a>
+            <a href="/" class="btn" style="padding: 10px 18px; font-size: 14px; background: var(--blue-200); color: var(--blue-700);">Back to Home</a>
+        </div>
+    </div>
+    <!-- Add after branch info -->
+{% if announcements %}
 <hr>
+<h3>Branch Announcements</h3>
+{% for ann in announcements %}
+  <div class="card">
+    <strong>{{ ann.title }}</strong>
+    <div>{{ ann.message }}</div>
+    <div style="font-size:11px;color:#2563eb;margin-top:7px;">{{ ann.created_at.strftime("%Y-%m-%d %H:%M") }}</div>
+  </div>
+{% endfor %}
+{% endif %}
 
-<p>
-    <a href="/track">Track Enrollment Status</a>
-</p>
-
+{% if faqs %}
+<hr>
+<h3>Branch FAQs</h3>
+{% for faq in faqs %}
+  <div class="card">
+    <strong>{{ faq.question }}</strong>
+    <div>{{ faq.answer }}</div>
+  </div>
+{% endfor %}
+{% endif %}
 </body>
 </html>

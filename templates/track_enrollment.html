@@ -2,50 +2,127 @@
 <html>
 <head>
     <title>Track Enrollment</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 14px;
+            padding: 35px 34px 30px 34px;
+            box-shadow: 0 5px 24px rgba(38,99,235,0.12);
+        }
+        h2, h3 {
+            color: #2563eb;
+            text-align: center;
+        }
+        form {
+            margin-bottom: 28px;
+            text-align: center;
+        }
+        input[type="number"] {
+            padding: 9px 16px;
+            border-radius: 6px;
+            border: 1px solid #6096fd;
+            width: 220px;
+            font-size: 1rem;
+            margin-right: 10px;
+        }
+        button {
+            background: linear-gradient(90deg, #2563eb 80%, #6096fd 100%);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 10px 28px;
+            cursor: pointer;
+            transition: background 0.18s, transform 0.19s;
+        }
+        button:hover {
+            background: linear-gradient(90deg, #153c73 65%, #6096fd 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+        hr {
+            margin: 36px 0 28px 0;
+            border: none;
+            border-top: 2px solid #e6f0ff;
+        }
+        .card {
+            background: #e6f0ff;
+            border-left: 5px solid #2563eb;
+            border-radius: 7px;
+            margin-bottom: 18px;
+            padding: 18px 15px;
+        }
+        .card strong {
+            color: #153c73;
+            font-size: 1.09rem;
+        }
+        .status-label {
+            font-weight: bold;
+            padding: 4px 11px;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .pending { background: #fde68a; color: #b45309; }
+        .approved { background: #bbf7d0; color: #166534;}
+        .rejected { background: #fecaca; color: #be123c;}
+        .doc-row { margin-bottom: 8px; }
+        .label {
+            color: #2563eb;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
+<div class="container">
 
-<h2>Track Your Enrollment</h2>
+    <h2>Track Your Enrollment</h2>
 
-<form method="post">
-    <input type="number" name="enrollment_id" placeholder="Enter Enrollment ID" required>
-    <button type="submit">Check Status</button>
-</form>
+    <form method="post">
+        <input type="number" name="enrollment_id" placeholder="Enter Enrollment ID" required>
+        <button type="submit">Check Status</button>
+    </form>
 
-<hr>
+    <hr>
 
-{% if enrollment %}
-<h3>Enrollment Details</h3>
+    {% if enrollment %}
+    <h3>Enrollment Details</h3>
+    <div class="card">
+        <p><span class="label">Name:</span> {{ enrollment.student_name }}</p>
+        <p><span class="label">Branch:</span> {{ enrollment.branch_name }}</p>
+        <p><span class="label">Grade Level:</span> {{ enrollment.grade_level }}</p>
+        <p>
+            <span class="label">Status:</span>
+            {% if enrollment.status == 'pending' %}
+                <span class="status-label pending">⏳ Pending</span>
+            {% elif enrollment.status == 'approved' %}
+                <span class="status-label approved">✅ Approved</span>
+            {% else %}
+                <span class="status-label rejected">❌ Rejected</span>
+            {% endif %}
+        </p>
+    </div>
 
-<p><b>Name:</b> {{ enrollment.student_name }}</p>
-<p><b>Branch:</b> {{ enrollment.branch_name }}</p>
-<p><b>Grade:</b> {{ enrollment.grade_level }}</p>
-<p><b>Status:</b>
-    {% if enrollment.status == 'pending' %}
-        ⏳ Pending
-    {% elif enrollment.status == 'approved' %}
-        ✅ Approved
+    <h4>Documents Submitted</h4>
+    {% if documents %}
+        {% for doc in documents %}
+            <div class="doc-row">
+                <b>{{ doc.doc_type }}:</b>
+                <a href="{{ doc.file_path }}" target="_blank">{{ doc.file_name }}</a>
+            </div>
+        {% endfor %}
     {% else %}
-        ❌ Rejected
+        <span style="color:#999;">No documents uploaded.</span>
     {% endif %}
-</p>
+    {% endif %}
 
-<h4>Documents</h4>
-{% for doc in documents %}
-    <a href="{{ doc.file_path }}" target="_blank">{{ doc.file_name }}</a><br>
-{% endfor %}
-
-<h4>Books Reserved</h4>
-{% for book in books %}
-    {{ book.book_name }} ({{ book.quantity }})<br>
-{% endfor %}
-
-<h4>Uniforms Reserved</h4>
-{% for u in uniforms %}
-    {{ u.uniform_type }} - {{ u.size }} ({{ u.quantity }})<br>
-{% endfor %}
-
-{% endif %}
-
+</div>
 </body>
 </html>

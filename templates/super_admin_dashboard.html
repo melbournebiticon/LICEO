@@ -165,24 +165,73 @@
     <!-- Create New Branch -->
     <div class="card">
         <h2>➕ Create New Branch</h2>
-        <p class="muted">Creates a new branch and its default admin account.</p>
+        <p class="muted">
+            Creates a new branch and its default admin account.
+            Branch name and code are selected from the official list.
+        </p>
 
         <form method="POST" action="/super-admin">
             <div class="form-group">
-                <label for="branch_name">Branch Name:</label>
-                <input type="text" id="branch_name" name="branch_name"
-                    placeholder="e.g., Main Campus, Quezon City Branch" required>
+                <label for="branch_name_select">Branch:</label>
+                <select id="branch_name_select" name="branch_name" required>
+                    <option value="">— Select Branch —</option>
+                    <option value="Liceo de Bay" data-code="LDBAY">Liceo de Bay — LDBAY</option>
+                    <option value="Liceo de Cabuyao" data-code="LDCAB">Liceo de Cabuyao — LDCAB</option>
+                    <option value="Liceo de Calamba" data-code="LDCAL">Liceo de Calamba — LDCAL</option>
+                    <option value="Liceo de Calauan" data-code="LDCAU">Liceo de Calauan — LDCAU</option>
+                    <option value="Liceo de Cavinti" data-code="LDCAV">Liceo de Cavinti — LDCAV</option>
+                    <option value="Liceo de Liliw" data-code="LDLIW">Liceo de Liliw — LDLIW</option>
+                    <option value="Liceo de Los Baños" data-code="LDLB">Liceo de Los Baños — LDLB</option>
+                    <option value="Liceo de Luisiana" data-code="LDLUI">Liceo de Luisiana — LDLUI</option>
+                    <option value="Liceo de Majayjay" data-code="LDMAJ">Liceo de Majayjay — LDMAJ</option>
+                    <option value="Liceo de Mamatid" data-code="LDMAM">Liceo de Mamatid — LDMAM</option>
+                    <option value="Liceo de Paete" data-code="LDPAE">Liceo de Paete — LDPAE</option>
+                    <option value="Liceo de Pagsanjan" data-code="LDPSJ">Liceo de Pagsanjan — LDPSJ</option>
+                    <option value="Liceo de Pakil" data-code="LDPKL">Liceo de Pakil — LDPKL</option>
+                    <option value="Liceo de Pila" data-code="LDPILA">Liceo de Pila — LDPILA</option>
+                    <option value="Liceo de San Antonio" data-code="LDSANT">Liceo de San Antonio — LDSANT</option>
+                    <option value="Liceo de San Pablo" data-code="LDSPC">Liceo de San Pablo — LDSPC</option>
+                    <option value="Liceo de San Pedro" data-code="LDSPD">Liceo de San Pedro — LDSPD</option>
+                    <option value="Liceo de Victoria" data-code="LDVIC">Liceo de Victoria — LDVIC</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="branch_code">Branch Code:</label>
+                <input type="text" id="branch_code" name="branch_code" placeholder="e.g., LDMAJ" readonly required>
             </div>
 
             <div class="form-group">
                 <label for="location">Location:</label>
-                <input type="text" id="location" name="location" placeholder="e.g., Manila, Cebu, Davao" required>
+                <input type="text" id="location" name="location" placeholder="e.g., Laguna" required>
             </div>
 
             <button type="submit" class="btn btn-primary">
                 ➕ Create Branch & Admin Account
             </button>
         </form>
+
+        <script>
+            (function () {
+                const select = document.getElementById('branch_name_select');
+                const codeInput = document.getElementById('branch_code');
+
+                function syncBranchCode() {
+                    const opt = select.options[select.selectedIndex];
+                    if (opt && opt.dataset && opt.dataset.code) {
+                        codeInput.value = opt.dataset.code;
+                    } else {
+                        codeInput.value = '';
+                    }
+                }
+
+                if (select && codeInput) {
+                    select.addEventListener('change', syncBranchCode);
+                    // initialize on page load
+                    syncBranchCode();
+                }
+            })();
+        </script>
     </div>
 
     <!-- FAQs shortcut card (optional, but visible in page too) -->

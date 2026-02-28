@@ -28,9 +28,10 @@ def super_admin_dashboard():
     # POST: create branch + admin
     if request.method == "POST":
         branch_name = request.form.get("branch_name", "").strip()
+        branch_code = (request.form.get("branch_code") or "").strip().upper()
         location = request.form.get("location", "").strip()
 
-        if not branch_name or not location:
+        if not branch_name or not location or not branch_code:
             flash("Branch name and location are required.", "error")
             return redirect(url_for("super_admin.super_admin_dashboard"))
 
@@ -45,17 +46,23 @@ def super_admin_dashboard():
         try:
             cursor.execute("BEGIN;")
 
-            # Check for duplicate branch names
+            # Check for duplicate branch names / codes
             cursor.execute("SELECT 1 FROM branches WHERE branch_name=%s", (branch_name,))
             if cursor.fetchone():
                 db.rollback()
                 flash("Branch name already exists.", "error")
                 return redirect(url_for("super_admin.super_admin_dashboard"))
 
-            # Insert branch and get branch_id
+            cursor.execute("SELECT 1 FROM branches WHERE branch_code=%s", (branch_code,))
+            if cursor.fetchone():
+                db.rollback()
+                flash("Branch code already exists.", "error")
+                return redirect(url_for("super_admin.super_admin_dashboard"))
+
+            # Insert branch and get branch_id (store branch_code)
             cursor.execute(
-                "INSERT INTO branches (branch_name, location, is_active) VALUES (%s, %s, TRUE) RETURNING branch_id",
-                (branch_name, location)
+                "INSERT INTO branches (branch_name, location, branch_code, is_active) VALUES (%s, %s, %s, TRUE) RETURNING branch_id",
+                (branch_name, location, branch_code)
             )
             branch_id = cursor.fetchone()["branch_id"]
 

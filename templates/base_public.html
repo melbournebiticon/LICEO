@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+        {% block full_title %}
+            {% block title %}Liceo LMS{% endblock %}
+            {% if session.get('branch_name') %}
+                — {{ session.get('branch_name') }}
+            {% else %}
+                — Liceo de Majayjay
+            {% endif %}
+        {% endblock %}
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #f0f4f9;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --nav: #1a2e5a;
+            --nav2: #142347;
+            --nav-accent: #3b82f6;
+            --btn: #2563eb;
+            --btnHover: #1d4ed8;
+            --success: #16a34a;
+            --error: #dc2626;
+            --info: #2563eb;
+            --warning: #d97706;
+            --radius: 12px;
+            --shadow: 0 1px 3px rgba(0, 0, 0, .08), 0 1px 2px rgba(0, 0, 0, .04);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 14px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ══ TOP NAVBAR ══ */
+        .pub-nav {
+            background: linear-gradient(135deg, var(--nav) 0%, var(--nav2) 100%);
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            height: 62px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, .22);
+            gap: 4px;
+        }
+
+        .pub-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: 900;
+            font-size: 1.05rem;
+            letter-spacing: -.02em;
+            margin-right: 24px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .pub-brand-icon {
+            width: 34px;
+            height: 34px;
+            background: var(--nav-accent);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .pub-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .pub-link {
+            color: rgba(255, 255, 255, .82);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.88rem;
+            padding: 7px 14px;
+            border-radius: 8px;
+            transition: background 0.15s, color 0.15s;
+            white-space: nowrap;
+        }
+
+        .pub-link:hover {
+            background: rgba(255, 255, 255, .12);
+            color: #fff;
+        }
+
+        .pub-link.active {
+            background: rgba(255, 255, 255, .15);
+            color: #fff;
+        }
+
+        .pub-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .pub-btn-login {
+            background: var(--nav-accent);
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 9px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            text-decoration: none;
+            transition: background 0.15s, transform 0.15s;
+            cursor: pointer;
+        }
+
+        .pub-btn-login:hover {
+            background: var(--btnHover);
+            transform: translateY(-1px);
+        }
+
+        .pub-btn-outline {
+            background: transparent;
+            color: rgba(255, 255, 255, .85);
+            border: 1px solid rgba(255, 255, 255, .3);
+            padding: 7px 16px;
+            border-radius: 9px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .pub-btn-outline:hover {
+            background: rgba(255, 255, 255, .12);
+            color: #fff;
+        }
+
+        /* User badge (when logged in from homepage) */
+        .pub-user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, .1);
+            border: 1px solid rgba(255, 255, 255, .15);
+            border-radius: 999px;
+            padding: 4px 14px 4px 6px;
+        }
+
+        .pub-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--nav-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .pub-logout {
+            color: rgba(255, 255, 255, .75);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 7px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, .2);
+            transition: all 0.15s;
+        }
+
+        .pub-logout:hover {
+            background: rgba(239, 68, 68, .2);
+            color: #fca5a5;
+            border-color: rgba(239, 68, 68, .35);
+        }
+
+        /* ══ FLASH ══ */
+        .flash-wrap {
+            max-width: 1200px;
+            margin: 18px auto;
+            padding: 0 24px;
+        }
+
+        .flash {
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            margin: 6px 0;
+            background: var(--card);
+            border: 1px solid var(--border);
+            font-size: 13.5px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .flash.success {
+            border-left: 4px solid var(--success);
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .flash.success::before {
+            content: '✅';
+        }
+
+        .flash.error {
+            border-left: 4px solid var(--error);
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .flash.error::before {
+            content: '❌';
+        }
+
+        .flash.info {
+            border-left: 4px solid var(--info);
+            background: #eff6ff;
+            color: #1e40af;
+        }
+
+        .flash.info::before {
+            content: 'ℹ️';
+        }
+
+        .flash.warning {
+            border-left: 4px solid var(--warning);
+            background: #fffbeb;
+            color: #92400e;
+        }
+
+        .flash.warning::before {
+            content: '⚠️';
+        }
+
+        /* ══ CONTENT ══ */
+        .pub-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 28px 24px 80px;
+        }
+    </style>
+
+    {% block styles %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- ══ PUBLIC NAVBAR ══ -->
+    <nav class="pub-nav">
+        <a class="pub-brand" href="/">
+            <span class="pub-brand-icon">🎓</span>
+            Liceo LMS
+        </a>
+
+        <div class="pub-nav-links">
+            <a class="pub-link {% if request.path == '/' %}active{% endif %}" href="/">Home</a>
+            <a class="pub-link" href="/#faq">FAQ</a>
+            <a class="pub-link" href="/track">🔍 Track</a>
+        </div>
+
+        <div class="pub-nav-right">
+            {% if session.get('role') %}
+            {% set role_labels = {
+            'super_admin': 'Super Admin', 'branch_admin': 'Branch Admin',
+            'registrar': 'Registrar', 'cashier': 'Cashier',
+            'librarian': 'Librarian', 'parent': 'Parent',
+            'student': 'Student', 'teacher': 'Teacher'
+            } %}
+            {% set disp = session.get('student_name') or session.get('username') or 'User' %}
+            <div class="pub-user-badge">
+                <div class="pub-avatar">{{ disp[0] | upper }}</div>
+                <span style="color:#fff; font-size:0.82rem; font-weight:600;">{{ disp }}</span>
+            </div>
+            {% set role_map = {
+            'student': '/student/dashboard', 'parent': '/parent/dashboard',
+            'teacher': '/teacher', 'registrar': '/registrar',
+            'cashier': '/cashier', 'librarian': '/librarian',
+            'branch_admin': '/branch-admin', 'super_admin': '/super-admin'
+            } %}
+            <a class="pub-btn-outline" href="{{ role_map.get(session.get('role'), '/') }}">Go to Dashboard</a>
+            <a class="pub-logout" href="/logout">↩ Logout</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- ══ FLASH ══ -->
+    <div class="flash-wrap">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, msg in messages %}
+        <div class="flash {{ category }}">{{ msg }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- ══ CONTENT ══ -->
+    <div class="pub-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Chatbot -->
+    {% if session.get('role') != 'super_admin' %}
+    {% include "components/chatbot_widget.html" ignore missing %}
+    {% endif %}
+
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

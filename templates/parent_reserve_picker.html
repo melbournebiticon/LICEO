@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Reserve Items — Select Child{% endblock %}
+{% block page_title %}Reserve Items{% endblock %}
+
+{% block content %}
+<div style="max-width:600px;">
+
+    <div class="card">
+        <div class="card-header">🛒 Select Child to Reserve For</div>
+        <p style="color:var(--muted); font-size:0.9rem; margin-bottom:18px;">
+            You have multiple linked children. Choose which child's reservation you want to manage:
+        </p>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            {% for child in children %}
+            <a href="{{ url_for('student.student_reservation', enrollment_id=child.enrollment_id) }}" style="
+           display:flex; align-items:center; gap:14px;
+           background: linear-gradient(135deg,#f0f4ff,#eef2ff);
+           border: 1px solid #c7d2fe;
+           border-left: 4px solid #6366f1;
+           border-radius: 14px;
+           padding: 16px 20px;
+           text-decoration: none;
+           color: var(--text);
+           transition: transform 0.15s, box-shadow 0.15s;
+         " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 18px rgba(99,102,241,.18)'"
+                onmouseout="this.style.transform='';this.style.boxShadow=''">
+                <div style="
+          width:44px; height:44px;
+          background:linear-gradient(135deg,#6366f1,#7c3aed);
+          border-radius:50%;
+          display:flex; align-items:center; justify-content:center;
+          color:#fff; font-weight:800; font-size:1.1rem;
+          flex-shrink:0;">
+                    {{ child.student_name[0] | upper }}
+                </div>
+                <div>
+                    <div style="font-weight:700; font-size:0.97rem;">{{ child.student_name }}</div>
+                    <div style="font-size:0.8rem; color:var(--muted);">Grade {{ child.grade_level }} · Enrollment #{{
+                        child.enrollment_id }}</div>
+                </div>
+                <span style="margin-left:auto; color:#6366f1; font-size:1.1rem;">→</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <a href="{{ url_for('parent.dashboard') }}" class="btn btn-secondary" style="margin-top:8px;">
+        ← Back to Dashboard
+    </a>
+
+</div>
+{% endblock %}

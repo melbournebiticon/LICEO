@@ -120,15 +120,7 @@
     flex: 1;
   }
 
-  .thumb {
-    width: 90px;
-    height: 110px;
-    border-radius: 8px;
-    border: 1px solid #eee;
-    object-fit: contain;
-    background: #fafafa;
-    flex-shrink: 0;
-  }
+
 
   .item-info {
     flex: 1;
@@ -332,20 +324,6 @@
         <div class="item-card item-card-js {% if it.available <= 0 %}out-of-stock{% endif %}"
           data-category="{{ it.category }}" data-item-id="{{ it.item_id }}">
           <div class="item-top">
-            {% set imgpath = it.image_url %}
-            {% if not imgpath %}
-            {% set imgpath = '/static/img/placeholder.jpg' %}
-            {% elif imgpath.startswith('http') %}
-            {# keep as is #}
-            {% elif imgpath.startswith('/') %}
-            {# keep as is #}
-            {% else %}
-            {% set imgpath = '/' ~ imgpath %}
-            {% endif %}
-
-            <img class="thumb" src="{{ imgpath }}" alt="{{ it.item_name }}"
-              onerror="this.src='/static/img/placeholder.jpg'">
-
             <div class="item-info">
               <div class="title">{{ it.item_name }}</div>
 

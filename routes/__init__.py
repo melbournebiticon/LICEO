@@ -12,6 +12,7 @@ from routes.cashier import cashier_bp  # type: ignore
 from routes.parent import parent_bp  # type: ignore
 from routes.student_portal import student_portal_bp  # type: ignore
 from routes.librarian import librarian_bp  # type: ignore
+from routes.teacher import teacher_bp  # type: ignore
 
 
 def _register_bp_once(app, bp, **kwargs):
@@ -43,6 +44,7 @@ def init_routes(app):
     _register_bp_once(app, parent_bp)
     _register_bp_once(app, student_portal_bp)
     _register_bp_once(app, librarian_bp)
+    _register_bp_once(app, teacher_bp)
 
     # Serve uploaded files (avoid duplicate route on reload)
     if "uploaded_file" not in app.view_functions:

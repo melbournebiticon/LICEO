@@ -4,12 +4,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Liceo LMS{% endblock %}</title>
+  <title>
+    {% block full_title %}
+      {% block title %}Liceo LMS{% endblock %}
+      {% if session.get('branch_name') %}
+        — {{ session.get('branch_name') }}
+      {% else %}
+        — Liceo de Majayjay
+      {% endif %}
+    {% endblock %}
+  </title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
 
   <style>
+    /* ══════════════════════════════════════════
+       DESIGN TOKENS
+    ══════════════════════════════════════════ */
     :root {
       --bg: #f0f4f9;
       --card: #ffffff;
@@ -17,23 +30,26 @@
       --muted: #64748b;
       --border: #e2e8f0;
 
-      --nav: #1a2e5a;
-      --nav2: #162548;
-      --nav-accent: #3b82f6;
+      --sidebar-w: 240px;
+      --sidebar-bg: #1a2e5a;
+      --sidebar-dark: #142347;
+      --sidebar-text: rgba(255, 255, 255, .82);
+      --sidebar-muted: rgba(255, 255, 255, .45);
+      --sidebar-hover: rgba(255, 255, 255, .10);
+      --sidebar-active: #2563eb;
+
+      --topbar-h: 56px;
 
       --btn: #2563eb;
       --btnHover: #1d4ed8;
-      --dark: #111827;
-      --darkHover: #0d1520;
-
       --success: #16a34a;
       --error: #dc2626;
       --info: #2563eb;
       --warning: #d97706;
 
       --radius: 12px;
-      --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --shadow: 0 1px 3px rgba(0, 0, 0, .08), 0 1px 2px rgba(0, 0, 0, .04);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, .10);
     }
 
     *,
@@ -53,170 +69,360 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ===== NAVBAR ===== */
-    nav {
-      background: linear-gradient(135deg, var(--nav) 0%, var(--nav2) 100%);
-      padding: 0 24px;
-      display: flex;
-      align-items: center;
-      height: 58px;
-      position: sticky;
+    /* ══════════════════════════════════════════
+       SIDEBAR
+    ══════════════════════════════════════════ */
+    .sidebar {
+      position: fixed;
       top: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
-      gap: 4px;
-    }
-
-    /* Logo / brand */
-    .nav-brand {
+      left: 0;
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: var(--sidebar-bg);
       display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      color: #fff;
-      font-weight: 800;
-      font-size: 15px;
-      letter-spacing: -0.3px;
-      margin-right: 8px;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    .nav-brand-icon {
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.18);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-    }
-
-    .nav-divider {
-      width: 1px;
-      height: 22px;
-      background: rgba(255, 255, 255, 0.15);
-      margin: 0 6px;
-      flex-shrink: 0;
-    }
-
-    .nav-left {
-      display: flex;
-      align-items: center;
-      gap: 2px;
-      flex: 1;
+      flex-direction: column;
+      z-index: 1100;
+      transition: transform 0.28s cubic-bezier(.4, 0, .2, 1),
+        box-shadow 0.28s;
       overflow: hidden;
     }
 
-    .nav-right {
+    /* Hidden by default on mobile, shown on desktop */
+    @media (max-width: 900px) {
+      .sidebar {
+        transform: translateX(-100%);
+        box-shadow: none;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 4px 0 32px rgba(0, 0, 0, .35);
+      }
+    }
+
+    @media (min-width: 901px) {
+      .sidebar {
+        transform: translateX(0);
+      }
+
+      .sidebar.collapsed {
+        transform: translateX(-100%);
+      }
+    }
+
+    /* Brand */
+    .sb-brand {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      padding: 18px 18px 16px;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
       flex-shrink: 0;
     }
 
-    .nav-link {
-      color: rgba(255, 255, 255, 0.82);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 13.5px;
-      padding: 6px 11px;
-      border-radius: 8px;
-      transition: background 0.15s, color 0.15s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-
-    .nav-link:hover {
-      background: rgba(255, 255, 255, 0.12);
-      color: #fff;
-    }
-
-    .nav-link.active {
-      background: rgba(255, 255, 255, 0.15);
-      color: #fff;
-      font-weight: 600;
-    }
-
-    /* Logout button style */
-    .nav-logout {
-      color: rgba(255, 255, 255, 0.75);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 13px;
-      padding: 6px 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      transition: all 0.15s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .nav-logout:hover {
-      background: rgba(239, 68, 68, 0.2);
-      border-color: rgba(239, 68, 68, 0.4);
-      color: #fca5a5;
-    }
-
-    /* User badge */
-    .nav-user {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255, 255, 255, 0.10);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 999px;
-      padding: 5px 12px 5px 6px;
-    }
-
-    .nav-avatar {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: var(--nav-accent);
+    .sb-brand-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--sidebar-active);
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .sb-brand-text {
+      line-height: 1.15;
+    }
+
+    .sb-brand-name {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -.02em;
+    }
+
+    .sb-brand-sub {
+      font-size: 0.68rem;
+      color: var(--sidebar-muted);
+      font-weight: 500;
+    }
+
+    /* User info strip */
+    .sb-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      flex-shrink: 0;
+    }
+
+    .sb-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #7c3aed);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-weight: 700;
+      font-size: 0.9rem;
       color: #fff;
       flex-shrink: 0;
     }
 
-    .nav-user-info {
-      display: flex;
-      flex-direction: column;
+    .sb-user-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #fff;
       line-height: 1.2;
     }
 
-    .nav-user-name {
-      font-size: 12.5px;
-      font-weight: 600;
-      color: #fff;
-    }
-
-    .nav-user-role {
-      font-size: 10.5px;
-      color: rgba(255, 255, 255, 0.6);
+    .sb-user-role {
+      font-size: 0.7rem;
+      color: var(--sidebar-muted);
       font-weight: 500;
       text-transform: capitalize;
     }
 
-    /* ===== FLASH MESSAGES ===== */
-    .flash-wrap {
-      max-width: 1200px;
-      margin: 16px auto 0;
+    /* Nav */
+    .sb-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0;
+    }
+
+    .sb-nav::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .sb-nav::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .12);
+      border-radius: 4px;
+    }
+
+    .sb-section-label {
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      color: var(--sidebar-muted);
+      padding: 14px 18px 4px;
+    }
+
+    .sb-link {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 18px;
+      color: var(--sidebar-text);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      border-radius: 0;
+      transition: background 0.15s, color 0.15s;
+      position: relative;
+    }
+
+    .sb-link:hover {
+      background: var(--sidebar-hover);
+      color: #fff;
+    }
+
+    .sb-link.active {
+      background: var(--sidebar-active);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .sb-link.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: #93c5fd;
+      border-radius: 0 3px 3px 0;
+    }
+
+    .sb-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      width: 22px;
+      text-align: center;
+    }
+
+    /* Logout at bottom */
+    .sb-footer {
+      border-top: 1px solid rgba(255, 255, 255, .08);
+      padding: 10px 0;
+      flex-shrink: 0;
+    }
+
+    .sb-logout {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 18px;
+      color: rgba(252, 165, 165, .85);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .sb-logout:hover {
+      background: rgba(239, 68, 68, .15);
+      color: #fca5a5;
+    }
+
+    /* ══════════════════════════════════════════
+       OVERLAY (mobile)
+    ══════════════════════════════════════════ */
+    .sb-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .45);
+      z-index: 1099;
+    }
+
+    .sb-overlay.show {
+      display: block;
+    }
+
+    /* ══════════════════════════════════════════
+       TOPBAR
+    ══════════════════════════════════════════ */
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: var(--sidebar-w);
+      right: 0;
+      height: var(--topbar-h);
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
       padding: 0 24px;
+      gap: 12px;
+      z-index: 1000;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, .06);
+      transition: left 0.28s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    @media (max-width: 900px) {
+      .topbar {
+        left: 0;
+      }
+    }
+
+    .topbar.sb-collapsed {
+      left: 0;
+    }
+
+    /* Hamburger */
+    .hamburger {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 8px;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .hamburger:hover {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .hamburger span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: currentColor;
+      border-radius: 2px;
+      transition: transform 0.25s, opacity 0.25s;
+    }
+
+    .topbar-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .topbar-change-pw {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .topbar-change-pw:hover {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* ══════════════════════════════════════════
+       MAIN CONTENT
+    ══════════════════════════════════════════ */
+    .main-wrap {
+      margin-left: var(--sidebar-w);
+      margin-top: var(--topbar-h);
+      min-height: calc(100vh - var(--topbar-h));
+      transition: margin-left 0.28s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    @media (max-width: 900px) {
+      .main-wrap {
+        margin-left: 0;
+      }
+    }
+
+    .main-wrap.sb-collapsed {
+      margin-left: 0;
+    }
+
+    .page-content {
+      padding: 28px 28px 60px;
+      max-width: 1280px;
+    }
+
+    /* ══════════════════════════════════════════
+       FLASH MESSAGES
+    ══════════════════════════════════════════ */
+    .flash-wrap {
+      margin-bottom: 16px;
     }
 
     .flash {
       padding: 13px 16px;
       border-radius: var(--radius);
-      margin: 8px 0;
+      margin: 6px 0;
       background: var(--card);
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
@@ -225,11 +431,6 @@
       display: flex;
       align-items: center;
       gap: 10px;
-    }
-
-    .flash::before {
-      font-size: 15px;
-      flex-shrink: 0;
     }
 
     .flash.success {
@@ -272,14 +473,111 @@
       content: '⚠️';
     }
 
-    /* ===== LAYOUT ===== */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
+    /* ══════════════════════════════════════════
+       CARD & UTILITIES
+    ══════════════════════════════════════════ */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
     }
 
-    /* ===== GLOBAL BUTTONS ===== */
+    .card-header {
+      font-weight: 800;
+      font-size: 1.15rem;
+      margin-bottom: 18px;
+      color: var(--text);
+    }
+
+    /* Grids */
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    @media (max-width:700px) {
+
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Stat cards */
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card .stat-value {
+      font-size: 2rem;
+      font-weight: 900;
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-top: 4px;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .badge-green {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-red {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .badge-gray {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .badge-blue {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .badge-yellow {
+      background: #fef9c3;
+      color: #92400e;
+    }
+
+    /* Buttons */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -299,7 +597,7 @@
 
     .btn:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, .12);
     }
 
     .btn:active {
@@ -316,16 +614,6 @@
       background: var(--btnHover);
     }
 
-    .btn-dark {
-      background: var(--dark);
-      color: #fff;
-      border-color: var(--dark);
-    }
-
-    .btn-dark:hover {
-      background: var(--darkHover);
-    }
-
     .btn-secondary {
       background: #fff;
       color: var(--text);
@@ -335,6 +623,109 @@
     .btn-secondary:hover {
       background: #f8fafc;
     }
+
+    .btn-dark {
+      background: #111827;
+      color: #fff;
+      border-color: #111827;
+    }
+
+    .btn-dark:hover {
+      background: #0d1520;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: #fff;
+      border-color: #dc2626;
+    }
+
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12.5px;
+    }
+
+    /* Tables */
+    .table-wrap {
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    thead th {
+      background: #f0f4ff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #1a2e5a;
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: #f8faff;
+    }
+
+    tbody td {
+      padding: 11px 14px;
+      vertical-align: middle;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.82rem;
+      margin-bottom: 5px;
+      color: var(--text);
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      font-size: 0.9rem;
+      font-family: 'Inter', Arial, sans-serif;
+      color: var(--text);
+      background: var(--card);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--btn);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+    }
   </style>
 
   {% block head %}{% endblock %}
@@ -343,114 +734,268 @@
 
 <body>
 
-  <nav>
+  <!-- ══ SIDEBAR OVERLAY (mobile) ══ -->
+  <div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" id="sidebar">
+
     <!-- Brand -->
-    <a class="nav-brand" href="/">
-      <span class="nav-brand-icon">🎓</span>
-      Liceo LMS
+    <a class="sb-brand" href="/">
+      <span class="sb-brand-icon">🎓</span>
+      <span class="sb-brand-text">
+        <span class="sb-brand-name">Liceo LMS</span>
+        {% if session.get('branch_name') %}
+        <span class="sb-brand-sub">{{ session.get('branch_name') }}</span>
+        {% endif %}
+      </span>
     </a>
 
-    <div class="nav-divider"></div>
+    <!-- User strip -->
+    {% if session.get('role') %}
+    {% set role_labels = {
+    'super_admin': 'Super Admin', 'branch_admin': 'Branch Admin',
+    'registrar': 'Registrar', 'cashier': 'Cashier',
+    'librarian': 'Librarian', 'parent': 'Parent',
+    'student': 'Student', 'teacher': 'Teacher'
+    } %}
+    {% set role_raw = session.get('role') %}
+    {% set role_label = role_labels.get(role_raw, role_raw | title) %}
+    {% if session.get('full_name') %}
+    {% set disp = session.get('full_name') %}
+    {% elif session.get('student_name') %}
+    {% set disp = session.get('student_name') %}
+    {% elif session.get('username') %}
+    {% set disp = session.get('username') %}
+    {% else %}
+    {% set disp = role_label %}
+    {% endif %}
 
-    <div class="nav-left">
-      {% if session.get('role') %}
+    <div class="sb-user">
+      <div class="sb-avatar">{{ disp[0] | upper }}</div>
+      <div>
+        <div class="sb-user-name">{{ disp }}</div>
+        <div class="sb-user-role">{{ role_label }}</div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Navigation -->
+    <nav class="sb-nav">
 
       {% if session.get('role') == 'student' %}
-      <a class="nav-link" href="/student/dashboard">🏠 Home</a>
-      <a class="nav-link" href="/student/billing">🧾 Billing</a>
+      <div class="sb-section-label">Student</div>
+      <a class="sb-link {% if request.path == '/student/dashboard' %}active{% endif %}" href="/student/dashboard">
+        <span class="sb-icon">🏠</span> Dashboard
+      </a>
+      <a class="sb-link {% if request.path == '/student/billing' %}active{% endif %}" href="/student/billing">
+        <span class="sb-icon">💳</span> Billing
+      </a>
+      <a class="sb-link {% if request.path == '/student/enrollment-status' %}active{% endif %}"
+        href="/student/enrollment-status">
+        <span class="sb-icon">📋</span> Enrollment
+      </a>
+      <a class="sb-link {% if request.path == '/student/reservations' %}active{% endif %}" href="/student/reservations">
+        <span class="sb-icon">🛒</span> Reservations
+      </a>
 
       {% elif session.get('role') == 'parent' %}
-      <a class="nav-link" href="/parent/dashboard">👨‍👩‍👧 My Children</a>
-      <a class="nav-link" href="/parent/link-child">➕ Add Child</a>
+      <div class="sb-section-label">Parent</div>
+      <a class="sb-link {% if request.path == '/parent/dashboard' %}active{% endif %}" href="/parent/dashboard">
+        <span class="sb-icon">🏠</span> Dashboard
+      </a>
+      <a class="sb-link {% if request.path == '/parent/link-child' %}active{% endif %}" href="/parent/link-child">
+        <span class="sb-icon">➕</span> Link Child
+      </a>
+      <a class="sb-link" href="/parent/reserve">
+        <span class="sb-icon">🛒</span> Reserve Items
+      </a>
+
+      {% elif session.get('role') == 'teacher' %}
+      <div class="sb-section-label">Teacher</div>
+      <a class="sb-link {% if request.path == '/teacher' %}active{% endif %}" href="/teacher">
+        <span class="sb-icon">👩‍🏫</span> My Class
+      </a>
 
       {% elif session.get('role') == 'registrar' %}
-      <a class="nav-link" href="/registrar">📋 Registrar</a>
+      <div class="sb-section-label">Registrar</div>
+      <a class="sb-link {% if request.path == '/registrar' %}active{% endif %}" href="/registrar">
+        <span class="sb-icon">📋</span> Enrollments
+      </a>
 
       {% elif session.get('role') == 'cashier' %}
-      <a class="nav-link" href="/cashier">💰 Cashier</a>
-      <a class="nav-link" href="/cashier/payment-history">📊 Payments</a>
+      <div class="sb-section-label">Cashier</div>
+      <a class="sb-link {% if request.path == '/cashier' %}active{% endif %}" href="/cashier">
+        <span class="sb-icon">💰</span> Dashboard
+      </a>
+      <a class="sb-link {% if request.path == '/cashier/search' %}active{% endif %}" href="/cashier/search">
+        <span class="sb-icon">🔍</span> Search Student
+      </a>
+      <a class="sb-link {% if request.path == '/cashier/payment-history' %}active{% endif %}"
+        href="/cashier/payment-history">
+        <span class="sb-icon">📊</span> Payment History
+      </a>
+      <a class="sb-link {% if request.path == '/cashier/reports' %}active{% endif %}" href="/cashier/reports">
+        <span class="sb-icon">📈</span> Daily Reports
+      </a>
+      <a class="sb-link {% if request.path == '/cashier/reservations' %}active{% endif %}" href="/cashier/reservations">
+        <span class="sb-icon">📚</span> Reservations
+      </a>
 
       {% elif session.get('role') == 'librarian' %}
-      <a class="nav-link" href="/librarian">📚 Librarian</a>
+      <div class="sb-section-label">Library</div>
+      <a class="sb-link {% if request.path == '/librarian' %}active{% endif %}" href="/librarian">
+        <span class="sb-icon">🏠</span> Dashboard
+      </a>
+      <a class="sb-link {% if '/librarian/books' in request.path %}active{% endif %}"
+        href="{{ url_for('librarian.books_inventory') }}">
+        <span class="sb-icon">📚</span> Book Inventory
+      </a>
+      <a class="sb-link" href="{{ url_for('librarian.book_add') }}">
+        <span class="sb-icon">➕</span> Add Book
+      </a>
 
       {% elif session.get('role') == 'branch_admin' %}
-      <a class="nav-link" href="/branch-admin">🏫 Branch Admin</a>
+      <div class="sb-section-label">Administration</div>
+      <a class="sb-link {% if request.path == '/branch-admin' %}active{% endif %}" href="/branch-admin">
+        <span class="sb-icon">🏫</span> Dashboard
+      </a>
+      <a class="sb-link" href="/branch-admin/faqs">
+        <span class="sb-icon">🤖</span> Manage FAQs
+      </a>
+      <a class="sb-link" href="/branch-admin/inventory">
+        <span class="sb-icon">📦</span> Inventory
+      </a>
 
       {% elif session.get('role') == 'super_admin' %}
-      <a class="nav-link" href="/super-admin">🔐 Super Admin</a>
-      {% endif %}
-
-      <a class="nav-link" href="/#faq">❓ FAQ</a>
+      <div class="sb-section-label">Super Admin</div>
+      <a class="sb-link {% if request.path == '/super-admin' %}active{% endif %}" href="/super-admin">
+        <span class="sb-icon">🔐</span> Dashboard
+      </a>
 
       {% else %}
-      <a class="nav-link" href="/login">🔑 Login</a>
-      <a class="nav-link" href="/track">🔍 Track</a>
-      <a class="nav-link" href="/#faq">❓ FAQ</a>
+      <div class="sb-section-label">Navigation</div>
+      <a class="sb-link" href="/login"><span class="sb-icon">🔑</span> Login</a>
+      <a class="sb-link" href="/track"><span class="sb-icon">🔍</span> Track</a>
       {% endif %}
-    </div>
 
-    <div class="nav-right">
+      <!-- Common -->
+      <div class="sb-section-label">General</div>
+      <a class="sb-link" href="/#faq"><span class="sb-icon">❓</span> FAQ</a>
       {% if session.get('role') %}
-      {# Friendly role label mapping #}
-      {% set role_labels = {
-      'super_admin': 'Super Admin',
-      'branch_admin': 'Branch Admin',
-      'registrar': 'Registrar',
-      'cashier': 'Cashier',
-      'librarian': 'Librarian',
-      'parent': 'Parent',
-      'student': 'Student'
-      } %}
-      {% set role_raw = session.get('role') %}
-      {% set role_label = role_labels.get(role_raw, role_raw | title) %}
-
-      {# Get display name: prefer student_name, else use first part of role #}
-      {% if session.get('student_name') %}
-      {% set display_name = session.get('student_name') %}
-      {% else %}
-      {% set display_name = role_label %}
+      <a class="sb-link" href="/change-password">
+        <span class="sb-icon">🔑</span> Change Password
+      </a>
       {% endif %}
 
-      {# Avatar initial #}
-      {% set avatar_letter = display_name[0] | upper %}
+    </nav>
 
-      <div class="nav-user">
-        <div class="nav-avatar">{{ avatar_letter }}</div>
-        <span class="nav-user-name">{{ display_name }}</span>
+    <!-- Logout -->
+    {% if session.get('role') %}
+    <div class="sb-footer">
+      <a class="sb-logout" href="/logout">
+        <span class="sb-icon">↩</span> Logout
+      </a>
+    </div>
+    {% endif %}
+
+  </aside>
+
+  <!-- ══ TOPBAR ══ -->
+  <header class="topbar" id="topbar">
+    <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <span class="topbar-title">{% block page_title %}Liceo LMS{% endblock %}</span>
+
+    <div class="topbar-right">
+    </div>
+  </header>
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <div class="main-wrap" id="mainWrap">
+    <div class="page-content">
+
+      <!-- Flash messages -->
+      <div class="flash-wrap">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, msg in messages %}
+        <div class="flash {{ category }}">{{ msg }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
       </div>
 
-      <a class="nav-logout" href="/logout">↩ Logout</a>
-      {% endif %}
-    </div>
-  </nav>
+      {% block content %}{% endblock %}
 
-  <!-- Flash messages -->
-  <div class="flash-wrap">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, msg in messages %}
-    <div class="flash {{ category }}">{{ msg }}</div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+    </div>
   </div>
 
-  <!-- Page content -->
-  {% block content %}{% endblock %}
-
-  {# Global chatbot - ON by default, OFF for super_admin #}
+  <!-- ══ CHATBOT ══ -->
   {% set _auto_show = (session.get('role') != 'super_admin') %}
   {% if show_chatbot is defined %}
   {% set _final_show = show_chatbot %}
   {% else %}
   {% set _final_show = _auto_show %}
   {% endif %}
-
   {% if _final_show %}
   {% include "components/chatbot_widget.html" ignore missing %}
   {% endif %}
 
   {% block scripts %}{% endblock %}
+
+  <script>
+    // ── Sidebar state ──
+    const sidebar = document.getElementById('sidebar');
+    const topbar = document.getElementById('topbar');
+    const mainWrap = document.getElementById('mainWrap');
+    const overlay = document.getElementById('sbOverlay');
+
+    // On desktop: start open; on mobile: start closed
+    let isOpen = window.innerWidth > 900;
+
+    function applyState() {
+      const desktop = window.innerWidth > 900;
+      if (desktop) {
+        // Desktop: collapse/expand shifts content
+        if (isOpen) {
+          sidebar.classList.remove('collapsed');
+          topbar.classList.remove('sb-collapsed');
+          mainWrap.classList.remove('sb-collapsed');
+        } else {
+          sidebar.classList.add('collapsed');
+          topbar.classList.add('sb-collapsed');
+          mainWrap.classList.add('sb-collapsed');
+        }
+        overlay.classList.remove('show');
+      } else {
+        // Mobile: overlay mode
+        if (isOpen) {
+          sidebar.classList.add('open');
+          overlay.classList.add('show');
+        } else {
+          sidebar.classList.remove('open');
+          overlay.classList.remove('show');
+        }
+      }
+    }
+
+    function toggleSidebar() { isOpen = !isOpen; applyState(); }
+    function closeSidebar() { isOpen = false; applyState(); }
+
+    // On resize, re-evaluate
+    window.addEventListener('resize', () => {
+      isOpen = window.innerWidth > 900;
+      applyState();
+    });
+
+    applyState();
+  </script>
+
 </body>
 
 </html>

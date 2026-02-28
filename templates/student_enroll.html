@@ -1,92 +1,910 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
+
 <head>
-    <title>Student Enrollment</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Enrollment Form – {{ branch.branch_name }}</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
-            padding: 40px;
+        :root {
+            --bg: #f0f4f9;
+            --card: #ffffff;
+            --text: #1a2035;
+            --muted: #6b7280;
+            --line: #dde3ed;
+            --primary: #1e4e8c;
+            --primary-light: #2b6cb0;
+            --soft: #eef5ff;
+            --gold: #b8960c;
+            --gold-light: #f0d060;
+            --shadow: 0 12px 32px rgba(0, 0, 0, .10);
+            --radius: 16px;
         }
-        h1 {
-            color: #2c3e50;
-        }
-        form {
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            max-width: 600px;
-        }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0 15px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+
+        * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0
         }
-        label {
-            font-weight: bold;
+
+        body {
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            background:
+                radial-gradient(ellipse 1200px 500px at 10% -5%, #dceeff 0%, transparent 65%),
+                radial-gradient(ellipse 900px 400px at 95% 5%, #e8f0ff 0%, transparent 60%),
+                var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 28px 16px 48px;
         }
-        .btn-primary {
-            background-color: #2563eb;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
+
+        .wrap {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* ── CARD ── */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--line);
+            overflow: hidden;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #163a6e 100%);
+            padding: 22px 28px 18px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gold-light), var(--gold), var(--gold-light));
+        }
+
+        /* circular logo – no white bg */
+        .logo-circle {
+            width: 74px;
+            height: 74px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 3px solid rgba(255, 255, 255, .35);
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* school info center */
+        .header-center {
+            flex: 1;
+            text-align: center;
+            color: #fff;
+        }
+
+        .header-center .diocese {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .8px;
+            opacity: .85;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        .header-center .school-name {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            line-height: 1.15;
+        }
+
+        .header-center .school-address {
+            font-size: 11px;
+            opacity: .8;
+            margin-top: 3px;
+            line-height: 1.35;
+        }
+
+        .header-center .divider-gold {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+            margin: 8px auto;
+        }
+
+        .header-center .form-title {
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--gold-light);
+        }
+
+        /* ── FLASH ── */
+        .flash {
+            margin: 12px 24px 0;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .flash.error {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+        }
+
+        .flash.success {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            color: #166534;
+        }
+
+        /* ── FORM BODY ── */
+        form {
+            padding: 20px 24px 28px;
+        }
+
+        /* ── SECTION ── */
+        .section {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 14px 0;
+        }
+
+        .section-head {
+            background: var(--soft);
+            border-bottom: 1px solid var(--line);
+            padding: 9px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-head h3 {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            color: var(--primary);
+        }
+
+        .section-head small {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .section-body {
+            padding: 14px;
+        }
+
+        /* ── GRID ── */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 10px;
+        }
+
+        .c12 {
+            grid-column: span 12
+        }
+
+        .c8 {
+            grid-column: span 8
+        }
+
+        .c6 {
+            grid-column: span 6
+        }
+
+        .c5 {
+            grid-column: span 5
+        }
+
+        .c4 {
+            grid-column: span 4
+        }
+
+        .c3 {
+            grid-column: span 3
+        }
+
+        .c7 {
+            grid-column: span 7
+        }
+
+        @media(max-width:860px) {
+
+            .c8,
+            .c7,
+            .c6,
+            .c5,
+            .c4,
+            .c3 {
+                grid-column: span 12
+            }
+        }
+
+        /* ── FIELD ── */
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .field label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .field label .req {
+            color: #e53e3e;
+            margin-left: 2px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="tel"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 9px 11px;
+            border: 1.5px solid var(--line);
+            border-radius: 9px;
+            font-size: 13.5px;
+            color: var(--text);
+            background: #fff;
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+            font-family: inherit;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(43, 108, 176, .12);
+        }
+
+        textarea {
+            min-height: 75px;
+            resize: vertical;
+        }
+
+        select {
             cursor: pointer;
-            font-size: 16px;
         }
-        .btn-primary:hover {
-            background-color: #1e4ed8;
+
+        /* ── PILLS ── */
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .pill {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 13px;
+            border: 1.5px solid var(--line);
+            border-radius: 999px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            transition: border-color .15s, background .15s, color .15s;
+            color: var(--text);
+            background: #fff;
+        }
+
+        .pill:hover {
+            border-color: var(--primary-light);
+            background: var(--soft);
+            color: var(--primary);
+        }
+
+        .pill input {
+            accent-color: var(--primary);
+            margin: 0;
+        }
+
+        /* ── REQUIREMENTS GRID ── */
+        .req-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        @media(max-width:680px) {
+            .req-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+        .req-card {
+            border: 1.5px solid var(--line);
+            border-radius: 10px;
+            padding: 10px 10px 8px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .req-card .req-name {
+            font-size: 11.5px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .req-card small {
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        /* ── UPLOAD AREA ── */
+        .upload-area {
+            border: 1.5px dashed rgba(43, 108, 176, .4);
+            border-radius: 10px;
+            padding: 13px;
+            background: rgba(43, 108, 176, .04);
+            margin-top: 10px;
+        }
+
+        .upload-area label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            margin-bottom: 6px;
+        }
+
+        .upload-area input[type="file"] {
+            font-size: 12.5px;
+            width: 100%;
+        }
+
+        .upload-area small {
+            display: block;
+            margin-top: 5px;
+            font-size: 10.5px;
+            color: var(--muted);
+        }
+
+        /* ── DATA PRIVACY ── */
+        .privacy-box {
+            border: 1.5px solid #bfdbfe;
+            border-radius: 10px;
+            background: #eff6ff;
+            padding: 13px 14px;
+            margin-bottom: 14px;
+        }
+
+        .privacy-box .priv-title {
+            font-size: 11.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: #1e40af;
+            margin-bottom: 7px;
+        }
+
+        .privacy-box p {
+            font-size: 12px;
+            color: #1e3a8a;
+            line-height: 1.55;
+            margin-bottom: 8px;
+        }
+
+        .privacy-check-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .privacy-check-row input[type="checkbox"] {
+            margin-top: 2px;
+            accent-color: var(--primary);
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .privacy-check-row label {
+            font-size: 12px;
+            color: #1e3a8a;
+            font-weight: 600;
+            cursor: pointer;
+            line-height: 1.45;
+        }
+
+        /* ── GOLD DIVIDER ── */
+        .gold-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            border: none;
+            margin: 18px 0;
+        }
+
+        /* ── TWO-COL INLINE (label: value style) ── */
+        .inline-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
+
+        .inline-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--muted);
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .inline-line {
+            flex: 1;
+            border: none;
+            border-bottom: 1.5px solid var(--line);
+            padding: 7px 4px;
+            font-size: 13.5px;
+            color: var(--text);
+            background: transparent;
+            outline: none;
+            transition: border-color .15s;
+        }
+
+        .inline-line:focus {
+            border-bottom-color: var(--primary-light);
+        }
+
+        /* ── FOOTER / SUBMIT ── */
+        .form-footer {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+        }
+
+        .footer-note {
+            font-size: 11.5px;
+            color: var(--muted);
+            line-height: 1.45;
+            max-width: 560px;
+        }
+
+        .btn-submit {
+            border: none;
+            background: linear-gradient(160deg, #2b6cb0, var(--primary));
+            color: #fff;
+            padding: 12px 26px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(30, 78, 140, .25);
+            transition: transform .12s, box-shadow .12s;
+            white-space: nowrap;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 26px rgba(30, 78, 140, .32);
+        }
+
+        .btn-submit:active {
+            transform: translateY(1px);
+            box-shadow: none;
         }
     </style>
 </head>
+
 <body>
-<h1>Enrollment for {{ branch.branch_name }}</h1>
+    <div class="wrap">
+        <div class="card">
 
-{% if message %}
-<p style="color:green">{{ message }}</p>
-{% endif %}
+            <!-- ══ HEADER ══ -->
+            <div class="header">
+                <!-- Left: SPDCSS logo (always) -->
+                <div class="logo-circle">
+                    <img src="{{ url_for('static', filename='img/spdcss_logo.webp') }}" alt="SPDCSS Logo" />
+                </div>
 
-<form method="post" enctype="multipart/form-data">
-    <label>Full Name:</label>
-    <input type="text" name="student_name" placeholder="Full Name" required>
+                <!-- Center: school info -->
+                <div class="header-center">
+                    <div class="diocese">San Pablo Diocesan Catholic Schools System</div>
+                    <div class="school-name">{{ branch.branch_name }}</div>
+                    <div class="school-address">
+                        {% if 'liliw' in branch.branch_name | lower %}
+                        Liliw, Laguna &nbsp;•&nbsp; Contact No: 049-000-0000
+                        {% else %}
+                        Plaza Rizal St., Brgy. Sta Catalina, Majayjay, Laguna 4005<br>
+                        School ID: 402556 &nbsp;•&nbsp; Contact No: 049-563-2206
+                        {% endif %}
+                    </div>
+                    <div class="divider-gold"></div>
+                    <div class="form-title">Enrollment Form / Registration Form</div>
+                </div>
 
-    <label>Grade Level:</label>
-    <input type="text" name="grade_level" placeholder="Grade Level" required>
+                <!-- Right: branch-specific logo -->
+                <div class="logo-circle">
+                    {% if 'liliw' in branch.branch_name | lower %}
+                    <img src="{{ url_for('static', filename='img/LiceodeLiliwLogo.webp') }}"
+                        alt="Liceo de Liliw Logo" />
+                    {% else %}
+                    <img src="{{ url_for('static', filename='img/LiceodeMajayjayLogo.webp') }}"
+                        alt="Liceo de Majayjay Logo" />
+                    {% endif %}
+                </div>
+            </div>
 
-    <label>Gender:</label>
-    <select name="gender" required>
-        <option value="">-- Select Gender --</option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-    </select>
+            {% if message %}
+            <div class="flash error">{{ message }}</div>
+            {% endif %}
 
-    <label>Date of Birth:</label>
-    <input type="date" name="dob" required>
+            <form method="post" enctype="multipart/form-data">
 
-    <label>Address:</label>
-    <input type="text" name="address" placeholder="Address" required>
+                <!-- ══ ENROLLMENT TYPE ══ -->
+                <div class="section" style="margin-top:20px">
+                    <div class="section-head">
+                        <h3>Enrollment Type</h3>
+                        <small>* required</small>
+                    </div>
+                    <div class="section-body">
+                        <div class="grid">
+                            <div class="c12">
+                                <div class="pill-row">
+                                    <label class="pill"><input type="radio" name="enroll_type" value="Old" required>
+                                        Old</label>
+                                    <label class="pill"><input type="radio" name="enroll_type" value="New"> New</label>
+                                    <label class="pill"><input type="radio" name="enroll_type" value="Transferee">
+                                        Transferee</label>
+                                    <label class="pill"><input type="radio" name="enroll_type" value="First Semester">
+                                        First Semester</label>
+                                    <label class="pill"><input type="radio" name="enroll_type" value="Second Semester">
+                                        Second Semester</label>
+                                </div>
+                            </div>
+                            <div class="c4">
+                                <div class="field">
+                                    <label>Date <span class="req">*</span></label>
+                                    <input type="date" name="enroll_date" required />
+                                </div>
+                            </div>
+                            <div class="c8">
+                                <div class="field">
+                                    <label>Remarks (optional)</label>
+                                    <input type="text" name="remarks"
+                                        placeholder="e.g., Scholarship applicant, late enrollee..." />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    <label>Contact Number:</label>
-    <input type="text" name="contact_number" placeholder="Contact Number" required>
+                <!-- ══ STUDENT DETAILS ══ -->
+                <div class="section">
+                    <div class="section-head">
+                        <h3>Student Details</h3>
+                    </div>
+                    <div class="section-body">
+                        <div class="grid">
 
-    <label>Guardian Name:</label>
-    <input type="text" name="guardian_name" placeholder="Guardian Name" required>
+                            <div class="c7">
+                                <div class="field">
+                                    <label>Full Name <span class="req">*</span></label>
+                                    <input type="text" name="student_name" placeholder="Last Name, First Name, M.I."
+                                        required />
+                                </div>
+                            </div>
+                            <div class="c5">
+                                <div class="field">
+                                    <label>Learner Reference Number (LRN)</label>
+                                    <input type="text" name="lrn" placeholder="12-digit LRN" />
+                                </div>
+                            </div>
 
-    <label>Guardian Contact Number:</label>
-    <input type="text" name="guardian_contact" placeholder="Guardian Contact" required>
+                            <div class="c4">
+                                <div class="field">
+                                    <label>Grade Level / Strand <span class="req">*</span></label>
+                                    <select name="grade_level" required>
+                                        <option value="" disabled selected>-- Select --</option>
+                                        <option>Nursery</option>
+                                        <option>Kinder</option>
+                                        <option>Grade 1</option>
+                                        <option>Grade 2</option>
+                                        <option>Grade 3</option>
+                                        <option>Grade 4</option>
+                                        <option>Grade 5</option>
+                                        <option>Grade 6</option>
+                                        <option>Grade 7</option>
+                                        <option>Grade 8</option>
+                                        <option>Grade 9</option>
+                                        <option>Grade 10</option>
+                                        <option>Grade 11 – STEM</option>
+                                        <option>Grade 11 – ABM</option>
+                                        <option>Grade 11 – HUMSS</option>
+                                        <option>Grade 11 – GAS</option>
+                                        <option>Grade 12 – STEM</option>
+                                        <option>Grade 12 – ABM</option>
+                                        <option>Grade 12 – HUMSS</option>
+                                        <option>Grade 12 – GAS</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="c4">
+                                <div class="field">
+                                    <label>Birthday <span class="req">*</span></label>
+                                    <input type="date" name="dob" required />
+                                </div>
+                            </div>
+                            <div class="c4">
+                                <div class="field">
+                                    <label>Birthplace</label>
+                                    <input type="text" name="birthplace" placeholder="City / Municipality" />
+                                </div>
+                            </div>
 
-    <label>Previous School (optional):</label>
-    <input type="text" name="previous_school" placeholder="Previous School">
+                            <div class="c8">
+                                <div class="field">
+                                    <label>Address <span class="req">*</span></label>
+                                    <input type="text" name="address"
+                                        placeholder="House No., Street, Barangay, City/Municipality, Province"
+                                        required />
+                                </div>
+                            </div>
+                            <div class="c4">
+                                <div class="field">
+                                    <label>Cellphone No.</label>
+                                    <input type="tel" name="contact_number" placeholder="09xxxxxxxxx" />
+                                </div>
+                            </div>
 
-    <label>Upload Requirements (PDF/JPG/PNG):</label>
-    <input type="file" name="documents" multiple required>
+                            <div class="c4">
+                                <div class="field">
+                                    <label>Sex <span class="req">*</span></label>
+                                    <select name="gender" required>
+                                        <option value="" disabled selected>Select</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
 
-    <button type="submit" class="btn-primary">Next: Books</button>
-</form>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- ══ PARENT / GUARDIAN ══ -->
+                <div class="section">
+                    <div class="section-head">
+                        <h3>Parent / Guardian Information</h3>
+                    </div>
+                    <div class="section-body">
+                        <div class="grid">
+
+                            <div class="c6">
+                                <div class="field">
+                                    <label>Father's Name</label>
+                                    <input type="text" name="father_name" placeholder="Last Name, First Name, M.I." />
+                                </div>
+                            </div>
+                            <div class="c3">
+                                <div class="field">
+                                    <label>Contact Number</label>
+                                    <input type="tel" name="father_contact" placeholder="09xxxxxxxxx" />
+                                </div>
+                            </div>
+                            <div class="c3">
+                                <div class="field">
+                                    <label>Occupation</label>
+                                    <input type="text" name="father_occupation" />
+                                </div>
+                            </div>
+
+                            <div class="c6">
+                                <div class="field">
+                                    <label>Mother's Name</label>
+                                    <input type="text" name="mother_name" placeholder="Last Name, First Name, M.I." />
+                                </div>
+                            </div>
+                            <div class="c3">
+                                <div class="field">
+                                    <label>Contact Number</label>
+                                    <input type="tel" name="mother_contact" placeholder="09xxxxxxxxx" />
+                                </div>
+                            </div>
+                            <div class="c3">
+                                <div class="field">
+                                    <label>Occupation</label>
+                                    <input type="text" name="mother_occupation" />
+                                </div>
+                            </div>
+
+                            <div class="c8">
+                                <div class="field">
+                                    <label>Guardian Name <span class="req">*</span></label>
+                                    <input type="text" name="guardian_name" placeholder="Name / Relationship"
+                                        required />
+                                </div>
+                            </div>
+                            <div class="c4">
+                                <div class="field">
+                                    <label>Guardian Contact <span class="req">*</span></label>
+                                    <input type="tel" name="guardian_contact" placeholder="09xxxxxxxxx" required />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ PREVIOUS SCHOOL ══ -->
+                <div class="section">
+                    <div class="section-head">
+                        <h3>Previous School</h3>
+                    </div>
+                    <div class="section-body">
+                        <div class="grid">
+                            <div class="c8">
+                                <div class="field">
+                                    <label>Last School Attended</label>
+                                    <input type="text" name="previous_school" placeholder="School Name" />
+                                </div>
+                            </div>
+                            <div class="c4">
+                                <div class="field">
+                                    <label>School Year</label>
+                                    <input type="text" name="school_year" placeholder="e.g., 2024–2025" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ REQUIREMENTS ══ -->
+                <div class="section">
+                    <div class="section-head">
+                        <h3>Requirement/s Submitted</h3>
+                    </div>
+                    <div class="section-body">
+                        <div class="grid">
+                            <div class="c6">
+                                <div class="field">
+                                    <label>PSA Birth Certificate <span class="req">*</span></label>
+                                    <input type="file" name="psa_birth_cert" accept=".pdf,.jpg,.jpeg,.png" required />
+                                    <small>Photocopy/Original • PDF/JPG/PNG</small>
+                                </div>
+                            </div>
+                            <div class="c6">
+                                <div class="field">
+                                    <label>Baptismal Certificate</label>
+                                    <input type="file" name="baptismal_cert" accept=".pdf,.jpg,.jpeg,.png" />
+                                    <small>Optional / If applicable</small>
+                                </div>
+                            </div>
+                            <div class="c6">
+                                <div class="field">
+                                    <label>Card / Form 138 <span class="req">*</span></label>
+                                    <input type="file" name="form_138" accept=".pdf,.jpg,.jpeg,.png" required />
+                                    <small>Latest</small>
+                                </div>
+                            </div>
+                            <div class="c6">
+                                <div class="field">
+                                    <label>Good Moral Certificate</label>
+                                    <input type="file" name="good_moral" accept=".pdf,.jpg,.jpeg,.png" />
+                                    <small>Certificate</small>
+                                </div>
+                            </div>
+                            <div class="c6">
+                                <div class="field">
+                                    <label>Form 137</label>
+                                    <input type="file" name="form_137" accept=".pdf,.jpg,.jpeg,.png" />
+                                    <small>As required</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ DATA PRIVACY CONSENT ══ -->
+                <div class="section">
+                    <div class="section-head">
+                        <h3>Data Privacy Consent and Certification</h3>
+                    </div>
+                    <div class="section-body">
+
+                        <div class="privacy-box">
+                            <div class="priv-title">🔒 Data Privacy Act of 2012 – RA 10173</div>
+                            <p>
+                                I hereby certify that the information provided in this form is <strong>true and
+                                    correct</strong>.
+                            </p>
+                            <p>
+                                I give consent to the processing of my personal and sensitive personal data for
+                                <strong>legitimate school purposes</strong> in accordance with the
+                                <strong>Data Privacy Act of 2012</strong> and its Implementing Rules and Regulations.
+                                The school shall ensure that all collected data will be kept confidential and secured,
+                                and will not be shared with third parties without my written consent, except as required
+                                by law or authorized by the National Privacy Commission.
+                            </p>
+                            <div class="privacy-check-row">
+                                <input type="checkbox" name="privacy_consent" id="privacyConsent" value="1" required />
+                                <label for="privacyConsent">
+                                    I have read and understood the above Data Privacy statement, and I freely give my
+                                    consent
+                                    to the collection and processing of my personal data. <span
+                                        style="color:#e53e3e">*</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="grid" style="margin-top:14px">
+                            <div class="c6">
+                                <div class="field">
+                                    <label>Student's Signature (type full name) <span class="req">*</span></label>
+                                    <input type="text" name="student_signature" placeholder="Full Name as Signature"
+                                        required />
+                                </div>
+                            </div>
+                            <div class="c6">
+                                <div class="field">
+                                    <label>Parent / Guardian's Signature (type full name) <span
+                                            class="req">*</span></label>
+                                    <input type="text" name="parent_signature" placeholder="Full Name as Signature"
+                                        required />
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ══ SUBMIT FOOTER ══ -->
+                <div class="form-footer">
+                    <div class="footer-note">
+                        By clicking <strong>Submit Enrollment</strong>, you confirm that all information provided
+                        is true and correct, and that you have read and agreed to the Data Privacy statement above.
+                        You can track your enrollment status after submission.
+                    </div>
+                    <button class="btn-submit" type="submit">Submit Enrollment</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
 </body>
+
 </html>

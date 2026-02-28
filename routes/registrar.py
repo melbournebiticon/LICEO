@@ -58,17 +58,26 @@ def registrar_dashboard():
 
             db.commit()
 
-            if action == "approved":
-                flash(f"Enrollment {enrollment_id} approved successfully", "success")
-            else:
-                flash(f"Enrollment {enrollment_id} rejected", "warning")
+            # Fetch branch_enrollment_no for user-friendly message
+            cursor.execute("""
+                SELECT COALESCE(branch_enrollment_no, %s) AS display_no
+                FROM enrollments WHERE enrollment_id=%s
+            """, (enrollment_id, enrollment_id))
+            disp_row = cursor.fetchone()
+            display_no = disp_row["display_no"] if disp_row else enrollment_id
 
-        # Fetch enrollments for this branch
+            if action == "approved":
+                flash(f"Enrollment #{display_no} approved successfully", "success")
+            else:
+                flash(f"Enrollment #{display_no} rejected", "warning")
+
+        # Fetch enrollments for this branch ordered by per-branch number
         cursor.execute("""
-            SELECT *
+            SELECT *,
+                   COALESCE(branch_enrollment_no, enrollment_id) AS display_no
             FROM enrollments
             WHERE branch_id=%s
-            ORDER BY created_at DESC
+            ORDER BY branch_enrollment_no ASC NULLS LAST, created_at DESC
         """, (branch_id,))
         enrollments = cursor.fetchall()
 
@@ -150,8 +159,22 @@ def create_student_account(enrollment_id):
             flash("Student account already exists for this enrollment", "warning")
             return redirect("/registrar")
 
-        # Generate credentials
-        username = f"student_{enrollment_id}"
+        # Use branch_code + per-branch enrollment no for username, e.g. LDMAJ_0001
+        cursor.execute("SELECT branch_code FROM branches WHERE branch_id=%s", (branch_id,))
+        brow = cursor.fetchone()
+        branch_code = (brow["branch_code"] if brow and brow.get("branch_code") else "").strip().upper()
+        if not branch_code:
+            branch_code = f"B{branch_id}"
+
+        branch_no = enrollment.get("branch_enrollment_no") or enrollment_id
+        try:
+            num = int(branch_no)
+            branch_no_str = f"{num:04d}"
+        except Exception:
+            branch_no_str = str(branch_no)
+
+        username = f"{branch_code}_{branch_no_str}"
+        # Default password: secure random, stored hashed; student will be forced to change on first login
         temp_password = generate_password()
         hashed_password = generate_password_hash(temp_password)
 
@@ -169,7 +192,7 @@ def create_student_account(enrollment_id):
                 "account_created.html",
                 account_type="student",
                 student_name=enrollment.get("student_name"),
-                enrollment_id=enrollment_id,
+                enrollment_id=enrollment.get("branch_enrollment_no") or enrollment_id,
                 username=username,
                 password=temp_password
             )
@@ -233,8 +256,23 @@ def create_parent_account(enrollment_id):
             )
             return redirect("/registrar")
 
-        # Generate credentials
-        username = f"parent_{enrollment_id}"
+        # Use branch_code + running parent number per branch, e.g. LDMAJ_Parent1
+        cursor.execute("SELECT branch_code FROM branches WHERE branch_id=%s", (branch_id,))
+        brow = cursor.fetchone()
+        branch_code = (brow["branch_code"] if brow and brow.get("branch_code") else "").strip().upper()
+        if not branch_code:
+            branch_code = f"B{branch_id}"
+
+        cursor.execute("""
+            SELECT COUNT(*) AS cnt
+            FROM users
+            WHERE role='parent' AND branch_id=%s AND username ILIKE %s
+        """, (branch_id, f"{branch_code}_Parent%"))
+        prow = cursor.fetchone() or {}
+        next_no = (prow.get("cnt") or 0) + 1
+
+        username = f"{branch_code}_Parent{next_no}"
+        # Default password: secure random, stored hashed
         temp_password = generate_password()
         hashed_password = generate_password_hash(temp_password)
 
@@ -262,7 +300,7 @@ def create_parent_account(enrollment_id):
                 "account_created.html",
                 account_type="parent",
                 student_name=enrollment.get("student_name"),
-                enrollment_id=enrollment_id,
+                enrollment_id=enrollment.get("branch_enrollment_no") or enrollment_id,
                 username=username,
                 password=temp_password
             )

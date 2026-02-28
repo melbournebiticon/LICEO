@@ -1,0 +1,755 @@
+{% extends "base.html" %}
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block styles %}
+<style>
+    .td-wrap {
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 24px 16px 64px;
+    }
+
+    /* ── Header ── */
+    .td-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .td-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--text);
+        margin: 0;
+    }
+
+    .td-sub {
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin-top: 2px;
+    }
+
+    /* ── Grade picker ── */
+    .grade-form {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .grade-select {
+        padding: 9px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        font-size: 0.94rem;
+        color: var(--text);
+        min-width: 180px;
+    }
+
+    .btn-apply {
+        padding: 9px 18px;
+        border-radius: 10px;
+        background: var(--btn);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.9rem;
+        border: none;
+        cursor: pointer;
+        transition: background 0.18s, transform 0.15s;
+    }
+
+    .btn-apply:hover {
+        background: var(--btnHover);
+        transform: translateY(-1px);
+    }
+
+    /* ── Stats ── */
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+
+    .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px 20px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .stat-card .num {
+        font-size: 2rem;
+        font-weight: 900;
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+
+    .stat-card .lbl {
+        font-size: 0.8rem;
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+    .stat-blue .num {
+        color: #2563eb;
+    }
+
+    .stat-green .num {
+        color: #16a34a;
+    }
+
+    .stat-orange .num {
+        color: #d97706;
+    }
+
+    .stat-purple .num {
+        color: #7c3aed;
+    }
+
+    .stat-teal .num {
+        color: #0891b2;
+    }
+
+    .stat-gray .num {
+        color: var(--muted);
+    }
+
+    /* ── Announcements ── */
+    .ann-section {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 28px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+    }
+
+    .ann-section-title {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--text);
+        margin: 0 0 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* post form */
+    .ann-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 22px;
+    }
+
+    .ann-input,
+    .ann-textarea {
+        width: 100%;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--bg, #f9fafb);
+        color: var(--text);
+        font-size: 0.93rem;
+        font-family: inherit;
+        box-sizing: border-box;
+        transition: border-color 0.18s;
+    }
+
+    .ann-input:focus,
+    .ann-textarea:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
+    }
+
+    .ann-textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    .btn-post {
+        align-self: flex-end;
+        padding: 10px 22px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #3b82f6, #6366f1);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.9rem;
+        border: none;
+        cursor: pointer;
+        transition: opacity 0.18s, transform 0.15s;
+    }
+
+    .btn-post:hover {
+        opacity: 0.88;
+        transform: translateY(-1px);
+    }
+
+    /* list */
+    .ann-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 0 0 16px;
+    }
+
+    .ann-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .ann-card {
+        background: linear-gradient(135deg, #f0f9ff 0%, #eef2ff 100%);
+        border: 1px solid #c7d2fe;
+        border-left: 4px solid #6366f1;
+        border-radius: 12px;
+        padding: 14px 16px;
+        position: relative;
+    }
+
+    .ann-card-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 6px;
+    }
+
+    .ann-card-title {
+        font-weight: 700;
+        font-size: 0.97rem;
+        color: #1e3a8a;
+    }
+
+    .ann-card-meta {
+        font-size: 0.78rem;
+        color: #4b5563;
+        margin-bottom: 4px;
+    }
+
+    .ann-card-body {
+        font-size: 0.9rem;
+        color: #374151;
+        white-space: pre-wrap;
+        line-height: 1.55;
+    }
+
+    .btn-del-ann {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        color: #ef4444;
+        padding: 4px 8px;
+        border-radius: 6px;
+        transition: background 0.15s;
+        flex-shrink: 0;
+    }
+
+    .btn-del-ann:hover {
+        background: #fee2e2;
+    }
+
+    .btn-edit-ann {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        color: #3b82f6;
+        padding: 4px 8px;
+        border-radius: 6px;
+        transition: background 0.15s;
+        flex-shrink: 0;
+    }
+
+    .btn-edit-ann:hover {
+        background: #dbeafe;
+    }
+
+    /* inline edit form */
+    .ann-edit-form {
+        display: none;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 10px;
+        border-top: 1px dashed #c7d2fe;
+        padding-top: 10px;
+    }
+
+    .ann-edit-form.open {
+        display: flex;
+    }
+
+    .ann-edit-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-save-ann {
+        padding: 7px 18px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #3b82f6, #6366f1);
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border: none;
+        cursor: pointer;
+        transition: opacity .18s;
+    }
+
+    .btn-save-ann:hover {
+        opacity: .85;
+    }
+
+    .btn-cancel-ann {
+        padding: 7px 16px;
+        border-radius: 8px;
+        background: #f3f4f6;
+        color: #374151;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border: 1px solid #e5e7eb;
+        cursor: pointer;
+    }
+
+    .ann-empty {
+        text-align: center;
+        padding: 28px;
+        color: var(--muted);
+        font-size: 0.9rem;
+    }
+
+    /* ── Table ── */
+    .td-table-wrap {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+    }
+
+    .td-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.93rem;
+    }
+
+    .td-table thead th {
+        background: #f0f4ff;
+        color: #1a2e5a;
+        font-weight: 700;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        padding: 13px 16px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .td-table tbody tr {
+        border-bottom: 1px solid var(--border);
+        transition: background 0.15s;
+    }
+
+    .td-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .td-table tbody tr:hover {
+        background: #f8faff;
+    }
+
+    .td-table td {
+        padding: 12px 16px;
+        color: var(--text);
+        vertical-align: middle;
+    }
+
+    /* ── Badges ── */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .badge-green {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .badge-red {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .badge-yellow {
+        background: #fef9c3;
+        color: #92400e;
+    }
+
+    .badge-blue {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .badge-purple {
+        background: #ede9fe;
+        color: #6d28d9;
+    }
+
+    .badge-gray {
+        background: #f3f4f6;
+        color: #6b7280;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--muted);
+    }
+
+    .empty-state .big-icon {
+        font-size: 3.5rem;
+        margin-bottom: 12px;
+    }
+
+    .empty-state h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0 0 6px;
+        color: var(--text);
+    }
+
+    .empty-state p {
+        font-size: 0.93rem;
+        margin: 0;
+    }
+
+    /* ── Set grade prompt ── */
+    .set-grade-box {
+        background: linear-gradient(135deg, #eff6ff 0%, #eef2ff 100%);
+        border: 1.5px solid #bfdbfe;
+        border-radius: 14px;
+        padding: 32px;
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+    .set-grade-box h3 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #1e3a8a;
+        margin: 0 0 8px;
+    }
+
+    .set-grade-box p {
+        color: #3b5bdb;
+        font-size: 0.93rem;
+        margin: 0 0 18px;
+    }
+
+    @media (max-width: 600px) {
+        .td-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .stat-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .btn-post {
+            align-self: stretch;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="td-wrap">
+
+    <!-- Header -->
+    <div class="td-header">
+        <div>
+            <h1 class="td-title">👩‍🏫 Teacher Dashboard</h1>
+            <div class="td-sub">
+                {% if selected_grade %}
+                Viewing class: <strong>{{ selected_grade }}</strong>
+                {% else %}
+                Select your grade level to view your class roster.
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Grade picker / locked badge -->
+        {% if teacher_grade %}
+        <!-- Grade assigned by Branch Admin — LOCKED -->
+        <div style="
+            display:flex; align-items:center; gap:8px;
+            background: linear-gradient(135deg,#dbeafe,#ede9fe);
+            border: 1.5px solid #a5b4fc;
+            border-radius: 10px;
+            padding: 9px 16px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: #1e3a8a;
+        ">
+            📌 {{ teacher_grade }}
+            <span style="font-size:0.72rem; font-weight:500; color:#6b7280;">assigned by admin</span>
+        </div>
+        {% else %}
+        <!-- No assigned grade — teacher can pick -->
+        <form method="get" action="/teacher" class="grade-form">
+            <select name="grade" class="grade-select" onchange="this.form.submit()">
+                <option value="">— Select Grade —</option>
+                {% for g in grade_levels %}
+                <option value="{{ g }}" {% if g==selected_grade %}selected{% endif %}>{{ g }}</option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <!-- Save grade -->
+        {% if selected_grade and selected_grade != teacher_grade %}
+        <form method="post" action="/teacher/set-grade">
+            <input type="hidden" name="grade_level" value="{{ selected_grade }}">
+            <button type="submit" class="btn-apply">📌 Save as my grade</button>
+        </form>
+        {% endif %}
+        {% endif %}
+    </div>
+
+    {% if not selected_grade %}
+    <!-- No grade selected -->
+    {% if not teacher_grade %}
+    <!-- No grade assigned by admin — let teacher pick -->
+    <div class="set-grade-box">
+        <div style="font-size:3rem; margin-bottom:10px;">🎓</div>
+        <h3>Select Your Grade Level</h3>
+        <p>Choose the grade level you're handling from the dropdown above to view your class roster.</p>
+        <form method="post" action="/teacher/set-grade"
+            style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <select name="grade_level" class="grade-select">
+                <option value="">— Choose Grade —</option>
+                {% for g in grade_levels %}
+                <option value="{{ g }}">{{ g }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn-apply">📌 Set &amp; View Class</button>
+        </form>
+    </div>
+    {% endif %}
+
+    {% else %}
+
+    <!-- ════ STATS ════ -->
+    <div class="stat-grid">
+        <div class="stat-card stat-blue">
+            <div class="num">{{ stats.total }}</div>
+            <div class="lbl">Total Students</div>
+        </div>
+        <div class="stat-card stat-green">
+            <div class="num">{{ stats.cleared }}</div>
+            <div class="lbl">Billing Cleared</div>
+        </div>
+        <div class="stat-card stat-orange">
+            <div class="num">{{ stats.pending_bill }}</div>
+            <div class="lbl">Pending Payment</div>
+        </div>
+        <div class="stat-card stat-purple">
+            <div class="num">{{ stats.claimed }}</div>
+            <div class="lbl">Items Claimed</div>
+        </div>
+        <div class="stat-card stat-teal">
+            <div class="num">{{ stats.reserved }}</div>
+            <div class="lbl">Reservation Pending</div>
+        </div>
+        <div class="stat-card stat-gray">
+            <div class="num">{{ stats.no_reservation }}</div>
+            <div class="lbl">No Reservation</div>
+        </div>
+    </div>
+
+    <!-- ════ ANNOUNCEMENTS ════ -->
+    <div class="ann-section">
+        <p class="ann-section-title">📢 Class Announcements — {{ selected_grade }}</p>
+
+        <!-- Post form -->
+        <form method="post" action="/teacher/announce" class="ann-form">
+            <input type="hidden" name="grade_level" value="{{ selected_grade }}">
+            <input type="text" name="title" class="ann-input" placeholder="📌  Title (e.g. Quiz Tomorrow — Chapter 3)"
+                maxlength="150" required>
+            <textarea name="body" class="ann-textarea"
+                placeholder="Optional — add details about the assignment, topics to review, reminders, etc."
+                maxlength="2000"></textarea>
+            <button type="submit" class="btn-post">📤 Post Announcement</button>
+        </form>
+
+        <hr class="ann-divider">
+
+        <!-- List -->
+        {% if announcements %}
+        <div class="ann-list">
+            {% for a in announcements %}
+            <div class="ann-card" id="ann-card-{{ a.announcement_id }}">
+
+                <!-- View mode -->
+                <div id="ann-view-{{ a.announcement_id }}">
+                    <div class="ann-card-head">
+                        <div style="flex:1;">
+                            <div class="ann-card-title">{{ a.title }}</div>
+                            <div class="ann-card-meta">
+                                👩‍🏫 {{ a.display_name }} &nbsp;&middot;&nbsp;
+                                {{ a.created_at.strftime('%b %d, %Y %I:%M %p') if a.created_at else '' }}
+                            </div>
+                        </div>
+                        <!-- Edit & Delete buttons -->
+                        <div style="display:flex; gap:4px; flex-shrink:0;">
+                            <button type="button" class="btn-edit-ann" data-id="{{ a.announcement_id }}"
+                                data-title="{{ a.title | e }}" data-body="{{ (a.body or '') | e }}"
+                                onclick="openEditAnn(this)" title="Edit">✏️</button>
+                            <form method="post" action="/teacher/announce/{{ a.announcement_id }}/delete"
+                                onsubmit="return confirm('Delete this announcement?')" style="margin:0;">
+                                <input type="hidden" name="grade_level" value="{{ selected_grade }}">
+                                <button type="submit" class="btn-del-ann" title="Delete">🗑</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% if a.body %}
+                    <div class="ann-card-body">{{ a.body }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Inline edit form (hidden by default) -->
+                <form method="post" action="/teacher/announce/{{ a.announcement_id }}/edit" class="ann-edit-form"
+                    id="ann-edit-{{ a.announcement_id }}">
+                    <input type="hidden" name="grade_level" value="{{ selected_grade }}">
+                    <input type="text" name="title" class="ann-input" id="ann-edit-title-{{ a.announcement_id }}"
+                        maxlength="150" required placeholder="Title">
+                    <textarea name="body" class="ann-textarea" id="ann-edit-body-{{ a.announcement_id }}"
+                        maxlength="2000" placeholder="Optional details..." style="min-height:70px;"></textarea>
+                    <div class="ann-edit-actions">
+                        <button type="submit" class="btn-save-ann">💾 Save Changes</button>
+                        <button type="button" class="btn-cancel-ann" data-id="{{ a.announcement_id }}"
+                            onclick="closeEditAnn(this)">
+                            ✕ Cancel
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="ann-empty">
+            📭 No announcements yet for {{ selected_grade }}. Post your first one above!
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ════ STUDENT TABLE ════ -->
+    {% if students %}
+    <div class="td-table-wrap">
+        <table class="td-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Student Name</th>
+                    <th>Grade Level</th>
+                    <th>Enrollment</th>
+                    <th>Billing</th>
+                    <th>Reservation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in students %}
+                <tr>
+                    <td style="color:var(--muted); font-size:0.85rem;">{{ loop.index }}</td>
+                    <td><strong>{{ s.student_name }}</strong></td>
+                    <td>{{ s.grade_level or '—' }}</td>
+
+                    <td>
+                        {% if s.enrollment_status == 'approved' %}
+                        <span class="badge badge-green">✅ Approved</span>
+                        {% else %}
+                        <span class="badge badge-gray">{{ s.enrollment_status | title }}</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if s.billing_status == 'CLEARED' %}
+                        <span class="badge badge-green">✅ Cleared</span>
+                        {% elif s.billing_status == 'PENDING' %}
+                        <span class="badge badge-red">⏳ Pending</span>
+                        {% else %}
+                        <span class="badge badge-gray">No Bill</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% set res = s.reservation_status %}
+                        {% if res == 'CLAIMED' %}
+                        <span class="badge badge-purple">📦 Claimed</span>
+                        {% elif res in ('PENDING', 'RESERVED') %}
+                        <span class="badge badge-blue">🕐 Reserved</span>
+                        {% else %}
+                        <span class="badge badge-gray">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <div class="big-icon">🎒</div>
+        <h3>No students found for {{ selected_grade }}</h3>
+        <p>There are no enrolled students in this grade level at your branch yet.</p>
+    </div>
+    {% endif %}
+
+    {% endif %}
+
+</div>
+
+<script>
+    function openEditAnn(btn) {
+        var id = btn.dataset.id;
+        var title = btn.dataset.title;
+        var body = btn.dataset.body;
+
+        // Hide view, show form
+        document.getElementById('ann-view-' + id).style.display = 'none';
+
+        var form = document.getElementById('ann-edit-' + id);
+        document.getElementById('ann-edit-title-' + id).value = title;
+        document.getElementById('ann-edit-body-' + id).value = body;
+        form.classList.add('open');
+        document.getElementById('ann-edit-title-' + id).focus();
+    }
+
+    function closeEditAnn(btn) {
+        var id = btn.dataset.id;
+        document.getElementById('ann-edit-' + id).classList.remove('open');
+        // Restore view
+        document.getElementById('ann-view-' + id).style.display = '';
+    }
+</script>
+{% endblock %}

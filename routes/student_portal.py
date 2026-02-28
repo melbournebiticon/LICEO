@@ -108,14 +108,38 @@ def dashboard():
     cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     try:
-        # Get student account info
-        cursor.execute("""
-            SELECT sa.*, e.*, br.branch_name, br.location
-            FROM student_accounts sa
-            JOIN enrollments e ON sa.enrollment_id = e.enrollment_id
-            JOIN branches br ON e.branch_id = br.branch_id
-            WHERE sa.account_id = %s
-        """, (session.get("student_account_id"),))
+        account_id    = session.get("student_account_id")
+        enrollment_id = session.get("enrollment_id")
+
+        if account_id:
+            # Path A: logged in via student_accounts table
+            cursor.execute("""
+                SELECT sa.account_id, sa.enrollment_id, sa.username, sa.email,
+                       e.student_name, e.grade_level, e.status, e.branch_id,
+                       e.branch_enrollment_no,
+                       br.branch_name, br.location
+                FROM student_accounts sa
+                JOIN enrollments e ON sa.enrollment_id = e.enrollment_id
+                JOIN branches br ON e.branch_id = br.branch_id
+                WHERE sa.account_id = %s
+            """, (account_id,))
+        elif enrollment_id:
+            # Path B: logged in via users table with enrollment_id
+            cursor.execute("""
+                SELECT NULL AS account_id, e.enrollment_id,
+                       e.branch_enrollment_no,
+                       u.username, NULL AS email,
+                       e.student_name, e.grade_level, e.status, e.branch_id,
+                       br.branch_name, br.location
+                FROM enrollments e
+                JOIN branches br ON e.branch_id = br.branch_id
+                JOIN users u ON u.enrollment_id = e.enrollment_id
+                WHERE e.enrollment_id = %s
+            """, (enrollment_id,))
+        else:
+            flash("Session expired or student account not found. Please log in again.", "error")
+            return redirect("/")
+
         student = cursor.fetchone()
 
         if not student:
@@ -148,13 +172,54 @@ def dashboard():
         """, (student["enrollment_id"],))
         uniform_count = (cursor.fetchone() or {}).get("uniform_count", 0)
 
+        # Teacher announcements — match both "7" and "Grade 7" formats
+        raw_grade = student.get("grade_level") or ""
+        import re as _re
+        if _re.match(r'^\d+$', raw_grade.strip()):
+            # DB has plain number e.g. "7"
+            grade_short = raw_grade.strip()
+            grade_full  = "Grade " + grade_short
+        else:
+            # DB has "Grade 7" or "Kinder"
+            grade_full  = raw_grade.strip()
+            _m2 = _re.match(r'^Grade\s+(\d+)$', grade_full, _re.IGNORECASE)
+            grade_short = _m2.group(1) if _m2 else grade_full
+
+        cursor.execute("""
+            SELECT a.title, a.body, a.created_at,
+                   u.username AS posted_by, u.full_name, u.gender
+            FROM teacher_announcements a
+            JOIN users u ON u.user_id = a.teacher_user_id
+            WHERE a.branch_id = %(branch_id)s
+              AND (
+                  a.grade_level ILIKE %(grade_full)s
+                  OR a.grade_level ILIKE %(grade_short)s
+              )
+            ORDER BY a.created_at DESC
+            LIMIT 20
+        """, {
+            "branch_id":   student.get("branch_id"),
+            "grade_full":  grade_full,
+            "grade_short": grade_short,
+        })
+        raw_ann = cursor.fetchall() or []
+
+
+        teacher_announcements = []
+        for a in raw_ann:
+            a = dict(a)
+            prefix = "Ms. " if a.get("gender") == "female" else ("Mr. " if a.get("gender") == "male" else "")
+            a["display_name"] = prefix + (a.get("full_name") or a.get("posted_by") or "Teacher")
+            teacher_announcements.append(a)
+
         return render_template(
             "student_dashboard.html",
             student=student,
             bill=bill,
             doc_count=doc_count,
             book_count=book_count,
-            uniform_count=uniform_count
+            uniform_count=uniform_count,
+            teacher_announcements=teacher_announcements,
         )
 
     finally:

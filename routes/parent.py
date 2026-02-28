@@ -251,7 +251,44 @@ def child_bills(enrollment_id):
         db.close()
 
 
-# ✅ NEW: Parent → Reserve items for this child (redirect to student reservation page)
+# ✅ Sidebar "Reserve Items" — smart redirect
+@parent_bp.route("/parent/reserve")
+def parent_reserve():
+    if not _require_parent():
+        return redirect("/")
+
+    db = get_db_connection()
+    cursor = db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    try:
+        cursor.execute("""
+            SELECT e.enrollment_id, e.student_name, e.grade_level
+            FROM parent_student ps
+            JOIN enrollments e ON ps.student_id = e.enrollment_id
+            WHERE ps.parent_id = %s
+            ORDER BY e.student_name
+        """, (session.get("user_id"),))
+        children = cursor.fetchall()
+
+        if not children:
+            flash("No linked children found. Please link a child first.", "warning")
+            return redirect(url_for("parent.link_child"))
+
+        if len(children) == 1:
+            # Only one child — go straight to reservation
+            return redirect(url_for(
+                "student.student_reservation",
+                enrollment_id=children[0]["enrollment_id"]
+            ))
+
+        # Multiple children — show picker
+        return render_template("parent_reserve_picker.html", children=children)
+
+    finally:
+        cursor.close()
+        db.close()
+
+
+# ✅ Parent → Reserve items for this child (redirect to student reservation page)
 @parent_bp.route("/parent/child/<int:enrollment_id>/reserve")
 def child_reserve(enrollment_id):
     if not _require_parent():
