@@ -135,6 +135,29 @@
   </div>
 </div>
 
+
+{% if new_account_info %}
+<div class="card" style="margin-bottom:24px; border-left:8px solid #10b981; background:#f0fdf4;">
+    <div style="font-weight:900; color:#065f46; margin-bottom:8px;">
+        {{ new_account_info.type|title }} Account Created ✔
+    </div>
+    <div style="color:#374151; margin-bottom:4px;">
+        <b>Name:</b> {{ new_account_info.student_name }}<br>
+        <b>Enrollment No:</b> {{ new_account_info.enrollment_id }}
+    </div>
+    <div style="margin-bottom:10px;">
+        <b>Username:</b> <span id="new-user-username">{{ new_account_info.username }}</span>
+        <button class="btn btn-success btn-sm" onclick="copyRegValue('new-user-username', event)">Copy</button>
+    </div>
+    <div>
+        <b>Temporary Password:</b> <span id="new-user-password">{{ new_account_info.password }}</span>
+        <button class="btn btn-secondary btn-sm" onclick="copyRegValue('new-user-password', event)">Copy</button>
+    </div>
+    <div style="color:#991b1b; font-size:13px; margin-top:8px;">
+        (Password must be changed after login. Credentials will not be shown again.)
+    </div>
+</div>
+{% endif %}
 <div class="card">
   <div class="card-header">Enrollments</div>
 
@@ -228,5 +251,21 @@
     </table>
   </div>
 </div>
+
+<script>
+  function copyRegValue(elementId, event) {
+      const text = document.getElementById(elementId).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+          const btn = event.target;
+          const originalText = btn.textContent;
+          btn.textContent = 'Copied!';
+          btn.style.backgroundColor = '#10b981';
+          setTimeout(() => {
+              btn.textContent = originalText;
+              btn.style.backgroundColor = btn.classList.contains('btn-success') ? '#16a34a' : '#334155';
+          }, 1500);
+      });
+  }
+  </script>
 
 {% endblock %}
